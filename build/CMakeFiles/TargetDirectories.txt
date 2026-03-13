@@ -1,0 +1,3 @@
+C:/Users/Usuario/Desktop/Trabajo_ARCHON_Informatica/build/CMakeFiles/ARCHON.dir
+C:/Users/Usuario/Desktop/Trabajo_ARCHON_Informatica/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/Usuario/Desktop/Trabajo_ARCHON_Informatica/build/CMakeFiles/ZERO_CHECK.dir
