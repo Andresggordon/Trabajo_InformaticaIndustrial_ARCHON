@@ -15,13 +15,16 @@ public:
 
 private:
     ETSIDI::Sprite* fondo;
-    //ETSIDI::Sprite* logo;
-    //ETSIDI::Sprite* cabecera;
-    //ETSIDI::Sprite* cartel_menu;
-    //ETSIDI::Sprite* boton_UnJugador;
-    //ETSIDI::Sprite* boton_DosJugadores;
-   // ETSIDI::Sprite* boton_Ranking;
-   // ETSIDI::Sprite* indicador;
+    ETSIDI::Sprite* logo;
+    ETSIDI::Sprite* cabecera;
+    ETSIDI::Sprite* logo2;
+    ETSIDI::Sprite* cartel_menu;
+    ETSIDI::Sprite* boton_UnJugador;
+    ETSIDI::Sprite* boton_DosJugadores;
+    ETSIDI::Sprite* boton_Ranking;
+    ETSIDI::Sprite* indicador_UnJugador;
+    ETSIDI::Sprite* indicador_DosJugadores;
+    ETSIDI::Sprite* indicador_Ranking;
 
     int boton_activo;
 };
