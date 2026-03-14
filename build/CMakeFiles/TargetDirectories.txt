@@ -1,3 +1,0 @@
-C:/Users/Esther/Desktop/UNIVERSIDAD/TRABAJOINFO/Trabajo_InformaticaIndustrial_ARCHON/build/CMakeFiles/ARCHON.dir
-C:/Users/Esther/Desktop/UNIVERSIDAD/TRABAJOINFO/Trabajo_InformaticaIndustrial_ARCHON/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/Esther/Desktop/UNIVERSIDAD/TRABAJOINFO/Trabajo_InformaticaIndustrial_ARCHON/build/CMakeFiles/ZERO_CHECK.dir
