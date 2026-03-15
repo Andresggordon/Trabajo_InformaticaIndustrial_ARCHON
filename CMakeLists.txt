@@ -20,6 +20,9 @@ link_directories(
 add_executable(ARCHON 
     src/main.cpp
     src/Menu.cpp
+    src/Eleccion_1jugador.cpp
+    src/Eleccion_2jugadores.cpp
+    src/Eleccion2_1jugador.cpp
 )
 # 7. Directorio de trabajo del depurador
 set_target_properties(ARCHON PROPERTIES
@@ -51,6 +54,6 @@ add_custom_command(TARGET ARCHON POST_BUILD
 # 10. Copiar assets automáticamente al compilar
 add_custom_command(TARGET ARCHON POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    "${CMAKE_CURRENT_SOURCE_DIR}/assets"
+    "${CMAKE_CURRENT_SOURCE_DIR}/assets/menu_imagenes"
     "$<TARGET_FILE_DIR:ARCHON>/assets"
     COMMENT "Copiando assets...")

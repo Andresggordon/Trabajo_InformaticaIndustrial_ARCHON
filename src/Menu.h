@@ -2,13 +2,13 @@
 #include "ETSIDI.h"
 
 enum class Modos_juego {
-    MENU, Un_jugador, Dos_jugadores, Ranking
+    MENU, Un_jugador, Dos_jugadores, Ranking,
+    Eleccion_1jugador, Eleccion_2jugadores, Eleccion2_1jugador 
 };
 
 class Menu {
 public:
     Menu();
- 
     void dibuja();
     void update(int x, int y);
     Modos_juego click(int x, int y);
@@ -25,6 +25,6 @@ private:
     ETSIDI::Sprite* indicador_UnJugador;
     ETSIDI::Sprite* indicador_DosJugadores;
     ETSIDI::Sprite* indicador_Ranking;
-
+    ETSIDI::Sprite* quit;
     int boton_activo;
 };
