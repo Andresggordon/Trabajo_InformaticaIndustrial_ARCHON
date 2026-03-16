@@ -35,6 +35,8 @@ public:
     bool estaVivo() const { return vida_actual > 0; }
     bool estaEncarcelado() const { return encarcelado; }
     void setEncarcelado(bool v) { encarcelado = v; }
+    bool estaInmovilizado() const { return inmovilizado; }
+    void setInmovilizado(bool v) { inmovilizado = v; }
 
     string getNombre() const { return nombre; }
     int getVidaActual() const { return vida_actual; }
@@ -49,10 +51,11 @@ public:
 
 protected:
     string nombre;
-    int         vida_Max, vida_actual;
-    int         pos_x, pos_y;
-    Turno       turno;      
-    Movimiento  movimiento;  
-    stats       arma;
-    bool        encarcelado;
+    int vida_Max, vida_actual;
+    int pos_x, pos_y;
+    Turno turno;      
+    Movimiento movimiento;  
+    stats arma;
+    bool encarcelado;
+    bool inmovilizado;
 };

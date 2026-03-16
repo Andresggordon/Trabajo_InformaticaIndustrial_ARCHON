@@ -12,6 +12,7 @@ public:
             stats("Ondas de sonido", 20, 4, 3)){
     }
     Menu_habilidades habilidades;
+
     int getRadioMovimiento() const override { return 4; }
 
 };
