@@ -13,7 +13,6 @@ public:
 
 private:
     ETSIDI::Sprite* fondo_carga;
-    ETSIDI::Sprite* titulo_carga;
     ETSIDI::Sprite* logo1;
     ETSIDI::Sprite* logo2;
     bool esperando_enter;

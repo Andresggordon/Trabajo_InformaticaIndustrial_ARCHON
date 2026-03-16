@@ -3,7 +3,6 @@
 
 Pantalla_carga::Pantalla_carga() {
     fondo_carga = new ETSIDI::Sprite("assets/fondo_carga.png", 0, 0, 600, 600);
-    titulo_carga = new ETSIDI::Sprite("assets/titulo_carga.png", -5, 210, 250, 180);
     logo1 = new ETSIDI::Sprite("assets/logo.png", -350, 50, 150, 150);
     logo2 = new ETSIDI::Sprite("assets/logo.png", 350, 50, 150, 150);
     esperando_enter = true;
