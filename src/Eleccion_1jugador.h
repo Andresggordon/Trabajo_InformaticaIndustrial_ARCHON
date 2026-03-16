@@ -15,11 +15,7 @@ private:
     ETSIDI::Sprite* turno_manana;
     ETSIDI::Sprite* indicador_tarde;
     ETSIDI::Sprite* indicador_manana;
-    ETSIDI::Sprite* logo;
-    ETSIDI::Sprite* cabecera;
-    ETSIDI::Sprite* logo2;
-    ETSIDI::Sprite* back;
-    ETSIDI::Sprite* cartel_menu;
+        ETSIDI::Sprite* back;
     int boton_activo = 0;
     
 };

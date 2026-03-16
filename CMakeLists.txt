@@ -23,6 +23,8 @@ add_executable(ARCHON
     src/Eleccion_1jugador.cpp
     src/Eleccion_2jugadores.cpp
     src/Eleccion2_1jugador.cpp
+    src/ranking.cpp
+    src/Pantalla_carga.cpp
 )
 # 7. Directorio de trabajo del depurador
 set_target_properties(ARCHON PROPERTIES

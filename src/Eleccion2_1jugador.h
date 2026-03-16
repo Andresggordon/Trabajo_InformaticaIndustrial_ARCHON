@@ -4,7 +4,7 @@
 
 class Eleccion2_1jugador {
 public:
-    Eleccion2_1jugador();  // ← corregido
+    Eleccion2_1jugador();
     void dibuja();
     void update(int x, int y);
     Modos_juego click(int x, int y);
@@ -17,10 +17,6 @@ private:
     ETSIDI::Sprite* indicador_tarde;
     ETSIDI::Sprite* indicador_manana;
     ETSIDI::Sprite* indicador_random;
-    ETSIDI::Sprite* logo;
-    ETSIDI::Sprite* cabecera;
-    ETSIDI::Sprite* logo2;
     ETSIDI::Sprite* back;
-    ETSIDI::Sprite* cartel_menu;
     int boton_activo = 0;
 };
