@@ -1,10 +1,6 @@
 #pragma once
 #include "ETSIDI.h"
-
-enum class Modos_juego {
-    Pantalla_carga, MENU, Un_jugador, Dos_jugadores, Pantalla_Ranking,
-    Eleccion_1jugador, Eleccion_2jugadores, Eleccion2_1jugador
-};
+#include "Modos_juego.h"
 
 class Menu {
 public:

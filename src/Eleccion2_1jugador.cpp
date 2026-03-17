@@ -1,5 +1,6 @@
 #include "Eleccion2_1jugador.h"
 
+
 Eleccion2_1jugador::Eleccion2_1jugador() {
     fondo = new ETSIDI::Sprite("assets/fondo.png", 0, 0, 600, 600);
     back = new ETSIDI::Sprite("assets/back.png", 0, 0, 600, 600);

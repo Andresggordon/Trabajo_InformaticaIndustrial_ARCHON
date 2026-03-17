@@ -59,3 +59,17 @@ add_custom_command(TARGET ARCHON POST_BUILD
     "${CMAKE_CURRENT_SOURCE_DIR}/assets/menu_imagenes"
     "$<TARGET_FILE_DIR:ARCHON>/assets"
     COMMENT "Copiando assets...")
+
+
+
+    add_executable(TEST_TABLERO
+    src/test_tablero.cpp
+    src/Tablero.cpp
+    src/TableroVista.cpp
+)
+target_link_libraries(TEST_TABLERO
+    freeglut
+    opengl32
+    glu32
+    ETSIDI
+)

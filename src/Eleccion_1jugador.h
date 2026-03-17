@@ -1,6 +1,6 @@
 #pragma once
 #include "ETSIDI.h"
-#include "Menu.h"
+#include "Modos_juego.h"
 
 class Eleccion_1jugador {
 public:
