@@ -25,6 +25,8 @@ add_executable(ARCHON
     src/Eleccion2_1jugador.cpp
     src/ranking.cpp
     src/Pantalla_carga.cpp
+    src/Tablero.cpp
+    src/Tablero_vista.cpp
 )
 # 7. Directorio de trabajo del depurador
 set_target_properties(ARCHON PROPERTIES
@@ -59,17 +61,3 @@ add_custom_command(TARGET ARCHON POST_BUILD
     "${CMAKE_CURRENT_SOURCE_DIR}/assets/menu_imagenes"
     "$<TARGET_FILE_DIR:ARCHON>/assets"
     COMMENT "Copiando assets...")
-
-
-
-    add_executable(TEST_TABLERO
-    src/test_tablero.cpp
-    src/Tablero.cpp
-    src/TableroVista.cpp
-)
-target_link_libraries(TEST_TABLERO
-    freeglut
-    opengl32
-    glu32
-    ETSIDI
-)
