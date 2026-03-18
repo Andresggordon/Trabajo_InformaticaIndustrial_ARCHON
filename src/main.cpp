@@ -16,6 +16,21 @@ Pantalla_carga* pantalla_carga = nullptr;
 
 Modos_juego estado = Modos_juego::Pantalla_carga;  //empieza carga
 
+void reshape(int w, int h) {
+    int tam = min(w, h); //calcula el tamaño minimo de pantalla
+
+    //centra el area
+    int x = (w - tam) / 2;
+    int y = (h - tam) / 2;
+
+    glViewport(x, y, tam, tam);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-400, 400, -400, 400);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
 void display() {
     glClear(GL_COLOR_BUFFER_BIT);
     if (estado == Modos_juego::Pantalla_carga)
@@ -102,6 +117,7 @@ int main(int argc, char** argv) {
     glutMouseFunc(mouseClick);
     glutKeyboardFunc(teclado); 
     glutIdleFunc(reposo);
+    glutReshapeFunc(reshape);
     glutMainLoop();
     return 0;
 }
