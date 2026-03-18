@@ -27,9 +27,23 @@ link_directories(
 )
 
 # 6. Crear el ejecutable ARCHON
+<<<<<<< HEAD
 # Ahora usamos la variable ${SOURCES} que contiene todo lo que hay en src
 add_executable(ARCHON ${SOURCES} ${HEADERS})
 
+=======
+add_executable(ARCHON 
+    src/main.cpp
+    src/Menu.cpp
+    src/Eleccion_1jugador.cpp
+    src/Eleccion_2jugadores.cpp
+    src/Eleccion2_1jugador.cpp
+    src/ranking.cpp
+    src/Pantalla_carga.cpp
+    src/Tablero.cpp
+    src/Tablero_vista.cpp
+)
+>>>>>>> fc82cfd4e66c4880259b58c56dc8bbbe98ff23c2
 # 7. Directorio de trabajo del depurador
 set_target_properties(ARCHON PROPERTIES
     VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:ARCHON>"
@@ -65,5 +79,9 @@ add_custom_command(TARGET ARCHON POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     "${CMAKE_CURRENT_SOURCE_DIR}/assets"
     "$<TARGET_FILE_DIR:ARCHON>/assets"
+<<<<<<< HEAD
     COMMENT "Sincronizando carpeta de assets..."
 )
+=======
+    COMMENT "Copiando assets...")
+>>>>>>> fc82cfd4e66c4880259b58c56dc8bbbe98ff23c2
