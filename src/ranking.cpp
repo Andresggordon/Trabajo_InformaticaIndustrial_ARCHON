@@ -2,8 +2,8 @@
 #include <GL/freeglut.h>
 
 Ranking::Ranking() {
-    fondo2 = new ETSIDI::Sprite("assets/fondo2.png", 0, 0, 600, 600);
-    back = new ETSIDI::Sprite("assets/back.png", 0, 0, 600, 600);
+    fondo2 = new ETSIDI::Sprite("assets/menu_imagenes/fondo2.png", 0, 0, 600, 600);
+    back = new ETSIDI::Sprite("assets/menu_imagenes/back.png", 0, 0, 600, 600);
     boton_activo = 0;
 }
 

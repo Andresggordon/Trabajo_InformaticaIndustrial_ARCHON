@@ -6,6 +6,8 @@
 #include "Eleccion2_1jugador.h"
 #include "ranking.h"
 #include "Pantalla_carga.h"
+#include "Partida.h"
+#include <iostream>
 
 Menu* menu = nullptr;
 Eleccion_1jugador* eleccion_1jugador = nullptr;
@@ -13,52 +15,54 @@ Eleccion_2jugadores* eleccion_2jugadores = nullptr;
 Eleccion2_1jugador* eleccion2_1jugador = nullptr;
 Ranking* ranking = nullptr;
 Pantalla_carga* pantalla_carga = nullptr;
+Partida* partida = nullptr;
 
-Modos_juego estado = Modos_juego::Pantalla_carga;  //empieza carga
+Modos_juego estado = Modos_juego::Pantalla_carga;
 
-void reshape(int w, int h) {
-    int tam = min(w, h); //calcula el tamaño minimo de pantalla
-
-    //centra el area
-    int x = (w - tam) / 2;
+void reshape(int w, int h) { //ancho, alto
+    int tam = min(w, h);
+    int x = (w - tam) / 2; //centra
     int y = (h - tam) / 2;
-
-    glViewport(x, y, tam, tam);
+    glViewport(x, y, tam, tam); //define area cuadrada
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluOrtho2D(-400, 400, -400, 400);
+    gluOrtho2D(-400, 400, -400, 400); //lo de mantenerlo cambies el tamaño de la ventana o no
     glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    glLoadIdentity(); //resetea matriz modelo
 }
 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT);
     if (estado == Modos_juego::Pantalla_carga)
         pantalla_carga->dibuja();
-    if (estado == Modos_juego::MENU)
+    else if (estado == Modos_juego::MENU)
         menu->dibuja();
-    if (estado == Modos_juego::Eleccion_1jugador)
+    else if (estado == Modos_juego::Eleccion_1jugador)
         eleccion_1jugador->dibuja();
-    if (estado == Modos_juego::Eleccion_2jugadores)
+    else if (estado == Modos_juego::Eleccion_2jugadores)
         eleccion_2jugadores->dibuja();
-    if (estado == Modos_juego::Eleccion2_1jugador)
+    else if (estado == Modos_juego::Eleccion2_1jugador)
         eleccion2_1jugador->dibuja();
-    if (estado == Modos_juego::Pantalla_Ranking)
+    else if (estado == Modos_juego::Pantalla_Ranking)
         ranking->dibuja();
+    else if (estado == Modos_juego::Partida)
+        partida->dibuja();
     glutSwapBuffers();
 }
 
 void mouseMove(int x, int y) {
     if (estado == Modos_juego::MENU)
         menu->update(x, y);
-    if (estado == Modos_juego::Eleccion_1jugador)
+    else if (estado == Modos_juego::Eleccion_1jugador)
         eleccion_1jugador->update(x, y);
-    if (estado == Modos_juego::Eleccion_2jugadores)
+    else if (estado == Modos_juego::Eleccion_2jugadores)
         eleccion_2jugadores->update(x, y);
-    if (estado == Modos_juego::Eleccion2_1jugador)
+    else if (estado == Modos_juego::Eleccion2_1jugador)
         eleccion2_1jugador->update(x, y);
-    if (estado == Modos_juego::Pantalla_Ranking)
+    else if (estado == Modos_juego::Pantalla_Ranking)
         ranking->update(x, y);
+    else if (estado == Modos_juego::Partida) 
+        partida->update(x, y);
     glutPostRedisplay();
 }
 
@@ -74,14 +78,16 @@ void mouseClick(int button, int estadoBtn, int x, int y) {
             estado = eleccion2_1jugador->click(x, y);
         else if (estado == Modos_juego::Pantalla_Ranking)
             estado = ranking->click(x, y);
+        else if (estado == Modos_juego::Partida)
+            estado = partida->click(x, y);
     }
     glutPostRedisplay();
 }
 
-void teclado(unsigned char key, int x, int y) { 
+void teclado(unsigned char key, int x, int y) {
     if (estado == Modos_juego::Pantalla_carga) {
         pantalla_carga->teclado(key);
-        if (pantalla_carga->carga_completa) 
+        if (pantalla_carga->carga_completa)
             estado = Modos_juego::MENU;
     }
 }
@@ -112,10 +118,11 @@ int main(int argc, char** argv) {
     eleccion2_1jugador = new Eleccion2_1jugador();
     ranking = new Ranking();
     pantalla_carga = new Pantalla_carga();
+    partida = new Partida();
     glutDisplayFunc(display);
     glutPassiveMotionFunc(mouseMove);
     glutMouseFunc(mouseClick);
-    glutKeyboardFunc(teclado); 
+    glutKeyboardFunc(teclado);
     glutIdleFunc(reposo);
     glutReshapeFunc(reshape);
     glutMainLoop();
