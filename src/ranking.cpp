@@ -13,8 +13,14 @@ void Ranking::dibuja() {
 }
 
 void Ranking::update(int x, int y) {
-    float cx = (x / 1000.0f) * 800 - 400;
-    float cy = 400 - (y / 1000.0f) * 800;
+    int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
+    int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
+    int tam = min(ventana_w, ventana_h);
+    int offsetX = (ventana_w - tam) / 2;
+    int offsetY = (ventana_h - tam) / 2;
+    float cx = ((x - offsetX) / (float)tam) * 800 - 400;
+    float cy = 400 - ((y - offsetY) / (float)tam) * 800;
+
     if (cx >= 225 && cx <= 275 && cy >= -265 && cy <= -235)
         boton_activo = 1;
     else
@@ -22,8 +28,14 @@ void Ranking::update(int x, int y) {
 }
 
 Modos_juego Ranking::click(int x, int y) {
-    float cx = (x / 1000.0f) * 800 - 400;
-    float cy = 400 - (y / 1000.0f) * 800;
+    int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
+    int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
+    int tam = min(ventana_w, ventana_h);
+    int offsetX = (ventana_w - tam) / 2;
+    int offsetY = (ventana_h - tam) / 2;
+    float cx = ((x - offsetX) / (float)tam) * 800 - 400;
+    float cy = 400 - ((y - offsetY) / (float)tam) * 800;
+
     if (cx >= 225 && cx <= 275 && cy >= -265 && cy <= -235)
         return Modos_juego::MENU;
     return Modos_juego::Pantalla_Ranking;
