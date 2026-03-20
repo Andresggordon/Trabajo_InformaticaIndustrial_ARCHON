@@ -62,3 +62,7 @@ void Tablero::getColorDinamica(float& r, float& g, float& b) const {
         break; // azul muy claro
     }
 }
+
+FaseCiclo Tablero::getFase() const {
+    return fase_actual;
+}
