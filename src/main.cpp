@@ -7,7 +7,6 @@
 #include "ranking.h"
 #include "Pantalla_carga.h"
 #include "Partida.h"
-#include <iostream>
 
 Menu* menu = nullptr;
 Eleccion_1jugador* eleccion_1jugador = nullptr;
@@ -19,16 +18,16 @@ Partida* partida = nullptr;
 
 Modos_juego estado = Modos_juego::Pantalla_carga;
 
-void reshape(int w, int h) { //ancho, alto
+void reshape(int w, int h) {
     int tam = min(w, h);
-    int x = (w - tam) / 2; //centra
+    int x = (w - tam) / 2;
     int y = (h - tam) / 2;
-    glViewport(x, y, tam, tam); //define area cuadrada
+    glViewport(x, y, tam, tam);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluOrtho2D(-400, 400, -400, 400); //lo de mantenerlo cambies el tamaño de la ventana o no
+    gluOrtho2D(-400, 400, -400, 400);
     glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity(); //resetea matriz modelo
+    glLoadIdentity();
 }
 
 void display() {
@@ -61,13 +60,15 @@ void mouseMove(int x, int y) {
         eleccion2_1jugador->update(x, y);
     else if (estado == Modos_juego::Pantalla_Ranking)
         ranking->update(x, y);
-    else if (estado == Modos_juego::Partida) 
+    else if (estado == Modos_juego::Partida)
         partida->update(x, y);
     glutPostRedisplay();
 }
 
 void mouseClick(int button, int estadoBtn, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && estadoBtn == GLUT_DOWN) {
+        Modos_juego estado_anterior = estado; 
+
         if (estado == Modos_juego::MENU)
             estado = menu->click(x, y);
         else if (estado == Modos_juego::Eleccion_1jugador)
@@ -80,6 +81,9 @@ void mouseClick(int button, int estadoBtn, int x, int y) {
             estado = ranking->click(x, y);
         else if (estado == Modos_juego::Partida)
             estado = partida->click(x, y);
+
+        if (estado == Modos_juego::Partida && estado_anterior != Modos_juego::Partida)
+            partida->reset();
     }
     glutPostRedisplay();
 }
@@ -89,6 +93,9 @@ void teclado(unsigned char key, int x, int y) {
         pantalla_carga->teclado(key);
         if (pantalla_carga->carga_completa)
             estado = Modos_juego::MENU;
+    }
+    else if (estado == Modos_juego::Partida) {
+        partida->teclado(key);
     }
 }
 
