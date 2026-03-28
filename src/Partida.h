@@ -2,6 +2,7 @@
 #include "Menu.h"
 #include "Tablero.h"
 #include "Tablero_vista.h"
+#include "ETSIDI.h"
 
 class Partida {
 public:

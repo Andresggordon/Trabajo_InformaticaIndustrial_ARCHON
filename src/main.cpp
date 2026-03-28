@@ -67,7 +67,7 @@ void mouseMove(int x, int y) {
 
 void mouseClick(int button, int estadoBtn, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && estadoBtn == GLUT_DOWN) {
-        Modos_juego estado_anterior = estado; 
+        Modos_juego estado_anterior = estado;  // guarda estado anterior
 
         if (estado == Modos_juego::MENU)
             estado = menu->click(x, y);
@@ -82,6 +82,7 @@ void mouseClick(int button, int estadoBtn, int x, int y) {
         else if (estado == Modos_juego::Partida)
             estado = partida->click(x, y);
 
+        // si acabamos de entrar a Partida, reseteamos
         if (estado == Modos_juego::Partida && estado_anterior != Modos_juego::Partida)
             partida->reset();
     }
