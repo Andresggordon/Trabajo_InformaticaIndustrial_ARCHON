@@ -51,19 +51,31 @@ Modos_juego Eleccion_2jugadores::click(int x, int y) {
     int tam = min(ventana_w, ventana_h);
     int offsetX = (ventana_w - tam) / 2;
     int offsetY = (ventana_h - tam) / 2;
+
+    ETSIDI::play("assets/sonidos/click.mp3");
+
     float cx = ((x - offsetX) / (float)tam) * 800 - 400;
     float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
 
-    if (cx >= 225 && cx <= 275 && cy >= -265 && cy <= -235)
+    if (cx >= 225 && cx <= 275 && cy >= -265 && cy <= -235){
+        ETSIDI::play("assets/sonidos/click.mp3");
         return Modos_juego::MENU;  // back
+    }
 
-    if (cx >= -88 && cx <= 106 && cy >= 31 && cy <= 51)
+    else if (cx >= -88 && cx <= 106 && cy >= 31 && cy <= 51) {
+        ETSIDI::play("assets/sonidos/click.mp3");
         return Modos_juego::Partida;  // mañana primero
-    else if (cx >= -65 && cx <= 85 && cy >= -5 && cy <= 14)
+    }
+    else if (cx >= -65 && cx <= 85 && cy >= -5 && cy <= 14) {
+        ETSIDI::play("assets/sonidos/click.mp3");
         return Modos_juego::Partida;  // tarde primero
-    else if (cx >= -89 && cx <= 2 && cy >= -39 && cy <= -20)
+    }
+    else if (cx >= -89 && cx <= 2 && cy >= -39 && cy <= -20) {
+        ETSIDI::play("assets/sonidos/click.mp3");
         return Modos_juego::Partida;  // random
+
+    }
 
     return Modos_juego::Eleccion_2jugadores;
 }

@@ -49,11 +49,17 @@ Modos_juego Eleccion_1jugador::click(int x, int y) {
     float cx = ((x - offsetX) / (float)tam) * 800 - 400;
     float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
-    if (cx >= 225 && cx <= 275 && cy >= -265 && cy <= -235)
+    if (cx >= 225 && cx <= 275 && cy >= -265 && cy <= -235) {
+        ETSIDI::play("assets/sonidos/click.mp3");
         return Modos_juego::MENU;
-    else if (cx >= -80 && cx <= 70 && cy >= 15 && cy <= 45)
+    }
+    else if (cx >= -80 && cx <= 70 && cy >= 15 && cy <= 45) {
+        ETSIDI::play("assets/sonidos/click.mp3");
         return Modos_juego::Eleccion2_1jugador;
-    else if (cx >= -65 && cx <= 85 && cy >= -20 && cy <= 10)
+    }
+    else if (cx >= -65 && cx <= 85 && cy >= -20 && cy <= 10) {
+        ETSIDI::play("assets/sonidos/click.mp3");
         return Modos_juego::Eleccion2_1jugador;
+    }
     return Modos_juego::Eleccion_1jugador;
 }

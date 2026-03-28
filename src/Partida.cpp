@@ -50,6 +50,7 @@ Modos_juego Partida::click(int x, int y) {
     int tam = min(ventana_w, ventana_h);
     int offsetX = (ventana_w - tam) / 2;
     int offsetY = (ventana_h - tam) / 2;
+    ETSIDI::play("assets/sonidos/click.mp3");
     float cx = ((x - offsetX) / (float)tam) * 800 - 400;
     float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
@@ -58,12 +59,15 @@ Modos_juego Partida::click(int x, int y) {
             mostrar_popup = true;
     }
     else {
-        if (cx >= -153 && cx <= -57 && cy >= -43 && cy <= -5)
-            return Modos_juego::MENU;  // si → menú
+        if (cx >= -153 && cx <= -57 && cy >= -43 && cy <= -5) {
+            // Sí → volver al menú: cambiar música
+            ETSIDI::stopMusica();
+            ETSIDI::playMusica("assets/sonidos/menu.mp3", true);
+            return Modos_juego::MENU;
+        }
         else if (cx >= 15 && cx <= 108 && cy >= -46 && cy <= -4)
-            mostrar_popup = false;  // no → cierra popup
+            mostrar_popup = false;  // No → cerrar popup
     }
-
     return Modos_juego::Partida;
 }
 
@@ -75,6 +79,8 @@ void Partida::teclado(unsigned char key) {
 }
 
 void Partida::reset() {
+    ETSIDI::stopMusica();
+    ETSIDI::playMusica("assets/sonidos/partida.mp3", true);
     mostrar_popup = false;
     boton_activo = 0;
 }

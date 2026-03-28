@@ -2,6 +2,9 @@
 #include <GL/freeglut.h>
 
 Menu::Menu() {
+
+    ETSIDI::playMusica("assets/sonidos/menu.mp3", true);
+
     fondo = new ETSIDI::Sprite("assets/menu_imagenes/fondo.png", 0, 0, 600, 600);
     boton_UnJugador = new ETSIDI::Sprite("assets/menu_imagenes/boton_UnJugador.png", 0, 0, 600, 600);
     boton_DosJugadores = new ETSIDI::Sprite("assets/menu_imagenes/boton_DosJugadores.png", 0, 0, 600, 600);
@@ -46,11 +49,15 @@ void Menu::update(int x, int y) {
 }
 
 Modos_juego Menu::click(int x, int y) {
+
     int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
     int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
     int tam = min(ventana_w, ventana_h);
     int offsetX = (ventana_w - tam) / 2;
     int offsetY = (ventana_h - tam) / 2;
+
+    ETSIDI::play("assets/sonidos/click.mp3");
+
     float cx = ((x - offsetX) / (float)tam) * 800 - 400;
     float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
