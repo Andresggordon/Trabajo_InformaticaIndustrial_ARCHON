@@ -9,6 +9,7 @@ Partida::Partida() {
     popup_salir = new ETSIDI::Sprite("assets/menu_imagenes/popup_salir.png", 0, 0, 600, 600);
     mostrar_popup = false;
     boton_activo = 0;
+        
 }
 
 void Partida::dibuja() {
@@ -17,6 +18,11 @@ void Partida::dibuja() {
     abandonar_partida->draw();
     if (mostrar_popup)
         popup_salir->draw();
+
+   //PRUEBA PARA PERSONAJES -- BORRADOR
+    if (PSS_prueba) PSS_prueba->dibujar();
+    if (MH_prueba) MH_prueba->dibujar();
+    
 }
 
 void Partida::update(int x, int y) {
@@ -83,4 +89,17 @@ void Partida::reset() {
     ETSIDI::playMusica("assets/sonidos/partida.mp3", true);
     mostrar_popup = false;
     boton_activo = 0;
+
+    //PRUEBA PARA PERSONAJES -- BORRADOR
+
+    if (modo_actual == 1 && turno_actual == 0) {
+        Personaje* pss = new Profesor_SS(-4, 0);
+        Personaje* mh = new Profesor_MH(3, 2);
+    
+        PSS_prueba = new DibujoPersonaje(pss);
+        MH_prueba = new DibujoPersonaje(mh);
+    };
+
+
+
 }

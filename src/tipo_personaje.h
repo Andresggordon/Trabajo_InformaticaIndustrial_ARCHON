@@ -6,7 +6,7 @@
 class Profesor_SS : public Personaje {
 public:
     Profesor_SS(int posX_, int posY_)
-        : Personaje("San Segundo", 75, posX_, posY_,
+        : Personaje("SanSegundo", 75, posX_, posY_,
             Turno::TURNO_DE_MANANA,
             Movimiento::AIRE,
             stats("Ondas de sonido", 20, 4, 3)){
