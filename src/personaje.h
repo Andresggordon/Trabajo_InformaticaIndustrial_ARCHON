@@ -25,6 +25,9 @@ public:
     int getPosX() const;
     int getPosY() const;
     float getPorcentajeVida() const;
+    int getVidaActual() const;
+    int getVidaMax() const;
+    bool getInmovilizado() const;
 
     // Setters
     void setPosicion(int x_, int y_);

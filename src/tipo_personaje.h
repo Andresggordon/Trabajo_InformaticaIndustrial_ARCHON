@@ -11,7 +11,7 @@ public:
             Movimiento::AIRE,
             stats("Ondas de sonido", 20, 4, 3)){
     }
-    Menu_habilidades habilidades;
+    Menu_habilidades menu;
 
     int getRadioMovimiento() const override { return 4; }
 
@@ -111,7 +111,7 @@ public:
             Movimiento::AIRE,
             stats("Tizas", 8, 1, 6)) {
     }
-    Menu_habilidades habilidades;
+    Menu_habilidades menu;
     int getRadioMovimiento() const override { return 4; }
 };
 

@@ -28,6 +28,9 @@ std::string Personaje::getNombre() const { return nombre; }
 int Personaje::getPosX() const { return pos_x; }
 int Personaje::getPosY() const { return pos_y; }
 float Personaje::getPorcentajeVida() const { return (float)vida_actual / vida_Max; }
+int Personaje::getVidaActual() const { return vida_actual; }
+int Personaje::getVidaMax() const { return vida_Max; }
+bool Personaje::getInmovilizado() const { return inmovilizado; }
 
 void Personaje::setPosicion(int x_, int y_) {
     pos_x = x_;
