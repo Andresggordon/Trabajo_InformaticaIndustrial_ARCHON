@@ -2,9 +2,9 @@
 #include <GL/freeglut.h>
 
 Pantalla_carga::Pantalla_carga() {
-    fondo_carga = new ETSIDI::Sprite("assets/fondo_carga.png", 0, 0, 600, 600);
-    logo1 = new ETSIDI::Sprite("assets/logo.png", -350, 50, 150, 150);
-    logo2 = new ETSIDI::Sprite("assets/logo.png", 350, 50, 150, 150);
+    fondo_carga = new ETSIDI::Sprite("assets/menu_imagenes/fondo_carga.png", 0, 0, 600, 600);
+    logo1 = new ETSIDI::Sprite("assets/menu_imagenes/logo.png", -350, 50, 150, 150);
+    logo2 = new ETSIDI::Sprite("assets/menu_imagenes/logo.png", 350, 50, 150, 150);
     esperando_enter = true;
     timer = 0.0f;
     carga_completa = false;
@@ -21,8 +21,8 @@ void Pantalla_carga::dibuja() {
 void Pantalla_carga::update() {
     if (!esperando_enter && timer < 1.0f) {
         timer += 0.003f;
-        logo1 = new ETSIDI::Sprite("assets/logo.png", -350 + 350 * timer, 50, 150, 150);
-        logo2 = new ETSIDI::Sprite("assets/logo.png", 350 - 350 * timer, 50, 150, 150);
+        logo1 = new ETSIDI::Sprite("assets/menu_imagenes/logo.png", -350 + 350 * timer, 50, 150, 150);
+        logo2 = new ETSIDI::Sprite("assets/menu_imagenes/logo.png", 350 - 350 * timer, 50, 150, 150);
     }
     if (timer >= 1.0f)
         carga_completa = true;

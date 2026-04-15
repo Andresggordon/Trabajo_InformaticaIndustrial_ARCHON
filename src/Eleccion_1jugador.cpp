@@ -1,14 +1,17 @@
 #include "Eleccion_1jugador.h"
 #include "Eleccion2_1jugador.h"
+#include <GL/freeglut.h>
+
 Eleccion_1jugador::Eleccion_1jugador() {
-    fondo = new ETSIDI::Sprite("assets/fondo.png", 0, 0, 600, 600);
-    turno_tarde = new ETSIDI::Sprite("assets/turno_tarde.png", 0, 0, 600, 600);
-    turno_manana = new ETSIDI::Sprite("assets/turno_manana.png", 0, 0, 600, 600);
-    indicador_tarde = new ETSIDI::Sprite("assets/indicador.png", -100, -5, 30, 30);
-    indicador_manana = new ETSIDI::Sprite("assets/indicador.png", -100, 30, 30, 30);
-    back = new ETSIDI::Sprite("assets/back.png", 0, 0, 600, 600);
-    boton_activo = 0; 
+    fondo = new ETSIDI::Sprite("assets/menu_imagenes/fondo.png", 0, 0, 600, 600);
+    turno_tarde = new ETSIDI::Sprite("assets/menu_imagenes/turno_tarde.png", 0, 0, 600, 600);
+    turno_manana = new ETSIDI::Sprite("assets/menu_imagenes/turno_manana.png", 0, 0, 600, 600);
+    indicador_tarde = new ETSIDI::Sprite("assets/menu_imagenes/indicador.png", -100, -5, 30, 30);
+    indicador_manana = new ETSIDI::Sprite("assets/menu_imagenes/indicador.png", -100, 30, 30, 30);
+    back = new ETSIDI::Sprite("assets/menu_imagenes/back.png", 0, 0, 600, 600);
+    boton_activo = 0;
 }
+
 void Eleccion_1jugador::dibuja() {
     fondo->draw();
     turno_manana->draw();
@@ -17,9 +20,16 @@ void Eleccion_1jugador::dibuja() {
     if (boton_activo == 1) indicador_manana->draw();
     else if (boton_activo == 2) indicador_tarde->draw();
 }
+
 void Eleccion_1jugador::update(int x, int y) {
-    float cx = (x / 1000.0f) * 800 - 400;
-    float cy = 400 - (y / 1000.0f) * 800;
+    int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
+    int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
+    int tam = min(ventana_w, ventana_h);
+    int offsetX = (ventana_w - tam) / 2;
+    int offsetY = (ventana_h - tam) / 2;
+    float cx = ((x - offsetX) / (float)tam) * 800 - 400;
+    float cy = 400 - ((y - offsetY) / (float)tam) * 800;
+
     if (cx >= -80 && cx <= 70 && cy >= 15 && cy <= 45)
         boton_activo = 1;
     else if (cx >= -65 && cx <= 85 && cy >= -20 && cy <= 10)
@@ -29,17 +39,27 @@ void Eleccion_1jugador::update(int x, int y) {
     else
         boton_activo = 0;
 }
+
 Modos_juego Eleccion_1jugador::click(int x, int y) {
-    float cx = (x / 1000.0f) * 800 - 400;
-    float cy = 400 - (y / 1000.0f) * 800;
+    int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
+    int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
+    int tam = min(ventana_w, ventana_h);
+    int offsetX = (ventana_w - tam) / 2;
+    int offsetY = (ventana_h - tam) / 2;
+    float cx = ((x - offsetX) / (float)tam) * 800 - 400;
+    float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
-    if (cx >= 225 && cx <= 275 && cy >= -265 && cy <= -235)
+    if (cx >= 225 && cx <= 275 && cy >= -265 && cy <= -235) {
+        ETSIDI::play("assets/sonidos/click.mp3");
         return Modos_juego::MENU;
-
-   else if (cx >= -80 && cx <= 70 && cy >= 15 && cy <= 45)
-        return Modos_juego::Eleccion2_1jugador;  // turno mañana
-  else if (cx >= -65 && cx <= 85 && cy >= -20 && cy <= 10)
-      return Modos_juego::Eleccion2_1jugador;  // turno tarde
-
+    }
+    else if (cx >= -80 && cx <= 70 && cy >= 15 && cy <= 45) {
+        ETSIDI::play("assets/sonidos/click.mp3");
+        return Modos_juego::Eleccion2_1jugador;
+    }
+    else if (cx >= -65 && cx <= 85 && cy >= -20 && cy <= 10) {
+        ETSIDI::play("assets/sonidos/click.mp3");
+        return Modos_juego::Eleccion2_1jugador;
+    }
     return Modos_juego::Eleccion_1jugador;
 }
