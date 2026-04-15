@@ -36,3 +36,23 @@ void Personaje::setPosicion(int x_, int y_) {
     pos_x = x_;
     pos_y = y_;
 }
+
+Movimiento Personaje::getMovimiento() const { return movimiento; }
+
+std::vector<Casilla>> Personaje::casillasValidas(int ancho, int largo) const { //Falta inicializar la función casilla
+    std::vector<Casilla>> casillas;
+    int radio = getRadioMovimiento();
+
+    if (movimiento == Movimiento::TELETRANSPORTE) {
+        for (int x = 0; x < ancho; x++)
+            for (int y = 0; y < largo; y++)
+                casillas.push_back({ x, y });
+    }
+    else {
+        for (int x = pos_x - radio; x <= pos_x + radio; x++)
+            for (int y = pos_y - radio; y <= pos_y + radio; y++)
+                if (x >= 0 && y >= 0 && x < ancho && y < largo)
+                    casillas.push_back({ x, y });
+    }
+    return casillas;
+}
