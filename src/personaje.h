@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "stats.h"
+#include <vector>
 
 enum class Turno { TURNO_DE_MANANA, TURNO_DE_TARDE };
 enum class Movimiento { TIERRA, AIRE, TELETRANSPORTE };
@@ -14,6 +15,7 @@ public:
 
     // Métodos virtuales puros (obligan a las clases hijas a implementarlos)
     virtual int getRadioMovimiento() const = 0;
+    virtual bool esMovimientoLegal(int destinoX, int destinoY) const = 0;
 
     // Lógica de salud
     void recibirDano(int cantidad_);
@@ -25,6 +27,10 @@ public:
     int getPosX() const;
     int getPosY() const;
     float getPorcentajeVida() const;
+    int getVidaActual() const;
+    int getVidaMax() const;
+    bool getInmovilizado() const;
+    Movimiento getMovimiento() const;
 
     // Setters
     void setPosicion(int x_, int y_);
