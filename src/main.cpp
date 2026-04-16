@@ -8,6 +8,7 @@
 #include "Pantalla_carga.h"
 #include "Partida.h"
 
+// Punteros globales a las distintas pantallas del juego
 Menu* menu = nullptr;
 Eleccion_1jugador* eleccion_1jugador = nullptr;
 Eleccion_2jugadores* eleccion_2jugadores = nullptr;

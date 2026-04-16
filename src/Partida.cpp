@@ -3,26 +3,29 @@
 
 Partida::Partida() {
     tablero = new Tablero();
-    tablero_vista = new Tablero_vista(tablero);
+
+    // El motor gráfico recibe el tablero por referencia (*)
+    motor_grafico = new MotorGrafico(*tablero);
+
     fondo = new ETSIDI::Sprite("assets/menu_imagenes/fondo_partida.png", 0, 0, 600, 600);
     abandonar_partida = new ETSIDI::Sprite("assets/menu_imagenes/boton_abandonar.png", 0, 0, 600, 600);
     popup_salir = new ETSIDI::Sprite("assets/menu_imagenes/popup_salir.png", 0, 0, 600, 600);
     mostrar_popup = false;
     boton_activo = 0;
-        
 }
 
 void Partida::dibuja() {
     fondo->draw();
-    tablero_vista->dibuja();
+
+    motor_grafico->dibujar(); // <-- EL MOTOR SE ENCARGA DE TABLERO Y PERSONAJES
+
     abandonar_partida->draw();
     if (mostrar_popup)
         popup_salir->draw();
 
-   //PRUEBA PARA PERSONAJES -- BORRADOR
+    //PRUEBA PARA PERSONAJES -- BORRADOR
     if (PSS_prueba) PSS_prueba->dibujar();
     if (MH_prueba) MH_prueba->dibujar();
-    
 }
 
 void Partida::update(int x, int y) {
@@ -99,7 +102,4 @@ void Partida::reset() {
         PSS_prueba = new DibujoPersonaje(pss);
         MH_prueba = new DibujoPersonaje(mh);
     };
-
-
-
 }
