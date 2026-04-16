@@ -1,6 +1,7 @@
 #pragma once
 #include "Casilla.h"
 
+
 enum class FaseCiclo {
     MEDIODIA,
     ATARDECER,
@@ -14,6 +15,9 @@ class Tablero {
 public:
     Tablero();
     void avanzarCiclo();
+
+    bool moverPersonaje(Personaje* p, int destinoX, int destinoY);
+
 
     // Ahora devuelven el objeto Casilla directamente
     Casilla& getCasilla(int fila, int col);
@@ -30,3 +34,4 @@ private:
     FaseCiclo fase_actual;
     void inicializarMatriz();
 };
+

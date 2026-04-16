@@ -10,6 +10,8 @@ public:
     // El método 
     void dibujar();
 
+    Personaje* getPersonaje() const { return modelo; }
+
 private:
     Personaje* modelo;      // Puntero a la lógica del personaje
     ETSIDI::Sprite sprite;  

@@ -85,6 +85,28 @@ void Partida::teclado(unsigned char key) {
         tablero->avanzarCiclo();
     if (key == 27)
         mostrar_popup = false;
+
+    // PRUEBA MOVIMIENTO — borrar después
+    if (key == 'w' && PSS_prueba)
+        PSS_prueba->getPersonaje()->mover(
+            PSS_prueba->getPersonaje()->getPosX(),
+            PSS_prueba->getPersonaje()->getPosY() + 1
+        );
+    if (key == 's' && PSS_prueba)
+        PSS_prueba->getPersonaje()->mover(
+            PSS_prueba->getPersonaje()->getPosX(),
+            PSS_prueba->getPersonaje()->getPosY() - 1
+        );
+    if (key == 'a' && PSS_prueba)
+        PSS_prueba->getPersonaje()->mover(
+            PSS_prueba->getPersonaje()->getPosX() - 1,
+            PSS_prueba->getPersonaje()->getPosY()
+        );
+    if (key == 'd' && PSS_prueba)
+        PSS_prueba->getPersonaje()->mover(
+            PSS_prueba->getPersonaje()->getPosX() + 1,
+            PSS_prueba->getPersonaje()->getPosY()
+        );
 }
 
 void Partida::reset() {
@@ -96,8 +118,8 @@ void Partida::reset() {
     //PRUEBA PARA PERSONAJES -- BORRADOR
 
     if (modo_actual == 1 && turno_actual == 0) {
-        Personaje* pss = new Profesor_SS(-4, 0);
-        Personaje* mh = new Profesor_MH(3, 2);
+        Personaje* pss = new Profesor_SS(-4, 0, *tablero);
+        Personaje* mh = new Profesor_MH(3, 2, *tablero);
     
         PSS_prueba = new DibujoPersonaje(pss);
         MH_prueba = new DibujoPersonaje(mh);

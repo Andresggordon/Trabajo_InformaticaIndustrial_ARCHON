@@ -1,4 +1,5 @@
 #include "Tablero.h"
+#include "personaje.h"
 
 Tablero::Tablero() {
     fase_actual = FaseCiclo::ATARDECER;
@@ -59,4 +60,8 @@ void Tablero::getColorDinamica(float& r, float& g, float& b) const {
 
 FaseCiclo Tablero::getFase() const {
     return fase_actual;
+}
+
+bool Tablero::moverPersonaje(Personaje* p, int destinoX, int destinoY) {
+    return p->mover(destinoX, destinoY);
 }

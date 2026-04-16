@@ -1,7 +1,7 @@
 #pragma once
-#include "personaje.h"
 
 enum class EstadoCasilla { BLANCA_FIJA, AZUL_FIJA, DINAMICA };
+class Personaje;
 
 class Casilla {
 public:
