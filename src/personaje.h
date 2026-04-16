@@ -15,9 +15,7 @@ public:
 
     // Métodos virtuales puros (obligan a las clases hijas a implementarlos)
     virtual int getRadioMovimiento() const = 0;
-
-    // Movimiento inteligente
-    std::vector<Casilla>> casillasValidas(int ancho, int largo) const; // Poner la estructura casilla aqui
+    virtual bool esMovimientoLegal(int destinoX, int destinoY) const = 0;
 
     // Lógica de salud
     void recibirDano(int cantidad_);

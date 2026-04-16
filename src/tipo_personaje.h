@@ -1,6 +1,8 @@
 #pragma once
 #include "Personaje.h"
 #include "habilidades_profes.h"
+#include "Volador.h"
+#include "Terreste.h"
 
 // TURNO DE MAÑANA
 class Profesor_SS : public Personaje {
