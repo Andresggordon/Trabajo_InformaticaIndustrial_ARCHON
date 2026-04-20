@@ -7,15 +7,14 @@
 #include "ranking.h"
 #include "Pantalla_carga.h"
 #include "Partida.h"
+#include "MotorGrafico.h"
 
-// Punteros globales a las distintas pantallas del juego
 Menu* menu = nullptr;
 Eleccion_1jugador* eleccion_1jugador = nullptr;
 Eleccion_2jugadores* eleccion_2jugadores = nullptr;
 Eleccion2_1jugador* eleccion2_1jugador = nullptr;
 Ranking* ranking = nullptr;
 Pantalla_carga* pantalla_carga = nullptr;
-Partida* partida = nullptr;
 
 Modos_juego estado = Modos_juego::Pantalla_carga;
 
@@ -45,8 +44,10 @@ void display() {
         eleccion2_1jugador->dibuja();
     else if (estado == Modos_juego::Pantalla_Ranking)
         ranking->dibuja();
-    else if (estado == Modos_juego::Partida)
-        partida->dibuja();
+    else if (estado == Modos_juego::Partida) {
+        Partida::get_instance().dibuja();
+        MotorGrafico::get_instance().dibujar();
+    }
     glutSwapBuffers();
 }
 
@@ -62,13 +63,13 @@ void mouseMove(int x, int y) {
     else if (estado == Modos_juego::Pantalla_Ranking)
         ranking->update(x, y);
     else if (estado == Modos_juego::Partida)
-        partida->update(x, y);
+        Partida::get_instance().update(x, y);
     glutPostRedisplay();
 }
 
 void mouseClick(int button, int estadoBtn, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && estadoBtn == GLUT_DOWN) {
-        Modos_juego estado_anterior = estado;  // guarda estado anterior
+        Modos_juego estado_anterior = estado;
 
         if (estado == Modos_juego::MENU)
             estado = menu->click(x, y);
@@ -81,11 +82,10 @@ void mouseClick(int button, int estadoBtn, int x, int y) {
         else if (estado == Modos_juego::Pantalla_Ranking)
             estado = ranking->click(x, y);
         else if (estado == Modos_juego::Partida)
-            estado = partida->click(x, y);
+            estado = Partida::get_instance().click(x, y);
 
-        // si acabamos de entrar a Partida, reseteamos
         if (estado == Modos_juego::Partida && estado_anterior != Modos_juego::Partida)
-            partida->reset();
+            Partida::get_instance().reset();
     }
     glutPostRedisplay();
 }
@@ -97,7 +97,7 @@ void teclado(unsigned char key, int x, int y) {
             estado = Modos_juego::MENU;
     }
     else if (estado == Modos_juego::Partida) {
-        partida->teclado(key);
+        Partida::get_instance().teclado(key);
     }
 }
 
@@ -127,7 +127,9 @@ int main(int argc, char** argv) {
     eleccion2_1jugador = new Eleccion2_1jugador();
     ranking = new Ranking();
     pantalla_carga = new Pantalla_carga();
-    partida = new Partida();
+    // Partida y MotorGrafico se inicializan solos la primera vez que se llaman
+    Partida::get_instance();
+    MotorGrafico::get_instance();
     glutDisplayFunc(display);
     glutPassiveMotionFunc(mouseMove);
     glutMouseFunc(mouseClick);

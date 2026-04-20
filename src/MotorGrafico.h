@@ -1,25 +1,29 @@
 #pragma once
 #include "Tablero.h"
 #include "ETSIDI.h"
-#include <GL/freeglut.h> // Necesario para opengl
+#include <GL/freeglut.h>
 
 class MotorGrafico {
 public:
-    MotorGrafico(Tablero& tablero);
+    // Singleton
+    static MotorGrafico& get_instance() {
+        static MotorGrafico instance;
+        return instance;
+    }
+
     void dibujar();
 
 private:
-    Tablero& tablero;   // Referencia, no propietario
-    ETSIDI::Sprite* fondo;
+    MotorGrafico();
+    MotorGrafico(const MotorGrafico&) = delete;
+    MotorGrafico& operator=(const MotorGrafico&) = delete;
 
-    void dibujarTablero();
-    void dibujarPersonajes();
-    void dibujaCuadrado(float x, float y, float r, float g, float b);
-
-    float casillaPosX(int col) const;
-    float casillaPosY(int fila) const;
-
+    // Parámetros del tablero
     float tam;      // tamaño de cada casilla
     float inicioX;  // donde empieza a dibujar en X
     float inicioY;  // donde empieza a dibujar en Y
+
+    void dibujarTablero(const Tablero& t);
+    void dibujarPersonajes(const Tablero& t);
+    void dibujaCuadrado(float x, float y, float r, float g, float b);
 };

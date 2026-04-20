@@ -19,6 +19,6 @@ void DibujoPersonaje::dibujar() {
     float visualY = inicio + (modelo->getPosY() * tam) + (tam / 2.0f);
 
     sprite.setPos(visualX, visualY);
-    //sprite.setSize(280.0f, 280.0f);
+    sprite.setSize(60.0f, 60.0f);
     sprite.draw();
 }

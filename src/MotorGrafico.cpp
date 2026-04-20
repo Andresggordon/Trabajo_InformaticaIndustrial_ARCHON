@@ -1,31 +1,19 @@
 #include "MotorGrafico.h"
+#include "Partida.h"
 
-MotorGrafico::MotorGrafico(Tablero& t) : tablero(t) {
-    //fondo = new ETSIDI::Sprite("assets/fondo.png", ...); // Descomentar cuando tengas el sprite
-
+MotorGrafico::MotorGrafico() {
     tam = 60.0f;
     inicioX = -270.0f;
     inicioY = -270.0f;
 }
 
-void MotorGrafico::dibujaCuadrado(float x, float y, float r, float g, float b) {
-    glDisable(GL_TEXTURE_2D);
-    glColor3f(r, g, b);
-    glBegin(GL_QUADS);
-    glVertex2f(x, y);
-    glVertex2f(x + tam, y);
-    glVertex2f(x + tam, y + tam);
-    glVertex2f(x, y + tam);
-    glEnd();
-}
-
 void MotorGrafico::dibujar() {
-    // if(fondo) fondo->draw();
-    dibujarTablero();
-    dibujarPersonajes();
+    const Tablero& t = Partida::get_instance().tablero();  // accede al tablero via Singleton
+    dibujarTablero(t);
+    dibujarPersonajes(t);
 }
 
-void MotorGrafico::dibujarTablero() {
+void MotorGrafico::dibujarTablero(const Tablero& t) {
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -41,9 +29,7 @@ void MotorGrafico::dibujarTablero() {
         for (int col = 0; col < Tablero::COLUMNAS; col++) {
             float x = inicioX + col * tam;
             float y = inicioY + fila * tam;
-
-            // Fíjate que ahora extraemos el ESTADO de la casilla
-            EstadoCasilla tipo = tablero.getCasilla(fila, col).getEstado();
+            EstadoCasilla tipo = t.getCasilla(fila, col).getEstado();
 
             if (tipo == EstadoCasilla::BLANCA_FIJA) {
                 dibujaCuadrado(x, y, 1.0f, 1.0f, 1.0f);
@@ -53,7 +39,7 @@ void MotorGrafico::dibujarTablero() {
             }
             else {
                 float r, g, b;
-                tablero.getColorDinamica(r, g, b);
+                t.getColorDinamica(r, g, b);
                 dibujaCuadrado(x, y, r, g, b);
             }
         }
@@ -65,24 +51,25 @@ void MotorGrafico::dibujarTablero() {
     glPopAttrib();
 }
 
-void MotorGrafico::dibujarPersonajes() {
+void MotorGrafico::dibujarPersonajes(const Tablero& t) {
+    // TODO: cuando tengamos los sprites de personajes, dibujarlos aquí
     for (int fila = 0; fila < Tablero::FILAS; fila++) {
         for (int col = 0; col < Tablero::COLUMNAS; col++) {
-            Personaje* p = tablero.getCasilla(fila, col).getPersonaje();
+            Personaje* p = t.getCasilla(fila, col).getPersonaje();
             if (p != nullptr) {
-                // Aquí calculamos la posición y le diremos al personaje que se dibuje
-                float x = casillaPosX(col);
-                float y = casillaPosY(fila);
-                // p->dibuja(x, y); 
+                // TODO: elegir sprite según tipo de personaje y dibujarlo
             }
         }
     }
 }
 
-float MotorGrafico::casillaPosX(int col) const {
-    return inicioX + col * tam;
-}
-
-float MotorGrafico::casillaPosY(int fila) const {
-    return inicioY + fila * tam;
+void MotorGrafico::dibujaCuadrado(float x, float y, float r, float g, float b) {
+    glDisable(GL_TEXTURE_2D);
+    glColor3f(r, g, b);
+    glBegin(GL_QUADS);
+    glVertex2f(x, y);
+    glVertex2f(x + tam, y);
+    glVertex2f(x + tam, y + tam);
+    glVertex2f(x, y + tam);
+    glEnd();
 }

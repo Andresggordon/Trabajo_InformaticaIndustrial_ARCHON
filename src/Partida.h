@@ -1,7 +1,6 @@
 #pragma once
 #include "Menu.h"
 #include "Tablero.h"
-#include "MotorGrafico.h"
 #include "ETSIDI.h"
 #include "dibujo_personajes.h"
 #include "personaje.h"
@@ -9,7 +8,17 @@
 
 class Partida {
 public:
-    Partida();
+    // Singleton
+    static Partida& get_instance() {
+        static Partida instance;
+        return instance;
+    }
+
+    // Getters del tablero
+    Tablero& tablero() { return tab_; }
+    const Tablero& tablero() const { return tab_; }
+
+    // Métodos de juego
     void dibuja();
     void update(int x, int y);
     Modos_juego click(int x, int y);
@@ -17,8 +26,11 @@ public:
     void reset();
 
 private:
-    Tablero* tablero;
-    MotorGrafico* motor_grafico; 
+    Partida();
+    Partida(const Partida&) = delete;
+    Partida& operator=(const Partida&) = delete;
+
+    Tablero tab_;                       // propietaria del tablero, miembro directo
     ETSIDI::Sprite* fondo;
     ETSIDI::Sprite* abandonar_partida;
     ETSIDI::Sprite* popup_salir;
