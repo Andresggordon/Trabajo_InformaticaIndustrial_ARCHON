@@ -1,7 +1,8 @@
 #include "Tablero.h"
+#include "personaje.h"
 
 Tablero::Tablero() {
-    fase_actual = FaseCiclo::ATARDECER; //empezamos con atardecer
+    fase_actual = FaseCiclo::ATARDECER;
     inicializarMatriz();
 }
 
@@ -11,7 +12,7 @@ void Tablero::inicializarMatriz() {
     EstadoCasilla D = EstadoCasilla::DINAMICA;
 
     EstadoCasilla patron[FILAS][COLUMNAS] = {
-        {A, B, A, D, D, D, B, A, B}, //fila 0
+        {A, B, A, D, D, D, B, A, B},
         {B, A, D, B, D, A, D, B, A},
         {A, D, B, A, D, B, A, D, B},
         {D, B, A, B, D, A, B, A, D},
@@ -19,16 +20,14 @@ void Tablero::inicializarMatriz() {
         {D, B, A, B, D, A, B, A, D},
         {A, D, B, A, D, B, A, D, B},
         {B, A, D, B, D, A, D, B, A},
-        {A, B, A, D, D, D, B, A, B}, //fila 8
+        {A, B, A, D, D, D, B, A, B},
     };
-   
-    //copia patrón a la matriz
+
     for (int i = 0; i < FILAS; i++)
         for (int j = 0; j < COLUMNAS; j++)
-            matriz[i][j] = patron[i][j];
+            matriz[i][j].setEstado(patron[i][j]);
 }
 
-//Ciclo cerrado que avanza las fases
 void Tablero::avanzarCiclo() {
     switch (fase_actual) {
     case FaseCiclo::MEDIODIA:   fase_actual = FaseCiclo::ATARDECER;  break;
@@ -40,25 +39,29 @@ void Tablero::avanzarCiclo() {
     }
 }
 
-//Saber que colores
-EstadoCasilla Tablero::getCasilla(int fila, int col) const {
+Casilla& Tablero::getCasilla(int fila, int col) {
     return matriz[fila][col];
 }
 
-//Escala de azules
+const Casilla& Tablero::getCasilla(int fila, int col) const {
+    return matriz[fila][col];
+}
+
 void Tablero::getColorDinamica(float& r, float& g, float& b) const {
     switch (fase_actual) {
-    case FaseCiclo::MEDIODIA:   r = 1.0f; g = 1.0f; b = 1.0f; 
-        break; // blanco puro
-    case FaseCiclo::ATARDECER:  r = 0.6f; g = 0.7f; b = 0.9f; 
-        break; // azul muy claro
-    case FaseCiclo::ANOCHECER:  r = 0.2f; g = 0.4f; b = 0.7f;
-        break; // azul medio
-    case FaseCiclo::MEDIANOCHE: r = 0.0f; g = 0.0f; b = 0.3f; 
-        break; // azul oscuro
-    case FaseCiclo::MADRUGADA:  r = 0.2f; g = 0.4f; b = 0.7f; 
-        break; // azul medio
-    case FaseCiclo::AMANECER:   r = 0.6f; g = 0.7f; b = 0.9f; 
-        break; // azul muy claro
+    case FaseCiclo::MEDIODIA:   r = 1.0f; g = 1.0f; b = 1.0f; break;
+    case FaseCiclo::ATARDECER:  r = 0.6f; g = 0.7f; b = 0.9f; break;
+    case FaseCiclo::ANOCHECER:  r = 0.2f; g = 0.4f; b = 0.7f; break;
+    case FaseCiclo::MEDIANOCHE: r = 0.0f; g = 0.0f; b = 0.3f; break;
+    case FaseCiclo::MADRUGADA:  r = 0.2f; g = 0.4f; b = 0.7f; break;
+    case FaseCiclo::AMANECER:   r = 0.6f; g = 0.7f; b = 0.9f; break;
     }
+}
+
+FaseCiclo Tablero::getFase() const {
+    return fase_actual;
+}
+
+bool Tablero::moverPersonaje(Personaje* p, int destinoX, int destinoY) {
+    return p->mover(destinoX, destinoY);
 }
