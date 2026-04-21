@@ -24,6 +24,8 @@ public:
     Modos_juego click(int x, int y);
     void teclado(unsigned char key);
     void reset();
+    void dibujaPersonajes();
+    void dibujaextra();
 
 private:
     Partida();

@@ -1,8 +1,8 @@
 #include "Partida.h"
+#include "MotorGrafico.h"
 #include <GL/freeglut.h>
 
 Partida::Partida() {
-    // tab_ se construye solo como miembro directo, no necesita new
     fondo = new ETSIDI::Sprite("assets/menu_imagenes/fondo_partida.png", 0, 0, 600, 600);
     abandonar_partida = new ETSIDI::Sprite("assets/menu_imagenes/boton_abandonar.png", 0, 0, 600, 600);
     popup_salir = new ETSIDI::Sprite("assets/menu_imagenes/popup_salir.png", 0, 0, 600, 600);
@@ -11,15 +11,20 @@ Partida::Partida() {
 }
 
 void Partida::dibuja() {
-    fondo->draw();
-    abandonar_partida->draw();
+    fondo->draw();  // solo el fondo
+}
+
+void Partida::dibujaextra() {
+    abandonar_partida->draw();  // exit encima de todo
     if (mostrar_popup)
         popup_salir->draw();
+}
 
-    // PRUEBA PARA PERSONAJES -- BORRADOR
+void Partida::dibujaPersonajes() {
     if (PSS_prueba) PSS_prueba->dibujar();
     if (MH_prueba) MH_prueba->dibujar();
 }
+
 
 void Partida::update(int x, int y) {
     int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
@@ -74,7 +79,7 @@ Modos_juego Partida::click(int x, int y) {
 
 void Partida::teclado(unsigned char key) {
     if (key == 32)
-        tab_.avanzarCiclo();  // antes era tablero->avanzarCiclo()
+        tab_.avanzarCiclo();
     if (key == 27)
         mostrar_popup = false;
 }
@@ -88,7 +93,7 @@ void Partida::reset() {
     // PRUEBA PARA PERSONAJES -- BORRADOR
     if (modo_actual == 1 && turno_actual == 0) {
         Personaje* pss = new Profesor_SS(-4, 0, tab_);
-Personaje* mh = new Profesor_MH(3, 2, tab_);
+        Personaje* mh = new Profesor_MH(3, 2, tab_);
         PSS_prueba = new DibujoPersonaje(pss);
         MH_prueba = new DibujoPersonaje(mh);
     }

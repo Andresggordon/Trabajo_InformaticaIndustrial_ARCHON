@@ -4,7 +4,7 @@
 MotorGrafico::MotorGrafico() {
     tam = 60.0f;
     inicioX = -270.0f;
-    inicioY = -270.0f;
+    inicioY = -250.0f;
 }
 
 void MotorGrafico::dibujar() {
