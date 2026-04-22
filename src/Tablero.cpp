@@ -63,5 +63,48 @@ FaseCiclo Tablero::getFase() const {
 }
 
 bool Tablero::moverPersonaje(Personaje* p, int destinoX, int destinoY) {
-    return p->mover(destinoX, destinoY);
+
+    Casilla& casilladestino = getCasilla(destinoY, destinoX); //Obtenemos la casilla destino del personaje
+
+    if (destinoX < 0 || destinoX >= COLUMNAS) //Mediante estos ifs, se comprueba que la casilla destino del personaje
+        return false;                         // esta dentro del tablero
+    if (destinoY < 0 || destinoY >= FILAS)
+        return false;
+
+    if (casilladestino.getPersonaje() == nullptr) //Casilla vacía, movimiento de la pieza normal
+    {
+        getCasilla(p->getPosY(), p->getPosX()).setPersonaje(nullptr);
+        p->mover(destinoX, destinoY);
+        casilladestino.setPersonaje(p);
+        return true;
+    }
+
+    if (casilladestino.getPersonaje()->getTurno() == p->getTurno()) //Casilla ocupada por un personaje aliado, Repetir Turno
+    {
+        return false;
+    }
+
+    //Coincide en la casilla con un enemigo, se inicia combate
+    pendienteOrigen_ = { p->getPosX(),p->getPosY() };
+    pendienteDestino_ = { destinoX,destinoY };
+    return false;
+}
+
+bool Tablero::hayChoquePendiente() const //Partida confirma que hay que activar la arena
+{
+    return pendienteOrigen_.x != -1;
+}
+
+void Tablero::getPendiente(int& origenX, int& origenY, int& destinoX, int& destinoY) const //obtiene las coordenadas del choque para poder llevarse a los personajes
+{
+    origenX = pendienteOrigen_.x;
+    origenY = pendienteOrigen_.y;
+    destinoX = pendienteDestino_.x;
+    destinoY = pendienteDestino_.y;
+}
+
+void Tablero::limpiarPendiente() //Finaliza el combate y resetea las pendientes
+{
+    pendienteOrigen_ = { -1,-1 };
+    pendienteDestino_ = { -1,-1 };
 }

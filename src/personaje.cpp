@@ -49,3 +49,8 @@ bool Personaje::mover(int destinoX, int destinoY) {  // ← sin Tablero& como pa
 
     return true;
 }
+
+Turno Personaje::getTurno() const //Determinar los turnos de movimiento
+{
+    return turno;
+}

@@ -40,6 +40,8 @@ public:
     // Setters
     void setPosicion(int x_, int y_);
 
+    Turno getTurno()const; //Funcion para determinar los turnos de movimiento
+
 protected:
     Tablero& tablero_;  // referencia al tablero compartido
     std::string nombre;
