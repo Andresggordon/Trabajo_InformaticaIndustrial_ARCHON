@@ -8,6 +8,7 @@
 #include "Pantalla_carga.h"
 #include "Partida.h"
 #include "MotorGrafico.h"
+#include "ArenaCombate.h"
 
 Menu* menu = nullptr;
 Eleccion_1jugador* eleccion_1jugador = nullptr;
@@ -15,6 +16,7 @@ Eleccion_2jugadores* eleccion_2jugadores = nullptr;
 Eleccion2_1jugador* eleccion2_1jugador = nullptr;
 Ranking* ranking = nullptr;
 Pantalla_carga* pantalla_carga = nullptr;
+ArenaCombate* arena = nullptr;
 
 Modos_juego estado = Modos_juego::Pantalla_carga;
 
@@ -101,6 +103,10 @@ void teclado(unsigned char key, int x, int y) {
     else if (estado == Modos_juego::Partida) {
         Partida::get_instance().teclado(key);
     }
+    else if (estado == Modos_juego::Arena)
+    {
+        arena->teclado(key);
+    }
 }
 
 void reposo() {
@@ -109,6 +115,13 @@ void reposo() {
         if (pantalla_carga->carga_completa)
             estado = Modos_juego::MENU;
     }
+    glutPostRedisplay();
+}
+
+void tecladoEspecial(int key, int x, int y)
+{
+    if (estado == Modos_juego::Arena)
+        arena->tecladoEspecial(key);
     glutPostRedisplay();
 }
 
@@ -129,6 +142,7 @@ int main(int argc, char** argv) {
     eleccion2_1jugador = new Eleccion2_1jugador();
     ranking = new Ranking();
     pantalla_carga = new Pantalla_carga();
+    arena = new ArenaCombate();
     // Partida y MotorGrafico se inicializan solos la primera vez que se llaman
     Partida::get_instance();
     MotorGrafico::get_instance();
@@ -139,5 +153,6 @@ int main(int argc, char** argv) {
     glutIdleFunc(reposo);
     glutReshapeFunc(reshape);
     glutMainLoop();
+    glutSpecialFunc(tecladoEspecial);
     return 0;
 }
