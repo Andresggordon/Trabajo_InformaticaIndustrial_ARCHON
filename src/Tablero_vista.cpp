@@ -1,4 +1,5 @@
 #include "Tablero_vista.h"
+#include "Casilla.h"
 
 Tablero_vista::Tablero_vista(Tablero* t) {
     mi_tablero = t;
@@ -36,7 +37,7 @@ void Tablero_vista::dibuja() {
         for (int col = 0; col < 9; col++) {
             float x = inicioX + col * tam;
             float y = inicioY + fila * tam;
-            EstadoCasilla tipo = mi_tablero->getCasilla(fila, col);
+            EstadoCasilla tipo = mi_tablero->getCasilla(fila, col).getEstado();            
             if (tipo == EstadoCasilla::BLANCA_FIJA) {
                 dibujaCuadrado(x, y, 1.0f, 1.0f, 1.0f);
             }

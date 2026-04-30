@@ -2,6 +2,9 @@
 #include "ETSIDI.h"
 #include "Modos_juego.h"
 
+extern int equipo_j1;
+extern int equipo_j2;
+
 class Eleccion_2jugadores {
 public:
     Eleccion_2jugadores();
@@ -11,12 +14,7 @@ public:
 
 private:
     ETSIDI::Sprite* fondo;
-    ETSIDI::Sprite* tarde_primero;
-    ETSIDI::Sprite* manana_primero;
-    ETSIDI::Sprite* random;
-    ETSIDI::Sprite* indicador_tarde;
-    ETSIDI::Sprite* indicador_manana;
-    ETSIDI::Sprite* indicador_random;
     ETSIDI::Sprite* back;
     int boton_activo = 0;
+    
 };
