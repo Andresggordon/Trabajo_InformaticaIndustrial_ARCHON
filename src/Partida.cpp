@@ -2,6 +2,8 @@
 #include "MotorGrafico.h"
 #include <GL/freeglut.h>
 
+
+
 Partida::Partida() {
     fondo = new ETSIDI::Sprite("assets/menu_imagenes/fondo_partida.png", 0, 0, 600, 600);
     abandonar_partida = new ETSIDI::Sprite("assets/menu_imagenes/boton_abandonar.png", 0, 0, 600, 600);
@@ -90,6 +92,12 @@ void Partida::reset() {
     mostrar_popup = false;
     boton_activo = 0;
 
+<<<<<<< HEAD
+=======
+    modo_actual = modo_juego;      // 1=1jugador, 2=2jugadores
+    turno_actual = turno_inicio;   // 1=mañana primero, 2=tarde primero
+
+>>>>>>> Esther_1
     // PRUEBA PARA PERSONAJES -- BORRADOR
     if (modo_actual == 1 && turno_actual == 0) {
         Personaje* pss = new Profesor_SS(-4, 0, tab_);

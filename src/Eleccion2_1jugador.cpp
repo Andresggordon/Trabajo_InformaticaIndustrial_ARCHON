@@ -58,6 +58,7 @@ Modos_juego Eleccion2_1jugador::click(int x, int y) {
     if (cx >= 225 && cx <= 275 && cy >= -265 && cy <= -235) {
         ETSIDI::play("assets/sonidos/click.mp3");
         return Modos_juego::Eleccion_1jugador;
+<<<<<<< HEAD
 
     }
     else if (cx >= -88 && cx <= 106 && cy >= 31 && cy <= 51) {
@@ -72,5 +73,23 @@ Modos_juego Eleccion2_1jugador::click(int x, int y) {
             ETSIDI::play("assets/sonidos/click.mp3");
             return Modos_juego::Partida;
         }
+=======
+    }
+    else if (cx >= -88 && cx <= 106 && cy >= 31 && cy <= 51) {
+        ETSIDI::play("assets/sonidos/click.mp3");
+        turno_inicio = 1;  // mañana primero
+        return Modos_juego::Partida;
+    }
+    else if (cx >= -65 && cx <= 85 && cy >= -5 && cy <= 14) {
+        ETSIDI::play("assets/sonidos/click.mp3");
+        turno_inicio = 2;  // tarde primero
+        return Modos_juego::Partida;
+    }
+    else if (cx >= -89 && cx <= 2 && cy >= -39 && cy <= -20) {
+        ETSIDI::play("assets/sonidos/click.mp3");
+        turno_inicio = ETSIDI::lanzaMoneda() ? 1 : 2;  // random
+        return Modos_juego::Partida;
+    }
+>>>>>>> Esther_1
     return Modos_juego::Eleccion2_1jugador;
 }

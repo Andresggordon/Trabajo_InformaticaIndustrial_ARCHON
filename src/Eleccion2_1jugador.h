@@ -2,6 +2,11 @@
 #include "ETSIDI.h"
 #include "Modos_juego.h"
 
+extern int equipo_j1;
+extern int equipo_j2;
+extern int modo_juego;
+extern int turno_inicio;
+
 class Eleccion2_1jugador {
 public:
     Eleccion2_1jugador();

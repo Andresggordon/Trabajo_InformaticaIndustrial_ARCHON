@@ -5,6 +5,14 @@
 #include "dibujo_personajes.h"
 #include "personaje.h"
 #include "tipo_personaje.h"
+<<<<<<< HEAD
+=======
+
+extern int equipo_j1;
+extern int equipo_j2;
+extern int modo_juego;
+extern int turno_inicio;
+>>>>>>> Esther_1
 
 class Partida {
 public:
@@ -32,7 +40,11 @@ private:
     Partida(const Partida&) = delete;
     Partida& operator=(const Partida&) = delete;
 
+<<<<<<< HEAD
     Tablero tab_;                       // propietaria del tablero, miembro directo
+=======
+    Tablero tab_; // propietaria del tablero, miembro directo
+>>>>>>> Esther_1
     ETSIDI::Sprite* fondo;
     ETSIDI::Sprite* abandonar_partida;
     ETSIDI::Sprite* popup_salir;
