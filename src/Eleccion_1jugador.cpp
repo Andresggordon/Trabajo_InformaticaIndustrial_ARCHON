@@ -55,22 +55,20 @@ Modos_juego Eleccion_1jugador::click(int x, int y) {
     }
     else if (cx >= -80 && cx <= 70 && cy >= 15 && cy <= 45) {
         ETSIDI::play("assets/sonidos/click.mp3");
-<<<<<<< HEAD
-=======
+
         equipo_j1 = 1;  // j1 elige mañana
         equipo_j2 = 2;  // la IA es tarde
         modo_juego = 1;
->>>>>>> Esther_1
+
         return Modos_juego::Eleccion2_1jugador;
     }
     else if (cx >= -65 && cx <= 85 && cy >= -20 && cy <= 10) {
         ETSIDI::play("assets/sonidos/click.mp3");
-<<<<<<< HEAD
-=======
+
         equipo_j1 = 2;  // j1 elige tarde
         equipo_j2 = 1;  // la IA es mañana
         modo_juego = 1;
->>>>>>> Esther_1
+
         return Modos_juego::Eleccion2_1jugador;
     }
     return Modos_juego::Eleccion_1jugador;

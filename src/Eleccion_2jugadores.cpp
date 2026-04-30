@@ -6,7 +6,7 @@ Eleccion_2jugadores::Eleccion_2jugadores() {
     fondo = new ETSIDI::Sprite("assets/menu_imagenes/eleccion2jugador.png", 0, 0, 600, 600);
     back = new ETSIDI::Sprite("assets/menu_imagenes/back.png", 0, 0, 600, 600);
     boton_activo = 0;
-   }
+}
 
 void Eleccion_2jugadores::dibuja() {
     fondo->draw();
@@ -21,7 +21,7 @@ void Eleccion_2jugadores::update(int x, int y) {
     int offsetY = (ventana_h - tam) / 2;
     float cx = ((x - offsetX) / (float)tam) * 800 - 400;
     float cy = 400 - ((y - offsetY) / (float)tam) * 800;
-    
+
 
     if (cx >= -239 && cx <= -51 && cy >= -73 && cy <= 100)
         boton_activo = 1;  // mañana primero
@@ -39,31 +39,9 @@ Modos_juego Eleccion_2jugadores::click(int x, int y) {
     int tam = min(ventana_w, ventana_h);
     int offsetX = (ventana_w - tam) / 2;
     int offsetY = (ventana_h - tam) / 2;
-
-    ETSIDI::play("assets/sonidos/click.mp3");
-
     float cx = ((x - offsetX) / (float)tam) * 800 - 400;
     float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
-<<<<<<< HEAD
-
-    if (cx >= 225 && cx <= 275 && cy >= -265 && cy <= -235){
-        ETSIDI::play("assets/sonidos/click.mp3");
-        return Modos_juego::MENU;  // back
-    }
-
-    else if (cx >= -88 && cx <= 106 && cy >= 31 && cy <= 51) {
-        ETSIDI::play("assets/sonidos/click.mp3");
-        return Modos_juego::Partida;  // mañana primero
-    }
-    else if (cx >= -65 && cx <= 85 && cy >= -5 && cy <= 14) {
-        ETSIDI::play("assets/sonidos/click.mp3");
-        return Modos_juego::Partida;  // tarde primero
-    }
-    else if (cx >= -89 && cx <= 2 && cy >= -39 && cy <= -20) {
-        ETSIDI::play("assets/sonidos/click.mp3");
-        return Modos_juego::Partida;  // random
-=======
     if (cx >= 225 && cx <= 275 && cy >= -265 && cy <= -235) {
         ETSIDI::play("assets/sonidos/click.mp3");
         return Modos_juego::MENU;  // back
@@ -79,9 +57,6 @@ Modos_juego Eleccion_2jugadores::click(int x, int y) {
         equipo_j1 = 2;  // j1 = tarde
         equipo_j2 = 1;  // j2 = mañana
         return Modos_juego::Partida;
-    }
->>>>>>> Esther_1
-
     }
 
     return Modos_juego::Eleccion_2jugadores;

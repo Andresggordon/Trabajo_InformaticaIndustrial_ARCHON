@@ -8,14 +8,13 @@
 #include "Pantalla_carga.h"
 #include "Partida.h"
 #include "MotorGrafico.h"
-<<<<<<< HEAD
-=======
+
 
 int equipo_j1 = 0;
 int equipo_j2 = 0;
 int modo_juego = 0;
 int turno_inicio = 0;
->>>>>>> Esther_1
+
 
 Menu* menu = nullptr;
 Eleccion_1jugador* eleccion_1jugador = nullptr;
