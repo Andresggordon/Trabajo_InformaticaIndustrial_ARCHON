@@ -1,6 +1,7 @@
 #include "Eleccion_2jugadores.h"
 #include <GL/freeglut.h>
 #include <iostream>
+#include "Partida.h"
 
 Eleccion_2jugadores::Eleccion_2jugadores() {
     fondo = new ETSIDI::Sprite("assets/menu_imagenes/eleccion2jugador.png", 0, 0, 600, 600);
@@ -50,12 +51,14 @@ Modos_juego Eleccion_2jugadores::click(int x, int y) {
         ETSIDI::play("assets/sonidos/click.mp3");
         equipo_j1 = 1;  // j1 = mañana
         equipo_j2 = 2;  // j2 = tarde
+        turno_inicio = 0;
         return Modos_juego::Partida;
     }
     else if (cx >= 54 && cx <= 240 && cy >= -73 && cy <= 100) {
         ETSIDI::play("assets/sonidos/click.mp3");
         equipo_j1 = 2;  // j1 = tarde
         equipo_j2 = 1;  // j2 = mañana
+        turno_inicio = 1;
         return Modos_juego::Partida;
     }
 
