@@ -35,6 +35,7 @@ public:
     void reset();
     void dibujaextra();
     void dibujaSeleccion();
+    void dibujaHabilidades();
 
 private:
     Partida();
@@ -55,7 +56,9 @@ private:
 
     Personaje* personaje_seleccionado = nullptr;  // ← ya lo tienes
     void procesarClickTablero(int fil, int col);   // ← ya lo tienes
+    bool es_lider_seleccionado = false;
 
     bool mostrar_popup;
     int boton_activo;
+    bool modo_teleport = false;
 };

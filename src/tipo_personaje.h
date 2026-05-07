@@ -17,6 +17,7 @@ public:
     int getRadioMovimiento()  const override { return 4; }
     std::string getNombreSprite() const override { return "SanSegundo"; }
     float getTamanoSprite() const override { return 65.0f; }
+    Menu_habilidades* getMenu() override { return &menu; }
 
 };
 
@@ -149,8 +150,7 @@ public:
     int getRadioMovimiento() const override { return 4; }
     std::string getNombreSprite() const override { return "MH"; }
     float getTamanoSprite() const override { return 50.0f; }
-
-
+    Menu_habilidades* getMenu() override { return &menu; }
 };
 
 class Microprocesador_T : public Volador {

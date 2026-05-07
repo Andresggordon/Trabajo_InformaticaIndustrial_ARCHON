@@ -1,6 +1,7 @@
 #include "Partida.h"
 #include "MotorGrafico.h"
 #include <GL/freeglut.h>
+#include "tipo_personaje.h"
 
 
 
@@ -64,6 +65,45 @@ Modos_juego Partida::click(int x, int y) {
     int col = (int)((cx - inicioX) / tam_casilla);
     int fil = (int)((cy - inicioY) / tam_casilla);
 
+    // Convertir coordenadas
+    float ox = ((float)x / 500.0f - 1.0f) * 400.0f;
+    float oy = (1.0f - (float)y / 500.0f) * 400.0f;
+
+    // Botones de habilidades
+    if (es_lider_seleccionado && personaje_seleccionado != nullptr) {  // ← añadir la comprobación
+        Menu_habilidades* menu = personaje_seleccionado->getMenu();
+        if (menu == nullptr) return Modos_juego::Partida;
+
+        // Revivir (-390,-390) → (-150,-340)
+        if (ox >= -390 && ox <= -150 && oy >= -390 && oy <= -340) {
+            int vida = personaje_seleccionado->getVidaActual();
+            int vidaMax = personaje_seleccionado->getVidaMax();
+            bool inmov = personaje_seleccionado->getInmovilizado();
+            int px = personaje_seleccionado->getPosX();
+            int py = personaje_seleccionado->getPosY();
+            menu->Usar_habilidad(habilidades::REVIVIR, vida, vidaMax, px, py, inmov);
+            personaje_seleccionado->setVida(vida);
+            return Modos_juego::Partida;
+        }
+
+        // Inmovilizar (-80,-390) → (80,-340)
+        if (ox >= -80 && ox <= 80 && oy >= -390 && oy <= -340) {
+            int vida = personaje_seleccionado->getVidaActual();
+            int vidaMax = personaje_seleccionado->getVidaMax();
+            bool inmov = personaje_seleccionado->getInmovilizado();
+            int px = personaje_seleccionado->getPosX();
+            int py = personaje_seleccionado->getPosY();
+            menu->Usar_habilidad(habilidades::INMOVILIZA, vida, vidaMax, px, py, inmov);
+            personaje_seleccionado->setInmovilizado(inmov);
+            return Modos_juego::Partida;
+        }
+
+        // Teleport (150,-390) → (390,-340)
+        if (ox >= 150 && ox <= 390 && oy >= -390 && oy <= -340) {
+            modo_teleport = true;
+            return Modos_juego::Partida;
+        }
+    }
 
     if (!mostrar_popup) {
         if (cx >= 209 && cx <= 289 && cy >= -275 && cy <= -252)
@@ -86,21 +126,45 @@ Modos_juego Partida::click(int x, int y) {
 void Partida::procesarClickTablero(int fil, int col) {
     Casilla& casilla = tab_.getCasilla(fil, col);
 
+    if (modo_teleport) {
+        if (personaje_seleccionado == nullptr) { 
+            modo_teleport = false;
+            return;
+        }
+        if (casilla.getPersonaje() == nullptr) {
+            personaje_seleccionado->getCasillaActual()->setPersonaje(nullptr);
+            casilla.setPersonaje(personaje_seleccionado);
+            personaje_seleccionado->setCasillaActual(&casilla);
+        }
+        modo_teleport = false;
+        personaje_seleccionado = nullptr;
+        turno_actual = 1 - turno_actual;
+        return;
+    }
+
     if (personaje_seleccionado == nullptr) {
         Personaje* p = casilla.getPersonaje();
         if (p != nullptr && p->estaVivo()) {
             bool es_manana = (p->getTurno() == Turno::TURNO_DE_MANANA);
             bool turno_ok = (turno_actual == 0 && es_manana) ||
                 (turno_actual == 1 && !es_manana);
-            if (turno_ok)
+            if (turno_ok) {
                 personaje_seleccionado = p;
+                es_lider_seleccionado = (p->getMenu() != nullptr);
+            }
         }
     }
     else {
         bool movio = personaje_seleccionado->mover(casilla);
         personaje_seleccionado = nullptr;
+        es_lider_seleccionado = false;
         if (movio)
             turno_actual = 1 - turno_actual;
+        // Resetear habilidades de los líderes
+        for (auto p : personajes) {
+            if (p->getMenu() != nullptr)
+                p->getMenu()->resetHabilidad();
+        }
     }
 }
 
@@ -141,6 +205,50 @@ void Partida::dibujaSeleccion() {
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
     glPopAttrib();  // restaura todo el estado anterior
+}
+
+void Partida::dibujaHabilidades() {
+    if (!es_lider_seleccionado) return;
+    if (modo_teleport) return;  // ← AÑADIR: ocultar botones mientras espera destino
+
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(-400, 400, -400, 400);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Botón Revivir (izquierda)
+    glColor3f(0.2f, 0.6f, 0.2f);
+    glBegin(GL_QUADS);
+    glVertex2f(-390, -390); glVertex2f(-150, -390);
+    glVertex2f(-150, -340); glVertex2f(-390, -340);
+    glEnd();
+
+    // Botón Inmovilizar (centro)
+    glColor3f(0.6f, 0.2f, 0.2f);
+    glBegin(GL_QUADS);
+    glVertex2f(-80, -390); glVertex2f(80, -390);
+    glVertex2f(80, -340);  glVertex2f(-80, -340);
+    glEnd();
+
+    // Botón Teleport (derecha)
+    glColor3f(0.2f, 0.2f, 0.7f);
+    glBegin(GL_QUADS);
+    glVertex2f(150, -390); glVertex2f(390, -390);
+    glVertex2f(390, -340); glVertex2f(150, -340);
+    glEnd();
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glPopAttrib();
 }
 
 void Partida::teclado(unsigned char key) {

@@ -59,3 +59,7 @@ bool Personaje::mover(Casilla& destino) {
 
     return true;
 }
+
+void Personaje::setCasillaActual(Casilla* c) {
+    casilla_actual = c;
+}

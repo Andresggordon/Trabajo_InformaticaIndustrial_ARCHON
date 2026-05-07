@@ -55,7 +55,8 @@ void display() {
         Partida::get_instance().dibuja();           // 1. fondo
         MotorGrafico::get_instance().dibujar();     // 2. tablero
         Partida::get_instance().dibujaSeleccion(); // 3. Selección de casilla
-        Partida::get_instance().dibujaextra();        // 4. exit y popup encima de todo
+        Partida::get_instance().dibujaHabilidades(); // 4. Dibujar habilidades
+        Partida::get_instance().dibujaextra();        // 5. exit y popup encima de todo
     }
     glutSwapBuffers();
 }

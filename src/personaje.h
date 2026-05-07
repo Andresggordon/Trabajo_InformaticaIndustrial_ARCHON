@@ -3,6 +3,7 @@
 #include "stats.h"
 #include <vector>
 #include "dibujo_personajes.h"
+#include "habilidades_profes.h"
 
 // Declaración adelantada — no incluir Tablero.h aquí
 class Tablero;
@@ -23,6 +24,7 @@ public:
     // Método virtual puro
     virtual int getRadioMovimiento() const = 0;
     virtual float getTamanoSprite() const = 0; //Modificar el tamaño de cada sprite individualmente
+    virtual Menu_habilidades* getMenu() { return nullptr; } //Metodo virtual para abrir el menu de habilidades
 
     bool mover(Casilla& destino);
 
@@ -49,8 +51,10 @@ public:
     Turno getTurno() const { return turno; }
 
     // Setters
-    /*void setPosicion(int x_, int y_);
-    void setCasillaActual(Casilla* c);*/
+    /*void setPosicion(int x_, int y_);*/
+    void setCasillaActual(Casilla* c);
+    void setVida(int v) { vida_actual = v; }
+    void setInmovilizado(bool b) { inmovilizado = b; }
 
 protected:
     std::string nombre;
