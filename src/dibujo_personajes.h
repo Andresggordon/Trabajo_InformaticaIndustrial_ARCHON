@@ -9,7 +9,7 @@ public:
     DibujoPersonaje(Personaje* p);
 
     // El método 
-    void dibujar();
+    void dibujar(float x, float y);
 
     Personaje* getPersonaje() const { return modelo; }
 

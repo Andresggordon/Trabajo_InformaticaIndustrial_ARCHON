@@ -22,10 +22,6 @@ void Partida::dibujaextra() {
         popup_salir->draw();
 }
 
-void Partida::dibujaPersonajes() {
-    for (auto d : dibujos)
-        d->dibujar();
-}
 
 void Partida::update(int x, int y) {
     int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
