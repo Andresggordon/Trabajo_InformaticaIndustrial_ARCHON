@@ -45,7 +45,7 @@ public:
     float getPorcentajeVida() const;
     int getVidaActual() const;
     int getVidaMax() const;
-    bool getInmovilizado() const;
+    bool getInmovilizado() const { return turnos_inmovilizado > 0; }
     Movimiento getMovimiento() const;
 
     Turno getTurno() const { return turno; }
@@ -54,7 +54,8 @@ public:
     /*void setPosicion(int x_, int y_);*/
     void setCasillaActual(Casilla* c);
     void setVida(int v) { vida_actual = v; }
-    void setInmovilizado(bool b) { inmovilizado = b; }
+    void setInmovilizado(bool b) { turnos_inmovilizado = b ? 1 : 0; } // La imnovilización dura 1 turno
+    void decrementarInmovilizacion() { if (turnos_inmovilizado > 0) turnos_inmovilizado--; }
 
 protected:
     std::string nombre;
@@ -63,7 +64,7 @@ protected:
     Movimiento movimiento;
     stats arma;
     bool encarcelado = false;
-    bool inmovilizado = false;
+    int turnos_inmovilizado = 0;
     Casilla * casilla_actual;
 
 };

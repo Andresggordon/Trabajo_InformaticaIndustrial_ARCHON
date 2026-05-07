@@ -171,12 +171,11 @@ void Partida::procesarClickTablero(int fil, int col) {
         bool movio = personaje_seleccionado->mover(casilla);
         personaje_seleccionado = nullptr;
         es_lider_seleccionado = false;
-        if (movio)
+        if (movio) {
             turno_actual = 1 - turno_actual;
-        // Resetear habilidades de los líderes
-        for (auto p : personajes) {
-            if (p->getMenu() != nullptr)
-                p->getMenu()->resetHabilidad();
+            for (auto p : personajes) {
+                p->decrementarInmovilizacion();
+            }
         }
     }
 }
