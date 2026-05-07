@@ -22,6 +22,7 @@ public:
 
     // Método virtual puro
     virtual int getRadioMovimiento() const = 0;
+    virtual float getTamanoSprite() const = 0; //Modificar el tamaño de cada sprite individualmente
 
     bool mover(Casilla& destino);
 

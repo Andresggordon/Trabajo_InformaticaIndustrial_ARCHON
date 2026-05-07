@@ -8,7 +8,8 @@ DibujoPersonaje::DibujoPersonaje(Personaje* p)
 }
 
 void DibujoPersonaje::dibujar(float x, float y) {
+    float tam = modelo->getTamanoSprite();
     sprite.setPos(x, y);
-    sprite.setSize(45.0f, 45.0f);
+    sprite.setSize(tam, tam);
     sprite.draw();
 }
