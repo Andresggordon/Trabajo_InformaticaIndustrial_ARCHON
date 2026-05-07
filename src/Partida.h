@@ -61,4 +61,5 @@ private:
     bool mostrar_popup;
     int boton_activo;
     bool modo_teleport = false;
+    bool modo_inmovilizar = false;
 };
