@@ -34,14 +34,14 @@ public:
     void teclado(unsigned char key);
     void reset();
     void dibujaextra();
+    void dibujaSeleccion();
 
 private:
     Partida();
     Partida(const Partida&) = delete;
     Partida& operator=(const Partida&) = delete;
 
-    Tablero tab_;                       // propietaria del tablero, miembro directo
-
+    Tablero tab_;
 
     ETSIDI::Sprite* fondo;
     ETSIDI::Sprite* abandonar_partida;
@@ -52,6 +52,9 @@ private:
 
     int modo_actual = 1;
     int turno_actual = 0;
+
+    Personaje* personaje_seleccionado = nullptr;  // ← ya lo tienes
+    void procesarClickTablero(int fil, int col);   // ← ya lo tienes
 
     bool mostrar_popup;
     int boton_activo;

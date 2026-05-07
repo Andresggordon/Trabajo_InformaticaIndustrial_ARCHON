@@ -39,6 +39,8 @@ bool Casilla::puedeMoverseA(const Casilla& c_destino, const Personaje& p) const 
 		return ((dx <= radio) && (dy <= radio)); //De momento igual pero, este debe atravesar los objetos
 				
 	}
+
+	return false;
 }
 
 // ------ ESTADO DE LA CASILLA ---------

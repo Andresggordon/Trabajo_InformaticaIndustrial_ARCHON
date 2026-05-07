@@ -46,6 +46,8 @@ public:
     bool getInmovilizado() const;
     Movimiento getMovimiento() const;
 
+    Turno getTurno() const { return turno; }
+
     // Setters
     /*void setPosicion(int x_, int y_);
     void setCasillaActual(Casilla* c);*/

@@ -58,9 +58,18 @@ Modos_juego Partida::click(int x, int y) {
     float cx = ((x - offsetX) / (float)tam) * 800 - 400;
     float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
+    float tam_casilla = 60.0f;
+    float inicioX = -270.0f;
+    float inicioY = -250.0f;
+    int col = (int)((cx - inicioX) / tam_casilla);
+    int fil = (int)((cy - inicioY) / tam_casilla);
+
+
     if (!mostrar_popup) {
         if (cx >= 209 && cx <= 289 && cy >= -275 && cy <= -252)
             mostrar_popup = true;
+        else if (col >= 0 && col < 9 && fil >= 0 && fil < 9)
+            procesarClickTablero(fil, col);
     }
     else {
         if (cx >= -153 && cx <= -57 && cy >= -43 && cy <= -5) {
@@ -72,6 +81,66 @@ Modos_juego Partida::click(int x, int y) {
             mostrar_popup = false;
     }
     return Modos_juego::Partida;
+}
+
+void Partida::procesarClickTablero(int fil, int col) {
+    Casilla& casilla = tab_.getCasilla(fil, col);
+
+    if (personaje_seleccionado == nullptr) {
+        Personaje* p = casilla.getPersonaje();
+        if (p != nullptr && p->estaVivo()) {
+            bool es_manana = (p->getTurno() == Turno::TURNO_DE_MANANA);
+            bool turno_ok = (turno_actual == 0 && es_manana) ||
+                (turno_actual == 1 && !es_manana);
+            if (turno_ok)
+                personaje_seleccionado = p;
+        }
+    }
+    else {
+        bool movio = personaje_seleccionado->mover(casilla);
+        personaje_seleccionado = nullptr;
+        if (movio)
+            turno_actual = 1 - turno_actual;
+    }
+}
+
+void Partida::dibujaSeleccion() {
+
+    if (personaje_seleccionado == nullptr) return;
+
+    Casilla* c = personaje_seleccionado->getCasillaActual();
+    float tam = 60.0f;
+    float inicioX = -270.0f;
+    float inicioY = -250.0f;
+
+    float x0 = inicioX + c->getCol() * tam;
+    float y0 = inicioY + c->getFila() * tam;
+
+    glPushAttrib(GL_ALL_ATTRIB_BITS);  // guarda todo el estado
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
+    glDisable(GL_LIGHTING);
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(-400, 400, -400, 400);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glColor3f(0.0f, 1.0f, 0.0f);  // verde puro
+    glLineWidth(4.0f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(x0, y0);
+    glVertex2f(x0 + tam, y0);
+    glVertex2f(x0 + tam, y0 + tam);
+    glVertex2f(x0, y0 + tam);
+    glEnd();
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopAttrib();  // restaura todo el estado anterior
 }
 
 void Partida::teclado(unsigned char key) {
