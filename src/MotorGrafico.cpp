@@ -52,12 +52,22 @@ void MotorGrafico::dibujarTablero(const Tablero& t) {
 }
 
 void MotorGrafico::dibujarPersonajes(const Tablero& t) {
-    // TODO: cuando tengamos los sprites de personajes, dibujarlos aquí
+    const auto& dibujos = Partida::get_instance().getDibujos();
+
     for (int fila = 0; fila < Tablero::FILAS; fila++) {
         for (int col = 0; col < Tablero::COLUMNAS; col++) {
+            float x = inicioX + col * tam;
+            float y = inicioY + fila * tam;
+
             Personaje* p = t.getCasilla(fila, col).getPersonaje();
             if (p != nullptr) {
-                // TODO: elegir sprite según tipo de personaje y dibujarlo
+                // Buscar el DibujoPersonaje que corresponde a este personaje
+                for (auto d : dibujos) {
+                    if (d->getPersonaje() == p) {
+                        d->dibujar(x, y);
+                        break;
+                    }
+                }
             }
         }
     }

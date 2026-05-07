@@ -25,6 +25,7 @@ public:
     // Getters del tablero
     Tablero& tablero() { return tab_; }
     const Tablero& tablero() const { return tab_; }
+    const std::vector<DibujoPersonaje*>& getDibujos() const { return dibujos; }
 
     // Métodos de juego
     void dibuja();
@@ -32,7 +33,6 @@ public:
     Modos_juego click(int x, int y);
     void teclado(unsigned char key);
     void reset();
-    void dibujaPersonajes();
     void dibujaextra();
 
 private:
