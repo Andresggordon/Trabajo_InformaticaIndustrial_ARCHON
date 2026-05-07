@@ -1,5 +1,6 @@
 #pragma once
 #include "ETSIDI.h"      // Dibujo de los sprites
+#include "Casilla.h"
 #include "personaje.h"  
 
 class DibujoPersonaje {

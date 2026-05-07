@@ -15,8 +15,8 @@ public:
 
 private:
     MotorGrafico();
-    MotorGrafico(const MotorGrafico&) = delete;
-    MotorGrafico& operator=(const MotorGrafico&) = delete;
+	MotorGrafico(const MotorGrafico&) = delete; //Esto elimina el constructor de copia. Impide que se cree un nuevo objeto a partir de un objeto ya existente.
+	MotorGrafico& operator=(const MotorGrafico&) = delete; // Modifica el operador asignación para no permitir asignar un objeto a otro de motor gráfico.
 
     // Parámetros del tablero
     float tam;      // tamaño de cada casilla

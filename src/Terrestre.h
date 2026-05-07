@@ -1,14 +1,10 @@
 #pragma once
-#include "Personaje.h"
+#include "personaje.h"
 
 class Terrestre : public Personaje {
 public:
+    // Igual que Volador: la geometría del movimiento en cruz
+    // ya no vive aquí, vive en Casilla::puedeMoverseA().
+    // Esta clase agrupa a los personajes que se mueven por tierra.
     using Personaje::Personaje;
-
-    bool esMovimientoLegal(int destinoX, int destinoY) const override {
-        int dx = abs(destinoX - pos_x);
-        int dy = abs(destinoY - pos_y);
-        // Sin diagonales y dentro del radio
-        return (dx == 0 || dy == 0) && (dx + dy) <= getRadioMovimiento();
-    }
 };

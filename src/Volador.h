@@ -1,13 +1,9 @@
 #pragma once
-#include "Personaje.h"
+#include "personaje.h"
 
 class Volador : public Personaje {
 public:
-    using Personaje::Personaje;
-
-    bool esMovimientoLegal(int destinoX, int destinoY) const override {
-        int dx = abs(destinoX - pos_x);
-        int dy = abs(destinoY - pos_y);
-        return dx <= getRadioMovimiento() && dy <= getRadioMovimiento();
-    }
+	//Constructor heredado porque no es específico
+	// luego en cada personaje sí
+	using Personaje::Personaje; 
 };

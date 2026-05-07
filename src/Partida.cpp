@@ -23,10 +23,9 @@ void Partida::dibujaextra() {
 }
 
 void Partida::dibujaPersonajes() {
-    if (PSS_prueba) PSS_prueba->dibujar();
-    if (MH_prueba) MH_prueba->dibujar();
+    for (auto d : dibujos)
+        d->dibujar();
 }
-
 
 void Partida::update(int x, int y) {
     int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
@@ -97,11 +96,33 @@ void Partida::reset() {
     turno_actual = turno_inicio;   // 1=mañana primero, 2=tarde primero
 
 
-    // PRUEBA PARA PERSONAJES -- BORRADOR
-    if (modo_actual == 1 && turno_actual == 0) {
-        Personaje* pss = new Profesor_SS(-4, 0, tab_);
-        Personaje* mh = new Profesor_MH(3, 2, tab_);
-        PSS_prueba = new DibujoPersonaje(pss);
-        MH_prueba = new DibujoPersonaje(mh);
-    }
+    // Limpiar listas por si reset() se llama más de una vez
+    for (auto p : personajes) delete p;
+    for (auto d : dibujos)    delete d;
+    personajes.clear();
+    dibujos.clear();
+
+    // ── Equipo mañana  ──
+    personajes.push_back(new Profesor_SS(tab_.getCasilla(0, 0)));
+    personajes.push_back(new Microprocesador_M(tab_.getCasilla(0, 1)));
+    personajes.push_back(new Multimetro(tab_.getCasilla(0, 2)));
+    personajes.push_back(new PLC(tab_.getCasilla(0, 3)));
+    personajes.push_back(new Fuente_de_tension_de_bateria(tab_.getCasilla(0, 4)));
+    personajes.push_back(new Moto_electrica(tab_.getCasilla(0, 5)));
+    personajes.push_back(new Copilot(tab_.getCasilla(0, 6)));
+    personajes.push_back(new Circuito_integrado_M(tab_.getCasilla(0, 7)));
+    // ── Equipo tarde ── 
+    personajes.push_back(new Profesor_MH(tab_.getCasilla(0, 8)));
+    personajes.push_back(new Microprocesador_T(tab_.getCasilla(0, 9)));
+    personajes.push_back(new Osciloscopio(tab_.getCasilla(1, 0)));
+
+    personajes.push_back(new Brazo_robot(tab_.getCasilla(1, 2)));
+    personajes.push_back(new Fuente_de_corriente(tab_.getCasilla(1, 3)));
+    personajes.push_back(new Moto_petrol(tab_.getCasilla(1, 4)));
+    personajes.push_back(new Gemini(tab_.getCasilla(1, 5)));
+    personajes.push_back(new Circuito_integrado_T(tab_.getCasilla(1, 6)));
+
+    // Crear un DibujoPersonaje por cada personaje
+    for (auto p : personajes)
+        dibujos.push_back(new DibujoPersonaje(p));
 }
