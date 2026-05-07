@@ -62,4 +62,5 @@ private:
     int boton_activo;
     bool modo_teleport = false;
     bool modo_inmovilizar = false;
+    bool modo_revivir = false;
 };

@@ -83,6 +83,7 @@ Modos_juego Partida::click(int x, int y) {
             int py = personaje_seleccionado->getPosY();
             menu->Usar_habilidad(habilidades::REVIVIR, vida, vidaMax, px, py, inmov);
             personaje_seleccionado->setVida(vida);
+            modo_revivir = true;
             return Modos_juego::Partida;
         }
 
@@ -155,6 +156,20 @@ void Partida::procesarClickTablero(int fil, int col) {
         return;
     }
 
+    if (modo_revivir) {
+        Personaje* objetivo = casilla.getPersonaje();
+        if (objetivo != nullptr
+            && objetivo->getTurno() == personaje_seleccionado->getTurno()
+            && !objetivo->estaVivo()) {
+            objetivo->setVida(objetivo->getVidaMax());
+        }
+        modo_revivir = false;
+        personaje_seleccionado = nullptr;
+        es_lider_seleccionado = false;
+        turno_actual = 1 - turno_actual;
+        return;
+    }
+
     if (personaje_seleccionado == nullptr) {
         Personaje* p = casilla.getPersonaje();
         if (p != nullptr && p->estaVivo()) {
@@ -221,7 +236,7 @@ void Partida::dibujaSeleccion() {
 
 void Partida::dibujaHabilidades() {
     if (!es_lider_seleccionado) return;
-    if (modo_teleport || modo_inmovilizar) return;  // Ocultar botones mientras espera destino
+    if (modo_teleport || modo_inmovilizar || modo_revivir) return;  // Ocultar botones mientras espera destino
 
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glMatrixMode(GL_PROJECTION);
