@@ -151,6 +151,12 @@ void Partida::teclado(unsigned char key) {
 }
 
 void Partida::reset() {
+
+    //LIMPIAMOS TODAS LAS CASILLAS
+    for (int fila = 0; fila < Tablero::FILAS; fila++)
+        for (int col = 0; col < Tablero::COLUMNAS; col++)
+            tab_.getCasilla(fila, col).setPersonaje(nullptr);
+
     ETSIDI::stopMusica();
     ETSIDI::playMusica("assets/sonidos/partida.mp3", true);
     mostrar_popup = false;
