@@ -98,25 +98,56 @@ void Partida::reset() {
     personajes.clear();
     dibujos.clear();
 
+    // (FILAS , COLUMNAS)
     // ── Equipo mañana  ──
-    personajes.push_back(new Profesor_SS(tab_.getCasilla(0, 0)));
-    personajes.push_back(new Microprocesador_M(tab_.getCasilla(0, 1)));
-    personajes.push_back(new Multimetro(tab_.getCasilla(0, 2)));
-    personajes.push_back(new PLC(tab_.getCasilla(0, 3)));
-    personajes.push_back(new Fuente_de_tension_de_bateria(tab_.getCasilla(0, 4)));
-    personajes.push_back(new Moto_electrica(tab_.getCasilla(0, 5)));
-    personajes.push_back(new Copilot(tab_.getCasilla(0, 6)));
-    personajes.push_back(new Circuito_integrado_M(tab_.getCasilla(0, 7)));
-    // ── Equipo tarde ── 
-    personajes.push_back(new Profesor_MH(tab_.getCasilla(0, 8)));
-    personajes.push_back(new Microprocesador_T(tab_.getCasilla(0, 9)));
-    personajes.push_back(new Osciloscopio(tab_.getCasilla(1, 0)));
+    personajes.push_back(new Profesor_SS(tab_.getCasilla(4, 0)));
+   
+    personajes.push_back(new PLC(tab_.getCasilla(1, 0)));
+    personajes.push_back(new PLC(tab_.getCasilla(7, 0)));
 
-    personajes.push_back(new Brazo_robot(tab_.getCasilla(1, 2)));
-    personajes.push_back(new Fuente_de_corriente(tab_.getCasilla(1, 3)));
-    personajes.push_back(new Moto_petrol(tab_.getCasilla(1, 4)));
-    personajes.push_back(new Gemini(tab_.getCasilla(1, 5)));
-    personajes.push_back(new Circuito_integrado_T(tab_.getCasilla(1, 6)));
+    personajes.push_back(new Moto_electrica(tab_.getCasilla(2, 0)));
+    personajes.push_back(new Moto_electrica(tab_.getCasilla(6, 0)));
+
+    personajes.push_back(new Fuente_de_tension_de_bateria(tab_.getCasilla(3, 0)));
+
+    personajes.push_back(new Copilot(tab_.getCasilla(5, 0)));
+
+    personajes.push_back(new Microprocesador_M(tab_.getCasilla(0, 0)));
+    personajes.push_back(new Microprocesador_M(tab_.getCasilla(8, 0)));
+
+    personajes.push_back(new Multimetro(tab_.getCasilla(0, 1)));
+    personajes.push_back(new Multimetro(tab_.getCasilla(8, 1)));
+    for (int i = 1; i <= 7; i++)
+    {
+        personajes.push_back(new Circuito_integrado_M(tab_.getCasilla(i, 1)));
+
+    }
+    // (FILAS , COLUMNAS)
+
+    // ── Equipo tarde ── 
+    personajes.push_back(new Profesor_MH(tab_.getCasilla(4, 8)));
+
+    personajes.push_back(new Microprocesador_T(tab_.getCasilla(0, 8)));
+    personajes.push_back(new Microprocesador_T(tab_.getCasilla(8, 8)));
+
+    personajes.push_back(new Osciloscopio(tab_.getCasilla(0, 7)));
+    personajes.push_back(new Osciloscopio(tab_.getCasilla(8, 7)));
+
+
+    personajes.push_back(new Brazo_robot(tab_.getCasilla(1, 8)));
+    personajes.push_back(new Brazo_robot(tab_.getCasilla(7, 8)));
+
+    personajes.push_back(new Fuente_de_corriente(tab_.getCasilla(3, 8)));
+
+    personajes.push_back(new Moto_petrol(tab_.getCasilla(2, 8)));
+    personajes.push_back(new Moto_petrol(tab_.getCasilla(6, 8)));
+
+    personajes.push_back(new Gemini(tab_.getCasilla(5, 8)));
+
+	for (int i = 1; i <= 7; i++)
+    {
+        personajes.push_back(new Circuito_integrado_T(tab_.getCasilla(i, 7)));
+    }
 
     // Crear un DibujoPersonaje por cada personaje
     for (auto p : personajes)
