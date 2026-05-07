@@ -20,7 +20,7 @@ private:
     ETSIDI::Sprite* turno_manana;
     ETSIDI::Sprite* indicador_tarde;
     ETSIDI::Sprite* indicador_manana;
-        ETSIDI::Sprite* back;
+    ETSIDI::Sprite* back;
     int boton_activo = 0;
     
 };

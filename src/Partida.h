@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "Menu.h"
 #include "Tablero.h"
 #include "ETSIDI.h"
@@ -46,9 +47,9 @@ private:
     ETSIDI::Sprite* abandonar_partida;
     ETSIDI::Sprite* popup_salir;
 
-    // Pruebas de dibujo de sprites (borrador)
-    DibujoPersonaje* PSS_prueba = nullptr;
-    DibujoPersonaje* MH_prueba = nullptr;
+    std::vector<Personaje*>       personajes;
+    std::vector<DibujoPersonaje*> dibujos;
+
     int modo_actual = 1;
     int turno_actual = 0;
 

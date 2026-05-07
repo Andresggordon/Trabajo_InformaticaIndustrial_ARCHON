@@ -25,7 +25,10 @@ void Tablero::inicializarMatriz() {
 
     for (int i = 0; i < FILAS; i++)
         for (int j = 0; j < COLUMNAS; j++)
+        {
+            matriz[i][j].setPosicion(i, j);
             matriz[i][j].setEstado(patron[i][j]);
+        }
 }
 
 void Tablero::avanzarCiclo() {
@@ -62,6 +65,6 @@ FaseCiclo Tablero::getFase() const {
     return fase_actual;
 }
 
-bool Tablero::moverPersonaje(Personaje* p, int destinoX, int destinoY) {
-    return p->mover(destinoX, destinoY);
+bool Tablero::moverPersonaje(Personaje* p, Casilla& destino) {
+    return p->mover(destino);
 }

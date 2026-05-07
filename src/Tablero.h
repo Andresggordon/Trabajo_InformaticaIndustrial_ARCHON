@@ -16,7 +16,7 @@ public:
     Tablero();
     void avanzarCiclo();
 
-    bool moverPersonaje(Personaje* p, int destinoX, int destinoY);
+    bool moverPersonaje(Personaje* p, Casilla& destino);
 
 
     // Ahora devuelven el objeto Casilla directamente
@@ -32,6 +32,7 @@ public:
 private:
     Casilla matriz[FILAS][COLUMNAS];
     FaseCiclo fase_actual;
+
     void inicializarMatriz();
 };
 

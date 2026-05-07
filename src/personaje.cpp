@@ -1,15 +1,17 @@
 #include "personaje.h"
-#include "Tablero.h"
 #include "Casilla.h"
 
-Personaje::Personaje(std::string nombre_, int vida_, int posX_, int posY_,
-    Turno turno_, Movimiento movimiento_, stats arma_, Tablero& tab)
+Personaje::Personaje(std::string nombre_, int vida_,
+    Turno turno_, Movimiento movimiento_, stats arma_, Casilla& casillaInicial)
     : nombre(nombre_), vida_Max(vida_), vida_actual(vida_),
-    pos_x(posX_), pos_y(posY_), turno(turno_),
-    movimiento(movimiento_), arma(arma_), tablero_(tab) {
-}  // ← tablero_ no tablero
+    turno(turno_), movimiento(movimiento_), arma(arma_), casilla_actual(&casillaInicial)
+{
+	casilla_actual->setPersonaje(this);  // El personaje ocupa la casilla inicial
+}  
 
 Personaje::~Personaje() {}
+
+// SALUD
 
 void Personaje::recibirDano(int cantidad_) {
     vida_actual -= cantidad_;
@@ -23,29 +25,35 @@ void Personaje::curar(int cantidad_) {
 
 bool Personaje::estaVivo() const { return vida_actual > 0; }
 
+// GETTERS
 std::string Personaje::getNombre() const { return nombre; }
-int Personaje::getPosX() const { return pos_x; }
-int Personaje::getPosY() const { return pos_y; }
+
+int Personaje::getPosX() const { return casilla_actual->getCol(); }
+int Personaje::getPosY() const { return casilla_actual->getFila(); }
 float Personaje::getPorcentajeVida() const { return (float)vida_actual / vida_Max; }
 int Personaje::getVidaActual() const { return vida_actual; }
 int Personaje::getVidaMax() const { return vida_Max; }
 bool Personaje::getInmovilizado() const { return inmovilizado; }
 Movimiento Personaje::getMovimiento() const { return movimiento; }
+Casilla* Personaje::getCasillaActual() const { return casilla_actual;}
 
-void Personaje::setPosicion(int x_, int y_) {
-    pos_x = x_;
-    pos_y = y_;
-}
-
-bool Personaje::mover(int destinoX, int destinoY) {  // ← sin Tablero& como parámetro
+bool Personaje::mover(Casilla& destino) {  
+    
+    if (!estaVivo()) return false;
     if (inmovilizado) return false;
-    if (!esMovimientoLegal(destinoX, destinoY)) return false;
+    if (encarcelado) return false;
 
-    Casilla& destino = tablero_.getCasilla(destinoY, destinoX);
+    // La casilla de origen es la que decide si el movimiento es legal
+    if (!casilla_actual->puedeMoverseA(destino, *this)) return false;
 
+    //Limpiar la casilla de origen
+    if (casilla_actual) casilla_actual->setPersonaje(nullptr);
+
+    //Ocupar la casilla de destino
+    casilla_actual->setPersonaje(nullptr);
     destino.setPersonaje(this);
-    pos_x = destinoX;
-    pos_y = destinoY;
+    casilla_actual = &destino;
+   
 
     return true;
 }
