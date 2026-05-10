@@ -3,6 +3,7 @@
 #include "stats.h"
 #include <vector>
 #include "dibujo_personajes.h"
+#include "habilidades_profes.h"
 
 // Declaración adelantada — no incluir Tablero.h aquí
 class Tablero;
@@ -23,6 +24,7 @@ public:
     // Método virtual puro
     virtual int getRadioMovimiento() const = 0;
     virtual float getTamanoSprite() const = 0; //Modificar el tamaño de cada sprite individualmente
+    virtual Menu_habilidades* getMenu() { return nullptr; } //Metodo virtual para abrir el menu de habilidades
 
     bool mover(Casilla& destino);
 
@@ -43,14 +45,17 @@ public:
     float getPorcentajeVida() const;
     int getVidaActual() const;
     int getVidaMax() const;
-    bool getInmovilizado() const;
+    bool getInmovilizado() const { return turnos_inmovilizado > 0; }
     Movimiento getMovimiento() const;
 
     Turno getTurno() const { return turno; }
 
     // Setters
-    /*void setPosicion(int x_, int y_);
-    void setCasillaActual(Casilla* c);*/
+    /*void setPosicion(int x_, int y_);*/
+    void setCasillaActual(Casilla* c);
+    void setVida(int v) { vida_actual = v; }
+    void setInmovilizado(bool b) { turnos_inmovilizado = b ? 1 : 0; } // La imnovilización dura 1 turno
+    void decrementarInmovilizacion() { if (turnos_inmovilizado > 0) turnos_inmovilizado--; }
 
 protected:
     std::string nombre;
@@ -59,7 +64,7 @@ protected:
     Movimiento movimiento;
     stats arma;
     bool encarcelado = false;
-    bool inmovilizado = false;
+    int turnos_inmovilizado = 0;
     Casilla * casilla_actual;
 
 };

@@ -33,27 +33,32 @@ int Personaje::getPosY() const { return casilla_actual->getFila(); }
 float Personaje::getPorcentajeVida() const { return (float)vida_actual / vida_Max; }
 int Personaje::getVidaActual() const { return vida_actual; }
 int Personaje::getVidaMax() const { return vida_Max; }
-bool Personaje::getInmovilizado() const { return inmovilizado; }
 Movimiento Personaje::getMovimiento() const { return movimiento; }
 Casilla* Personaje::getCasillaActual() const { return casilla_actual;}
 
 bool Personaje::mover(Casilla& destino) {  
     
     if (!estaVivo()) return false;
-    if (inmovilizado) return false;
+    if (getInmovilizado()) return false;
     if (encarcelado) return false;
 
     // La casilla de origen es la que decide si el movimiento es legal
     if (!casilla_actual->puedeMoverseA(destino, *this)) return false;
 
+    //Detectar que hay un aliado en la casilla que nos movemos 
+    Personaje* ocupante = destino.getPersonaje();
+    if (ocupante != nullptr && ocupante->getTurno() == turno) return false;
+
     //Limpiar la casilla de origen
     if (casilla_actual) casilla_actual->setPersonaje(nullptr);
 
     //Ocupar la casilla de destino
-    casilla_actual->setPersonaje(nullptr);
     destino.setPersonaje(this);
     casilla_actual = &destino;
-   
 
     return true;
+}
+
+void Personaje::setCasillaActual(Casilla* c) {
+    casilla_actual = c;
 }

@@ -17,6 +17,7 @@ public:
     int getRadioMovimiento()  const override { return 4; }
     std::string getNombreSprite() const override { return "SanSegundo"; }
     float getTamanoSprite() const override { return 65.0f; }
+    Menu_habilidades* getMenu() override { return &menu; }
 
 };
 
@@ -32,7 +33,7 @@ public:
 
     int getRadioMovimiento() const override { return 3; }
     std::string getNombreSprite() const override { return "MicroprocesadorM"; }
-    float getTamanoSprite() const override { return 70.0f; }
+    float getTamanoSprite() const override { return 60.0f; }
 
 
 };
@@ -65,7 +66,7 @@ public:
 
     int getRadioMovimiento() const override { return 1; }
     std::string getNombreSprite() const override { return "PLC"; }
-    float getTamanoSprite() const override { return 65.0f; }
+    float getTamanoSprite() const override { return 60.0f; }
 
 };
 
@@ -129,7 +130,7 @@ public:
 
     int getRadioMovimiento() const override { return 2; }
     std::string getNombreSprite() const override { return "CINTEGRADOM"; }
-    float getTamanoSprite() const override { return 80.0f; }
+    float getTamanoSprite() const override { return 50.0f; }
 
 
 };
@@ -142,13 +143,12 @@ public:
         : Volador("MH", 35,
             Turno::TURNO_DE_TARDE,
             Movimiento::AIRE,
-            stats("Tizas", 8, 1, 6), 
-            casillaInicial) {
-    }
+            stats("Tizas", 8, 1, 6),
+            casillaInicial) {}
     Menu_habilidades menu;
     int getRadioMovimiento() const override { return 4; }
     std::string getNombreSprite() const override { return "MH"; }
-    float getTamanoSprite() const override { return 80.0f; }
+    float getTamanoSprite() const override { return 60.0f; }
 
 
 };
@@ -165,7 +165,7 @@ public:
 
     int getRadioMovimiento() const override { return 3; }
     std::string getNombreSprite() const override { return "MicroprocesadorT"; }
-    float getTamanoSprite() const override { return 70.0f; }
+    float getTamanoSprite() const override { return 55.0f; }
 
 
 };
@@ -198,7 +198,7 @@ public:
 
     int getRadioMovimiento() const override { return 1; }
     std::string getNombreSprite() const override { return "BRAZOROBOT"; }
-    float getTamanoSprite() const override { return 65.0f; }
+    float getTamanoSprite() const override { return 60.0f; }
 
 
 };
@@ -249,7 +249,7 @@ public:
 
     int getRadioMovimiento() const override { return 4; }
     std::string getNombreSprite() const override { return "GEMINI"; }
-    float getTamanoSprite() const override { return 65.0f; }
+    float getTamanoSprite() const override { return 50.0f; }
 
 
 };
@@ -266,7 +266,7 @@ public:
 
     int getRadioMovimiento() const override { return 2; }
     std::string getNombreSprite() const override { return "CINTEGRADOT"; }
-    float getTamanoSprite() const override { return 80.0f; }
+    float getTamanoSprite() const override { return 50.0f; }
 
 
 };
