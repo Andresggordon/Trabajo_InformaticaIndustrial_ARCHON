@@ -164,6 +164,7 @@ public:
     std::string getNombreSprite() const override { return "MH"; }
     float getTamanoSprite() const override { return 65.0f; }
 
+
 };
 
 class Microprocesador_T : public Volador {
