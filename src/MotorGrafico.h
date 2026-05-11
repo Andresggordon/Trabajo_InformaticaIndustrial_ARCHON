@@ -17,6 +17,7 @@ public:
     }
 
     void dibujar();
+    void dibujarArena();
 
 private:
     MotorGrafico();
@@ -31,4 +32,6 @@ private:
     void dibujarTablero(const Tablero& t);
     void dibujarPersonajes(const Tablero& t);
     void dibujaCuadrado(float x, float y, float r, float g, float b);
+    void dibujarPersonajesArena(Personaje* local, Personaje* invasor);
+    void dibujarFondoArena();
 };

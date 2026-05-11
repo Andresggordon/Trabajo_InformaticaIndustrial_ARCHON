@@ -45,9 +45,10 @@ ResultadoMover Personaje::mover(Casilla& destino) {
     // La casilla de origen es la que decide si el movimiento es legal
     if (!casilla_actual->puedeMoverseA(destino, *this)) return ResultadoMover::ILEGAL;
 
-    //Detectar que hay un aliado en la casilla que nos movemos 
+    //Detectar que hay un aliado o enemigo en la casilla que nos movemos 
     Personaje* ocupante = destino.getPersonaje();
-    if (ocupante != nullptr && ocupante->getTurno() == turno) return ResultadoMover::CHOQUE;
+    if (ocupante != nullptr && ocupante->getTurno() == turno) return ResultadoMover::ILEGAL;
+    if (ocupante != nullptr && ocupante->getTurno() != turno) return ResultadoMover::CHOQUE;
 
     //Limpiar la casilla de origen
     if (casilla_actual) casilla_actual->setPersonaje(nullptr);

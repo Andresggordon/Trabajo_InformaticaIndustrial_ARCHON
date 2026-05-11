@@ -1,5 +1,6 @@
 #include "MotorGrafico.h"
 #include "Partida.h"
+#include "ArenaCombate.h"
 
 MotorGrafico::MotorGrafico() {
     tam = TAM;
@@ -87,3 +88,55 @@ void MotorGrafico::dibujaCuadrado(float x, float y, float r, float g, float b) {
     glVertex2f(x, y + tam);
     glEnd();
 }
+
+void MotorGrafico::dibujarArena() {
+    // Obtener los personajes de la arena
+    extern ArenaCombate* arena;
+    Personaje* local = arena->getLocal();
+    Personaje* invasor = arena->getInvasor();
+
+    dibujarFondoArena();
+    dibujarPersonajesArena(local, invasor);
+}
+
+void MotorGrafico::dibujarFondoArena() {
+    // El fondo lo dibuja ArenaCombate
+    extern ArenaCombate* arena;
+    arena->dibuja();
+}
+
+void MotorGrafico::dibujarPersonajesArena(Personaje* local, Personaje* invasor) {
+    const auto& dibujos = Partida::get_instance().getDibujos();
+    extern ArenaCombate* arena;
+
+    // Convertir posición en cuadrícula a coordenadas OpenGL
+    float tamCasilla = 60.0f;
+    float inicioArenaX = -300.0f;
+    float inicioArenaY = -300.0f;
+
+    if (local != nullptr) {
+        float x = inicioArenaX + arena->getPosLocal().columna * tamCasilla;
+        float y = inicioArenaY + arena->getPosLocal().fila * tamCasilla;
+        for (auto d : dibujos) {
+            if (d->getPersonaje() == local) {
+                d->dibujar(x, y);
+                break;
+            }
+        }
+    }
+
+    if (invasor != nullptr) {
+        float x = inicioArenaX + arena->getPosInvasor().columna * tamCasilla;
+        float y = inicioArenaY + arena->getPosInvasor().fila * tamCasilla;
+        for (auto d : dibujos) {
+            if (d->getPersonaje() == invasor) {
+                d->dibujar(x, y);
+                break;
+            }
+        }
+    }
+}
+
+
+
+

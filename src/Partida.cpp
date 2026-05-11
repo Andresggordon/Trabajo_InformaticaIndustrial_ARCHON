@@ -201,7 +201,7 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
             tab_.limpiarPendiente();
             personaje_seleccionado = nullptr;
             es_lider_seleccionado = false;
-            return Modos_juego::ArenaCombate;
+            return Modos_juego::Arena_Combate;
         }
 
         personaje_seleccionado = nullptr;
