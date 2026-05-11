@@ -5,6 +5,11 @@
 
 class MotorGrafico {
 public:
+
+    static constexpr float TAM = 60.0f;
+    static constexpr float INICIO_X = -270.0f;
+    static constexpr float INICIO_Y = -270.0f;
+
     // Singleton
     static MotorGrafico& get_instance() {
         static MotorGrafico instance;

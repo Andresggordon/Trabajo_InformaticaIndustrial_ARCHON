@@ -2,12 +2,16 @@
 #include "Partida.h"
 
 MotorGrafico::MotorGrafico() {
-    tam = 60.0f;
-    inicioX = -270.0f;
-    inicioY = -250.0f;
+    tam = TAM;
+    inicioX = INICIO_X;
+    inicioY = INICIO_Y;
 }
 
 void MotorGrafico::dibujar() {
+    // Interpolación nearest neighbor para pixel art nítido
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    
     const Tablero& t = Partida::get_instance().tablero();  // accede al tablero via Singleton
     dibujarTablero(t);
     dibujarPersonajes(t);
