@@ -55,7 +55,7 @@ private:
     int turno_actual = 0;
 
     Personaje* personaje_seleccionado = nullptr;  // ← ya lo tienes
-    void procesarClickTablero(int fil, int col);   // ← ya lo tienes
+    Modos_juego procesarClickTablero(int fil, int col);   // ← ya lo tienes
     bool es_lider_seleccionado = false;
 
     bool mostrar_popup;

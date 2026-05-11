@@ -65,6 +65,17 @@ FaseCiclo Tablero::getFase() const {
     return fase_actual;
 }
 
-bool Tablero::moverPersonaje(Personaje* p, Casilla& destino) {
-    return p->mover(destino);
+ResultadoMover Tablero::moverPersonaje(Personaje* p, Casilla& destino) {
+    ResultadoMover resultado= p->mover(destino);
+    if (resultado == ResultadoMover::CHOQUE)
+    {
+        pendienteLocal_ = destino.getPersonaje();
+        pendienteInvasor_ = p;
+    }
+    return resultado;
+}
+
+void Tablero::limpiarPendiente() {
+    pendienteLocal_ = nullptr;
+    pendienteInvasor_ = nullptr;
 }

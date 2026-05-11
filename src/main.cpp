@@ -8,6 +8,7 @@
 #include "Pantalla_carga.h"
 #include "Partida.h"
 #include "MotorGrafico.h"
+#include "ArenaCombate.h"
 
 
 int equipo_j1 = 0;
@@ -22,6 +23,7 @@ Eleccion_2jugadores* eleccion_2jugadores = nullptr;
 Eleccion2_1jugador* eleccion2_1jugador = nullptr;
 Ranking* ranking = nullptr;
 Pantalla_carga* pantalla_carga = nullptr;
+ArenaCombate* arena = nullptr;
 
 Modos_juego estado = Modos_juego::Pantalla_carga;
 
@@ -137,6 +139,7 @@ int main(int argc, char** argv) {
     eleccion2_1jugador = new Eleccion2_1jugador();
     ranking = new Ranking();
     pantalla_carga = new Pantalla_carga();
+    arena = new ArenaCombate();
     // Partida y MotorGrafico se inicializan solos la primera vez que se llaman
     Partida::get_instance();
     MotorGrafico::get_instance();

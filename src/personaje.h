@@ -11,6 +11,7 @@ class Casilla;
 
 enum class Turno { TURNO_DE_MANANA, TURNO_DE_TARDE };
 enum class Movimiento { TIERRA, AIRE, TELETRANSPORTE };
+enum class ResultadoMover { OK,ILEGAL,CHOQUE};
 
 class Personaje {
 
@@ -26,7 +27,7 @@ public:
     virtual float getTamanoSprite() const = 0; //Modificar el tamaño de cada sprite individualmente
     virtual Menu_habilidades* getMenu() { return nullptr; } //Metodo virtual para abrir el menu de habilidades
 
-    bool mover(Casilla& destino);
+    ResultadoMover mover(Casilla& destino);
 
     // Lógica de salud
     void recibirDano(int cantidad_);
