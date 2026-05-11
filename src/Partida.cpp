@@ -2,7 +2,9 @@
 #include "MotorGrafico.h"
 #include <GL/freeglut.h>
 #include "tipo_personaje.h"
-
+#include "Modos_juego.h"
+#include "ArenaCombate.h"
+extern ArenaCombate* arena;
 
 
 Partida::Partida() {
@@ -111,7 +113,7 @@ Modos_juego Partida::click(int x, int y) {
         if (cx >= 209 && cx <= 289 && cy >= -275 && cy <= -252)
             mostrar_popup = true;
         else if (col >= 0 && col < 9 && fil >= 0 && fil < 9)
-            procesarClickTablero(fil, col);
+            return procesarClickTablero(fil, col);
     }
     else {
         if (cx >= -153 && cx <= -57 && cy >= -43 && cy <= -5) {
@@ -125,13 +127,13 @@ Modos_juego Partida::click(int x, int y) {
     return Modos_juego::Partida;
 }
 
-void Partida::procesarClickTablero(int fil, int col) {
+Modos_juego Partida::procesarClickTablero(int fil, int col) {
     Casilla& casilla = tab_.getCasilla(fil, col);
 
     if (modo_teleport) {
         if (personaje_seleccionado == nullptr) { 
             modo_teleport = false;
-            return;
+            return Modos_juego::Partida;
         }
         if (casilla.getPersonaje() == nullptr) {
             personaje_seleccionado->getCasillaActual()->setPersonaje(nullptr);
@@ -141,7 +143,7 @@ void Partida::procesarClickTablero(int fil, int col) {
         modo_teleport = false;
         personaje_seleccionado = nullptr;
         turno_actual = 1 - turno_actual;
-        return;
+        return Modos_juego::Partida;
     }
 
     if (modo_inmovilizar) {
@@ -153,7 +155,7 @@ void Partida::procesarClickTablero(int fil, int col) {
         personaje_seleccionado = nullptr;
         es_lider_seleccionado = false;
         turno_actual = 1 - turno_actual;
-        return;
+        return Modos_juego::Partida;
     }
 
     if (modo_revivir) {
@@ -167,7 +169,7 @@ void Partida::procesarClickTablero(int fil, int col) {
         personaje_seleccionado = nullptr;
         es_lider_seleccionado = false;
         turno_actual = 1 - turno_actual;
-        return;
+        return Modos_juego::Partida;
     }
 
     if (personaje_seleccionado == nullptr) {
@@ -183,16 +185,30 @@ void Partida::procesarClickTablero(int fil, int col) {
         }
     }
     else {
-        bool movio = personaje_seleccionado->mover(casilla);
+        ResultadoMover res = tab_.moverPersonaje(personaje_seleccionado, casilla);
+
+        if (res == ResultadoMover::OK) {
+            turno_actual = 1 - turno_actual;
+            for (auto p : personajes)
+                p->decrementarInmovilizacion();
+        }
+        else if (res == ResultadoMover::CHOQUE) {
+            arena->iniciarCombate(
+                tab_.getPendienteLocal(),
+                tab_.getPendienteInvasor(),
+                modo_actual
+            );
+            tab_.limpiarPendiente();
+            personaje_seleccionado = nullptr;
+            es_lider_seleccionado = false;
+            return Modos_juego::ArenaCombate;
+        }
+
         personaje_seleccionado = nullptr;
         es_lider_seleccionado = false;
-        if (movio) {
-            turno_actual = 1 - turno_actual;
-            for (auto p : personajes) {
-                p->decrementarInmovilizacion();
-            }
-        }
+        return Modos_juego::Partida;
     }
+    return Modos_juego::Partida;
 }
 
 void Partida::dibujaSeleccion() {

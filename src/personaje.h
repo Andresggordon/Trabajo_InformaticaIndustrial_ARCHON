@@ -7,6 +7,7 @@ class Casilla;
 
 enum class Turno { TURNO_DE_MANANA, TURNO_DE_TARDE };
 enum class Movimiento { TIERRA, AIRE, TELETRANSPORTE };
+enum class ResultadoMover { OK,ILEGAL,CHOQUE};
 
 class Personaje {
 public:
@@ -31,7 +32,7 @@ public:
     virtual float getOffsetX() const { return 0.0f; }
     virtual float getOffsetY() const { return 0.0f; }
 
-    bool mover(Casilla& destino);
+    ResultadoMover mover(Casilla& destino);
 
     void recibirDano(int cantidad_);
     void curar(int cantidad_);

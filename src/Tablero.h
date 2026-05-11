@@ -1,5 +1,6 @@
 #pragma once
 #include "Casilla.h"
+#include "personaje.h"
 
 
 enum class FaseCiclo {
@@ -16,7 +17,7 @@ public:
     Tablero();
     void avanzarCiclo();
 
-    bool moverPersonaje(Personaje* p, Casilla& destino);
+    ResultadoMover moverPersonaje(Personaje* p, Casilla& destino);
 
 
     // Ahora devuelven el objeto Casilla directamente
@@ -26,6 +27,10 @@ public:
     FaseCiclo getFase() const;
     void getColorDinamica(float& r, float& g, float& b) const;
 
+    Personaje* getPendienteLocal()   const { return pendienteLocal_; }
+    Personaje* getPendienteInvasor() const { return pendienteInvasor_; }
+    void limpiarPendiente();
+
     static const int FILAS = 9;
     static const int COLUMNAS = 9;
 
@@ -34,5 +39,8 @@ private:
     FaseCiclo fase_actual;
 
     void inicializarMatriz();
+
+    Personaje* pendienteLocal_ = nullptr;
+    Personaje* pendienteInvasor_ = nullptr;
 };
 
