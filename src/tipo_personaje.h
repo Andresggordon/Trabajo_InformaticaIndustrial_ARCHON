@@ -1,200 +1,272 @@
 #pragma once
 #include "Personaje.h"
 #include "habilidades_profes.h"
+#include "Volador.h"
+#include "Terrestre.h"
 
 // TURNO DE MAÑANA
-class Profesor_SS : public Personaje {
+class Profesor_SS : public Volador {
 public:
-    Profesor_SS(int posX_, int posY_)
-        : Personaje("SanSegundo", 75, posX_, posY_,
+    Profesor_SS(Casilla& casillaInicial)
+        : Volador("San Segundo", 75,
             Turno::TURNO_DE_MANANA,
             Movimiento::AIRE,
-            stats("Ondas de sonido", 20, 4, 3)){
-    }
-    Menu_habilidades habilidades;
-
-    int getRadioMovimiento() const override { return 4; }
+            stats("Ondas de sonido", 20, 4, 3),
+            casillaInicial) {}
+    Menu_habilidades menu;
+    int getRadioMovimiento()  const override { return 4; }
+    std::string getNombreSprite() const override { return "SanSegundo"; }
+    float getTamanoSprite() const override { return 65.0f; }
+    Menu_habilidades* getMenu() override { return &menu; }
 
 };
 
-class Microprocesador_M : public Personaje {
+class Microprocesador_M : public Volador {
 public:
-    Microprocesador_M(int posX_, int posY_)
-        : Personaje("Microprocesador", 110, posX_, posY_,
+    Microprocesador_M(Casilla& casillaInicial)
+        : Volador("Microprocesador", 110,
             Turno::TURNO_DE_MANANA,
             Movimiento::AIRE,
-            stats("Cadena de bits", 30, 1, 1)) {
+            stats("Cadena de bits", 30, 1, 1),
+            casillaInicial) {
     }
 
     int getRadioMovimiento() const override { return 3; }
+    std::string getNombreSprite() const override { return "MicroprocesadorM"; }
+    float getTamanoSprite() const override { return 60.0f; }
+
+
 };
 
-class Multimetro : public Personaje {
+class Multimetro : public Terrestre {
 public:
-    Multimetro(int posX_, int posY_)
-        : Personaje("Multimetro", 50, posX_, posY_,
+    Multimetro(Casilla& casillaInicial)
+        : Terrestre("Multimetro", 50,
             Turno::TURNO_DE_MANANA,
             Movimiento::TIERRA,
-            stats("Lanza rayos", 15, 5, 5)) {
+            stats("Lanza rayos", 15, 5, 5),
+            casillaInicial) {
     }
 
     int getRadioMovimiento() const override { return 3; }
+    std::string getNombreSprite() const override { return "Multimetro"; }
+    float getTamanoSprite() const override { return 65.0f; }
+
 };
 
-class PLC : public Personaje {
+class PLC : public Terrestre {
 public:
-    PLC(int posX_, int posY_)
-        : Personaje("PLC", 60, posX_, posY_,
+    PLC(Casilla& casillaInicial)
+        : Terrestre("PLC", 60,
             Turno::TURNO_DE_MANANA,
             Movimiento::TIERRA,
-            stats("Lanza tuercas", 18, 4, 3)) {
+            stats("Lanza tuercas", 18, 4, 3),
+            casillaInicial) {
     }
 
     int getRadioMovimiento() const override { return 1; }
+    std::string getNombreSprite() const override { return "PLC"; }
+    float getTamanoSprite() const override { return 60.0f; }
+
 };
 
-class Fuente_de_tension_de_bateria : public Personaje {
+class Fuente_de_tension_de_bateria : public Volador {
 public:
-    Fuente_de_tension_de_bateria(int posX_, int posY_)
-        : Personaje("Fuente de tension de bateria", 35, posX_, posY_,
+    Fuente_de_tension_de_bateria(Casilla& casillaInicial)
+        : Volador("Fuente de tension de bateria", 35,
             Turno::TURNO_DE_MANANA,
             Movimiento::AIRE,
-            stats("Arco electrico", 8, 1, 6)) {
+            stats("Arco electrico", 8, 1, 6),
+            casillaInicial) {
     }
 
     int getRadioMovimiento() const override { return 5; }
+    std::string getNombreSprite() const override { return "Bateria"; }
+    float getTamanoSprite() const override { return 65.0f; }
+
 };
 
-class Moto_electrica : public Personaje {
+class Moto_electrica : public Volador {
 public:
-    Moto_electrica(int posX_, int posY_)
-        : Personaje("Moto electrica", 75, posX_, posY_,
+    Moto_electrica(Casilla& casillaInicial)
+        : Volador("Moto electrica", 75,
             Turno::TURNO_DE_MANANA,
             Movimiento::AIRE,
-            stats("Rayo", 20, 4, 3)) {
+            stats("Rayo", 20, 4, 3),
+            casillaInicial) {
     }
 
     int getRadioMovimiento() const override { return 4; }
+    std::string getNombreSprite() const override { return "MOTOELECTRIC"; }
+    float getTamanoSprite() const override { return 65.0f; }
+
 };
 
-class Copilot : public Personaje {
+class Copilot : public Volador {
 public:
-    Copilot(int posX_, int posY_)
-        : Personaje("Copilot", 110, posX_, posY_,
+    Copilot(Casilla& casillaInicial)
+        : Volador("Copilot", 110,
             Turno::TURNO_DE_MANANA,
             Movimiento::AIRE,
-            stats("C", 30, 1, 1)) {
+            stats("C", 30, 1, 1),
+            casillaInicial) {
     }
 
     int getRadioMovimiento() const override { return 4; }
+    std::string getNombreSprite() const override { return "COPILOT"; }
+    float getTamanoSprite() const override { return 65.0f; }
+
 };
 
-class Circuito_integrado_M : public Personaje {
+class Circuito_integrado_M : public Volador {
 public:
-    Circuito_integrado_M(int posX_, int posY_)
-        : Personaje("Circuito integrado", 55, posX_, posY_,
+    Circuito_integrado_M(Casilla& casillaInicial)
+        : Volador("Circuito integrado", 55,
             Turno::TURNO_DE_MANANA,
             Movimiento::AIRE,
-            stats("Patas del micro", 22, 6, 2)) {
+            stats("Patas del micro", 22, 6, 2),
+            casillaInicial) {
     }
 
     int getRadioMovimiento() const override { return 2; }
+    std::string getNombreSprite() const override { return "CINTEGRADOM"; }
+    float getTamanoSprite() const override { return 50.0f; }
+
+
 };
 
 //TURNO DE TARDE 
 
-class Profesor_MH : public Personaje {
+class Profesor_MH : public Volador {
 public:
-    Profesor_MH(int posX_, int posY_)
-        : Personaje("MH", 35, posX_, posY_,
+    Profesor_MH(Casilla& casillaInicial)
+        : Volador("MH", 35,
             Turno::TURNO_DE_TARDE,
             Movimiento::AIRE,
-            stats("Tizas", 8, 1, 6)) {
-    }
-    Menu_habilidades habilidades;
+            stats("Tizas", 8, 1, 6),
+            casillaInicial) {}
+    Menu_habilidades menu;
     int getRadioMovimiento() const override { return 4; }
+    std::string getNombreSprite() const override { return "MH"; }
+    float getTamanoSprite() const override { return 60.0f; }
+
+
 };
 
-class Microprocesador_T : public Personaje {
+class Microprocesador_T : public Volador {
 public:
-    Microprocesador_T(int posX_, int posY_)
-        : Personaje("Microprocesador", 60, posX_, posY_,
+    Microprocesador_T(Casilla& casillaInicial)
+        : Volador("Microprocesador", 60,
             Turno::TURNO_DE_TARDE,
             Movimiento::AIRE,
-            stats("Cadena de bits", 16, 3, 4)) {
+            stats("Cadena de bits", 16, 3, 4),
+            casillaInicial) {
     }
 
     int getRadioMovimiento() const override { return 3; }
+    std::string getNombreSprite() const override { return "MicroprocesadorT"; }
+    float getTamanoSprite() const override { return 55.0f; }
+
+
 };
 
-class Osciloscopio : public Personaje{
+class Osciloscopio : public Terrestre {
 public:
-    Osciloscopio(int posX_, int posY_)
-        : Personaje("Osciloscopio", 60, posX_, posY_,
+    Osciloscopio(Casilla& casillaInicial)
+        : Terrestre("Osciloscopio", 60,
             Turno::TURNO_DE_TARDE,
             Movimiento::TIERRA,
-            stats("Lanza senos", 16, 3, 4)) {
+            stats("Lanza senos", 16, 3, 4),
+            casillaInicial) {
     }
 
     int getRadioMovimiento() const override { return 3; }
+    std::string getNombreSprite() const override { return "OSCILOSCOPIO"; }
+    float getTamanoSprite() const override { return 65.0f; }
+
+
 };
 
-class Brazo_robot : public Personaje{
+class Brazo_robot : public Terrestre {
 public:
-    Brazo_robot(int posX_, int posY_)
-        : Personaje("Brazo robot", 60, posX_, posY_,
+    Brazo_robot(Casilla& casillaInicial)
+        : Terrestre("Brazo robot", 60,
             Turno::TURNO_DE_TARDE,
             Movimiento::TIERRA,
-            stats("Lanza tornillos", 16, 3, 4)) {
+            stats("Lanza tornillos", 16, 3, 4), casillaInicial) {
     }
 
     int getRadioMovimiento() const override { return 1; }
+    std::string getNombreSprite() const override { return "BRAZOROBOT"; }
+    float getTamanoSprite() const override { return 60.0f; }
+
+
 };
 
-class Fuente_de_corriente : public Personaje{
+class Fuente_de_corriente : public Volador {
 public:
-    Fuente_de_corriente(int posX_, int posY_)
-        : Personaje("Fuente de corriente", 60, posX_, posY_,
+    Fuente_de_corriente(Casilla& casillaInicial)
+        : Volador("Fuente de corriente", 60,
             Turno::TURNO_DE_TARDE,
             Movimiento::AIRE,
-            stats("Arco eléctrico", 16, 3, 4)) {
+            stats("Arco eléctrico", 16, 3, 4),
+            casillaInicial) {
     }
 
     int getRadioMovimiento() const override { return 5; }
+    std::string getNombreSprite() const override { return "FUENTECORRIENTE"; }
+    float getTamanoSprite() const override { return 65.0f; }
+
+
 };
 
-class Moto_petrol : public Personaje{
+class Moto_petrol : public Terrestre {
 public:
-    Moto_petrol(int posX_, int posY_)
-        : Personaje("Moto Petrol", 60, posX_, posY_,
+    Moto_petrol(Casilla& casillaInicial)
+        : Terrestre("Moto Petrol", 60,
             Turno::TURNO_DE_TARDE,
             Movimiento::TIERRA,
-            stats("Gasolina", 16, 3, 4)) {
+            stats("Gasolina", 16, 3, 4),
+            casillaInicial) {
     }
 
     int getRadioMovimiento() const override { return 4; }
+    std::string getNombreSprite() const override { return "MOTOPETROL"; }
+    float getTamanoSprite() const override { return 65.0f; }
+
+
 };
 
-class Gemini : public Personaje {
+class Gemini : public Volador {
 public:
-    Gemini(int posX_, int posY_)
-        : Personaje("Gemini", 60, posX_, posY_,
+    Gemini(Casilla& casillaInicial)
+        : Volador("Gemini", 60,
             Turno::TURNO_DE_TARDE,
             Movimiento::AIRE,
-            stats("C++", 16, 3, 4)) {
+            stats("C++", 16, 3, 4),
+            casillaInicial) {
     }
 
     int getRadioMovimiento() const override { return 4; }
+    std::string getNombreSprite() const override { return "GEMINI"; }
+    float getTamanoSprite() const override { return 50.0f; }
+
+
 };
 
-class Circuito_integrado_T : public Personaje {
+class Circuito_integrado_T : public Volador {
 public:
-    Circuito_integrado_T(int posX_, int posY_)
-        : Personaje("Circuito integrado", 55, posX_, posY_,
+    Circuito_integrado_T(Casilla& casillaInicial)
+        : Volador("Circuito integrado", 55,
             Turno::TURNO_DE_TARDE,
             Movimiento::AIRE,
-            stats("Patas del micro", 22, 6, 2)) {
+            stats("Patas del micro", 22, 6, 2),
+            casillaInicial) {
     }
 
     int getRadioMovimiento() const override { return 2; }
+    std::string getNombreSprite() const override { return "CINTEGRADOT"; }
+    float getTamanoSprite() const override { return 50.0f; }
+
+
 };

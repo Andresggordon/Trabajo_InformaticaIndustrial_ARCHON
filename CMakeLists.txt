@@ -20,7 +20,7 @@ link_directories(
     lib/ETSIDI_2019
 )
 # 7. Crear el ejecutable ARCHON
-add_executable(ARCHON ${SOURCES} ${HEADERS})
+add_executable(ARCHON ${SOURCES} ${HEADERS} "src/Finpartida.cpp" "src/Finpartida.h")
 # 8. Directorio de trabajo del depurador
 set_target_properties(ARCHON PROPERTIES
     VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:ARCHON>"

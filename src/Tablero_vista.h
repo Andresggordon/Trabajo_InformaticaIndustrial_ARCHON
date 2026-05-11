@@ -8,7 +8,7 @@ public:
     void dibuja();
 
 private:
-    const Tablero* mi_tablero; //Declarado constante para no modificarlo
+    Tablero* mi_tablero;
     float tam;      // tamaño de cada casilla
     float inicioX;  // donde empieza a dibujar en X
     float inicioY;  // donde empieza a dibujar en Y
