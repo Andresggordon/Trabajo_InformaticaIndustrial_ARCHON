@@ -3,9 +3,9 @@
 
 Tablero_vista::Tablero_vista(Tablero* t) {
     mi_tablero = t;
-    tam = 45.0f;
-    inicioX = -202.5f;
-    inicioY = -202.5f;
+	tam = 60.0f;
+    inicioX = -270.0f;
+    inicioY = -270.0f;
 }
 
 void Tablero_vista::dibujaCuadrado(float x, float y, float r, float g, float b) {

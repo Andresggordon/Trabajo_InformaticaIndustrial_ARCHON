@@ -8,9 +8,9 @@ extern ArenaCombate* arena;
 
 
 Partida::Partida() {
-    fondo = new ETSIDI::Sprite("assets/menu_imagenes/fondo_partida.png", 0, 0, 600, 600);
-    abandonar_partida = new ETSIDI::Sprite("assets/menu_imagenes/boton_abandonar.png", 0, 0, 600, 600);
-    popup_salir = new ETSIDI::Sprite("assets/menu_imagenes/popup_salir.png", 0, 0, 600, 600);
+    fondo = new ETSIDI::Sprite("assets/menu_imagenes/fondo_partida.png", 0, 0, 800, 800);
+    abandonar_partida = new ETSIDI::Sprite("assets/menu_imagenes/boton_abandonar.png", 0, 0, 800, 800);
+    popup_salir = new ETSIDI::Sprite("assets/menu_imagenes/popup_salir.png", 0, 0, 800, 800);
     mostrar_popup = false;
     boton_activo = 0;
 }
@@ -61,9 +61,9 @@ Modos_juego Partida::click(int x, int y) {
     float cx = ((x - offsetX) / (float)tam) * 800 - 400;
     float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
-    float tam_casilla = 60.0f;
-    float inicioX = -270.0f;
-    float inicioY = -250.0f;
+    float tam_casilla = MotorGrafico::TAM;
+    float inicioX = MotorGrafico::INICIO_X;
+    float inicioY = MotorGrafico::INICIO_Y;
     int col = (int)((cx - inicioX) / tam_casilla);
     int fil = (int)((cy - inicioY) / tam_casilla);
 
@@ -216,9 +216,9 @@ void Partida::dibujaSeleccion() {
     if (personaje_seleccionado == nullptr) return;
 
     Casilla* c = personaje_seleccionado->getCasillaActual();
-    float tam = 60.0f;
-    float inicioX = -270.0f;
-    float inicioY = -250.0f;
+    float tam = MotorGrafico::TAM;
+    float inicioX = MotorGrafico::INICIO_X;
+    float inicioY = MotorGrafico::INICIO_Y;
 
     float x0 = inicioX + c->getCol() * tam;
     float y0 = inicioY + c->getFila() * tam;
