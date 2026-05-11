@@ -52,6 +52,7 @@ Modos_juego Eleccion_2jugadores::click(int x, int y) {
         equipo_j1 = 1;  // j1 = mañana
         equipo_j2 = 2;  // j2 = tarde
         turno_inicio = 0;
+        modo_juego = 2;
         return Modos_juego::Partida;
     }
     else if (cx >= 54 && cx <= 240 && cy >= -73 && cy <= 100) {
@@ -59,6 +60,7 @@ Modos_juego Eleccion_2jugadores::click(int x, int y) {
         equipo_j1 = 2;  // j1 = tarde
         equipo_j2 = 1;  // j2 = mañana
         turno_inicio = 1;
+        modo_juego = 2;
         return Modos_juego::Partida;
     }
 

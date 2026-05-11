@@ -1,12 +1,6 @@
 #include "ArenaCombate.h"
 #include <GL/freeglut.h>
 
-ArenaCombate::ArenaCombate()
-{
-	posLocal_ = { 5,1 };
-	posInvasor_ = { 5,9 };
-}
-
 void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo)
 {
 	local_ = local;
@@ -48,10 +42,10 @@ void ArenaCombate::teclado(unsigned char key)
 	switch (key)
 	{
 	case 'w':
-		moverEnArena(posLocal_, -1, 0);
+		moverEnArena(posLocal_, 1, 0);
 		break;
 	case 's':
-		moverEnArena(posLocal_, 1, 0);
+		moverEnArena(posLocal_, -1, 0);
 		break;
 	case 'a':
 		moverEnArena(posLocal_, 0, -1);
@@ -72,10 +66,10 @@ void ArenaCombate::tecladoEspecial(int key)
 	switch (key)
 	{
 	case GLUT_KEY_UP:
-		moverEnArena(posInvasor_, -1, 0);
+		moverEnArena(posInvasor_, 1, 0);
 		break;
 	case GLUT_KEY_DOWN:
-		moverEnArena(posInvasor_, 1, 0);
+		moverEnArena(posInvasor_, -1, 0);
 		break;
 	case GLUT_KEY_LEFT:
 		moverEnArena(posInvasor_, 0, -1);
@@ -113,4 +107,14 @@ bool ArenaCombate::combateTerminado() const
 ResultadoCombate ArenaCombate::getResultado() const
 {
 	return resultado_;
+}
+
+ArenaCombate::ArenaCombate() {
+	fondo_arena = new ETSIDI::Sprite("assets/menu_imagenes/ArenaCombate1.png", 0, 0, 600, 600);
+	posLocal_ = { 5, 1 };
+	posInvasor_ = { 5, 9 };
+}
+
+void ArenaCombate::dibuja() {
+	fondo_arena->draw();
 }

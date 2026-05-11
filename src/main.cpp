@@ -60,6 +60,8 @@ void display() {
         Partida::get_instance().dibujaHabilidades(); // 4. Dibujar habilidades
         Partida::get_instance().dibujaextra();        // 5. exit y popup encima de todo
     }
+    else if (estado == Modos_juego::Arena_Combate)
+        MotorGrafico::get_instance().dibujarArena();
     glutSwapBuffers();
 }
 
@@ -98,6 +100,9 @@ void mouseClick(int button, int estadoBtn, int x, int y) {
 
         if (estado == Modos_juego::Partida && estado_anterior != Modos_juego::Partida)
             Partida::get_instance().reset();
+
+        if (estado == Modos_juego::Partida && estado_anterior != Modos_juego::Partida)
+            Partida::get_instance().reset();
     }
     glutPostRedisplay();
 }
@@ -111,6 +116,16 @@ void teclado(unsigned char key, int x, int y) {
     else if (estado == Modos_juego::Partida) {
         Partida::get_instance().teclado(key);
     }
+    else if (estado == Modos_juego::Arena_Combate) {  
+        arena->teclado(key);
+    }
+    glutPostRedisplay();
+}
+
+void tecladoEspecial(int key, int x, int y) {
+    if (estado == Modos_juego::Arena_Combate)
+        arena->tecladoEspecial(key);
+    glutPostRedisplay();
 }
 
 void reposo() {
@@ -149,6 +164,7 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(teclado);
     glutIdleFunc(reposo);
     glutReshapeFunc(reshape);
+    glutSpecialFunc(tecladoEspecial);
     glutMainLoop();
     return 0;
 }
