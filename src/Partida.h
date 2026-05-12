@@ -42,6 +42,8 @@ private:
     Partida(const Partida&) = delete;
     Partida& operator=(const Partida&) = delete;
 
+    Modos_juego comprobarFinPartida();
+
     Tablero tab_;
 
     ETSIDI::Sprite* fondo;

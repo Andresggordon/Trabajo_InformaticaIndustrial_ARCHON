@@ -4,13 +4,15 @@
 #include "tipo_personaje.h"
 #include "Modos_juego.h"
 #include "ArenaCombate.h"
+#include "FinPartida.h"
+#include <iostream> 
 extern ArenaCombate* arena;
 
 
 Partida::Partida() {
-    fondo = new ETSIDI::Sprite("assets/menu_imagenes/fondo_partida.png", 0, 0, 600, 600);
-    abandonar_partida = new ETSIDI::Sprite("assets/menu_imagenes/boton_abandonar.png", 0, 0, 600, 600);
-    popup_salir = new ETSIDI::Sprite("assets/menu_imagenes/popup_salir.png", 0, 0, 600, 600);
+    fondo = new ETSIDI::Sprite("assets/menu_imagenes/fondo_partida.png", 0, 0, 800, 800);
+    abandonar_partida = new ETSIDI::Sprite("assets/menu_imagenes/boton_abandonar.png", 0, 0, 800, 800);
+    popup_salir = new ETSIDI::Sprite("assets/menu_imagenes/popup_salir.png", 0, 0, 800, 800);
     mostrar_popup = false;
     boton_activo = 0;
 }
@@ -61,9 +63,9 @@ Modos_juego Partida::click(int x, int y) {
     float cx = ((x - offsetX) / (float)tam) * 800 - 400;
     float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
-    float tam_casilla = 60.0f;
-    float inicioX = -270.0f;
-    float inicioY = -250.0f;
+    float tam_casilla = MotorGrafico::TAM;
+    float inicioX = MotorGrafico::INICIO_X;
+    float inicioY = MotorGrafico::INICIO_Y;
     int col = (int)((cx - inicioX) / tam_casilla);
     int fil = (int)((cy - inicioY) / tam_casilla);
 
@@ -143,7 +145,8 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
         modo_teleport = false;
         personaje_seleccionado = nullptr;
         turno_actual = 1 - turno_actual;
-        return Modos_juego::Partida;
+        //return Modos_juego::Partida;
+        return comprobarFinPartida();
     }
 
     if (modo_inmovilizar) {
@@ -155,7 +158,8 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
         personaje_seleccionado = nullptr;
         es_lider_seleccionado = false;
         turno_actual = 1 - turno_actual;
-        return Modos_juego::Partida;
+       // return Modos_juego::Partida;
+        return comprobarFinPartida();
     }
 
     if (modo_revivir) {
@@ -169,7 +173,8 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
         personaje_seleccionado = nullptr;
         es_lider_seleccionado = false;
         turno_actual = 1 - turno_actual;
-        return Modos_juego::Partida;
+        //return Modos_juego::Partida;
+        return comprobarFinPartida();
     }
 
     if (personaje_seleccionado == nullptr) {
@@ -191,6 +196,9 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
             turno_actual = 1 - turno_actual;
             for (auto p : personajes)
                 p->decrementarInmovilizacion();
+
+            Modos_juego fin = comprobarFinPartida();
+            if (fin != Modos_juego::Partida) return fin;
         }
         else if (res == ResultadoMover::CHOQUE) {
             arena->iniciarCombate(
@@ -216,9 +224,9 @@ void Partida::dibujaSeleccion() {
     if (personaje_seleccionado == nullptr) return;
 
     Casilla* c = personaje_seleccionado->getCasillaActual();
-    float tam = 60.0f;
-    float inicioX = -270.0f;
-    float inicioY = -250.0f;
+    float tam = MotorGrafico::TAM;
+    float inicioX = MotorGrafico::INICIO_X;
+    float inicioY = MotorGrafico::INICIO_Y;
 
     float x0 = inicioX + c->getCol() * tam;
     float y0 = inicioY + c->getFila() * tam;
@@ -378,4 +386,37 @@ void Partida::reset() {
     // Crear un DibujoPersonaje por cada personaje
     for (auto p : personajes)
         dibujos.push_back(new DibujoPersonaje(p));
+}
+
+// ============================================================
+//  Comprueba si la partida ha terminado.
+//  Devuelve el nuevo estado del juego:
+//    - Modos_juego::Partida  -> la partida sigue
+//    - Modos_juego::MENU     -> la partida termino
+// ============================================================
+Modos_juego Partida::comprobarFinPartida() {
+    CondicionVictoria r = FinPartida::comprobar(personajes, tab_);
+
+    if (!FinPartida::partidaTerminada(r))
+        return Modos_juego::Partida;
+
+    // ── DEBUG: imprimir en consola quien ha ganado ──────────────
+    std::cout << "[FIN PARTIDA] ";
+    switch (r) {
+    case CondicionVictoria::GANA_MANANA_POR_PIEZAS:
+        std::cout << "MANANA gana por eliminacion de piezas\n"; break;
+    case CondicionVictoria::GANA_TARDE_POR_PIEZAS:
+        std::cout << "TARDE  gana por eliminacion de piezas\n"; break;
+    case CondicionVictoria::GANA_MANANA_POR_PUNTOS:
+        std::cout << "MANANA gana por puntos de poder\n"; break;
+    case CondicionVictoria::GANA_TARDE_POR_PUNTOS:
+        std::cout << "TARDE  gana por puntos de poder\n"; break;
+    default: break;
+    }
+
+    // De momento, volvemos al MENU. En el siguiente paso conectaremos
+    // esto con PantallaFinal para mostrar el ganador.
+    ETSIDI::stopMusica();
+    ETSIDI::playMusica("assets/sonidos/menu.mp3", true);
+    return Modos_juego::MENU;
 }

@@ -1,5 +1,6 @@
 #include "FinPartida.h"
 
+
 // ── Puntos de poder en el tablero 9x9 ────────────────────────────────────────
 // Formato: {fila, columna}
 // Son el centro + los 4 puntos medios de cada borde,

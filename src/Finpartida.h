@@ -2,6 +2,7 @@
 #include "personaje.h"
 #include "Tablero.h"
 #include <vector>
+#include "Modos_juego.h"
 
 // ============================================================
 //  Enum que indica el estado de la partida
