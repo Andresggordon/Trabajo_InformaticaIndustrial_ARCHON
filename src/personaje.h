@@ -27,6 +27,7 @@ public:
     virtual Menu_habilidades* getMenu() { return nullptr; }
 
     virtual int getFramesIdle() const { return 1; } // por defecto 1, no es puro
+	virtual int getTiempoAnimacion() const { return 500; } // por defecto 500ms, no es puro
 
     // Offset de cada sprite
     virtual float getOffsetX() const { return 0.0f; }
