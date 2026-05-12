@@ -15,9 +15,12 @@ public:
             casillaInicial) {}
     Menu_habilidades menu;
     int getRadioMovimiento()  const override { return 4; }
-    std::string getNombreSprite() const override { return "PSSanimado"; }
+    std::string getNombreSprite() const override { return "SanseAnimado"; }
 
-    float getTamanoSprite() const override { return 55.0f; }
+    float getOffsetX() const override { return 35.0f; }
+    float getOffsetY() const override { return 20.0f; }
+
+    float getTamanoSprite() const override { return 65.0f; }
 
     int getFramesIdle() const override { return 8; }
 
@@ -125,8 +128,14 @@ public:
     }
 
     int getRadioMovimiento() const override { return 4; }
-    std::string getNombreSprite() const override { return "COPILOT"; }
+    std::string getNombreSprite() const override { return "COPILOTAnimado"; }
+    int getFramesIdle() const override { return 8; }
+
     float getTamanoSprite() const override { return 60.0f; }
+    float getOffsetY() const override { return -30.0f; }
+
+    int getTiempoAnimacion() const override { return 150; }
+
 
 
 };
@@ -161,9 +170,13 @@ public:
             casillaInicial) {}
     Menu_habilidades menu;
     int getRadioMovimiento() const override { return 4; }
-    std::string getNombreSprite() const override { return "MH"; }
-    float getTamanoSprite() const override { return 65.0f; }
+    std::string getNombreSprite() const override { return "MHAnimado"; }
+    float getTamanoSprite() const override { return 80.0f; }
+    int getFramesIdle() const override { return 8; }
 
+    float getOffsetX() const override { return 30.0f; }
+
+    int getTiempoAnimacion() const override { return 300; }
 
 };
 
@@ -199,6 +212,7 @@ public:
     std::string getNombreSprite() const override { return "OsciloscopioAnimacion"; }
     int getFramesIdle() const override { return 8; }
     float getOffsetY() const override { return -15.0f; }
+    int getTiempoAnimacion() const override { return 300; }
 
     float getTamanoSprite() const override { return 60.0f; }
 
@@ -216,8 +230,13 @@ public:
     }
 
     int getRadioMovimiento() const override { return 1; }
-    std::string getNombreSprite() const override { return "BRAZOROBOT"; }
-    float getTamanoSprite() const override { return 60.0f; }
+    std::string getNombreSprite() const override { return "BRAZOANIMADO2"; }
+
+    int getFramesIdle() const override { return 17; }
+    float getOffsetY() const override { return 10.0f; }
+    int getTiempoAnimacion() const override {return 500;}
+
+    float getTamanoSprite() const override { return 90.0f; }
 
 
 
@@ -270,8 +289,13 @@ public:
     }
 
     int getRadioMovimiento() const override { return 4; }
-    std::string getNombreSprite() const override { return "GEMINI"; }
+    std::string getNombreSprite() const override { return "GEMINIAnimado"; }
     float getTamanoSprite() const override { return 55.0f; }
+    int getFramesIdle() const override { return 8; }
+    int getTiempoAnimacion() const override { return 100 ; }
+    float getOffsetY() const override { return -20.0f; }
+
+
 
 
 
