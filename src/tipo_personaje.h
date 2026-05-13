@@ -176,7 +176,7 @@ public:
 
     float getOffsetX() const override { return 30.0f; }
 
-    int getTiempoAnimacion() const override { return 300; }
+    int getTiempoAnimacion() const override { return 350; }
 
 };
 
@@ -253,8 +253,13 @@ public:
     }
 
     int getRadioMovimiento() const override { return 5; }
-    std::string getNombreSprite() const override { return "FUENTECORRIENTE"; }
+    std::string getNombreSprite() const override { return "FuenteCorrienteAnimada"; }
     float getTamanoSprite() const override { return 70.0f; }
+    int getFramesIdle() const override { return 8; }
+
+    float getOffsetX() const override { return 30.0f; }
+
+    int getTiempoAnimacion() const override { return 350; }
 
 
 

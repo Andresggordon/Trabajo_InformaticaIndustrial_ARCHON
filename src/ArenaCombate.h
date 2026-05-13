@@ -52,32 +52,3 @@ private:
 	ETSIDI::Sprite* fondo_arena = nullptr;
 };
 
-//Pensar en hacer metodos publicos privados o protegidos, sobretodo protegidos pueden venir bien para probar las funciones en un test unitario
-
-/*
-class testArenaCombate : public ArenaCombate
-
-Aquí irían los metodos protegidos en su clase base:
-Cómo se ponen las tareas protegidas:
-public:
-	using ArenaCombate::moverEnArena; // Hacer moverEnArena accesible para pruebas
-
-	o de otra forma una función que pueda llamar a la tarea protegida:
-	void tarea_Secundaria(){
-		tareaSecundariaprotegida();
-	}
-
-	y luego ya en el main
-
-	int main(){
-		testArenaCombate test;
-		test.tarea_Secundaria(); // Llamar a la función que a su vez llama a la tarea protegida
-		return 0;
-
-		//Sin embargo usando using
-
-		test.moverEnArena(pos, df, dc); // Llamar directamente a la tarea protegida
-		test.tareaSecundariaprotegida(); // Llamar directamente a la tarea protegida
-		
-		}
-*/
