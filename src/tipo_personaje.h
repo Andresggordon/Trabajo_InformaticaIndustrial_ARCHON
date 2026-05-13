@@ -178,6 +178,8 @@ public:
 
     int getTiempoAnimacion() const override { return 300; }
 
+    Menu_habilidades* getMenu() override { return &menu; }
+
 };
 
 class Microprocesador_T : public Volador {

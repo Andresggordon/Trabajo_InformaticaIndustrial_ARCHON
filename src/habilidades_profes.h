@@ -1,23 +1,20 @@
 #pragma once
 
-enum class habilidades {
-    TELEPORT,
-    REVIVIR,
-    INMOVILIZA,
-};
+class Personaje;
+class Casilla;
 
 class Menu_habilidades {
 public:
-    Menu_habilidades() {}
-    void resetHabilidad() { habilidadUsada = false; }
+    bool usarTeleport(Personaje* usuario, Casilla* destino);
+    bool usarRevivir(Personaje* usuario, Personaje* objetivo);
+    bool usarInmovilizar(Personaje* usuario, Personaje* objetivo);
 
-    bool Usar_habilidad(habilidades a, int& vida, int vidaMax,
-        int& posX, int& posY, bool& inmovilizado, int destX = 0, int destY = 0) {
-        return true;
-    }
+    bool puedeUsarTeleport() const { return !teleport_usado; }
+    bool puedeUsarRevivir() const { return !revivir_usado; }
+    bool puedeUsarInmovilizar() const { return !inmovilizar_usado; }
 
 private:
-
-    bool habilidadUsada = false;
-
+    bool teleport_usado = false;
+    bool revivir_usado = false;
+    bool inmovilizar_usado = false;
 };

@@ -4,6 +4,7 @@
 #include "tipo_personaje.h"
 #include "Modos_juego.h"
 #include "ArenaCombate.h"
+#include <string>
 extern ArenaCombate* arena;
 
 
@@ -52,78 +53,49 @@ void Partida::update(int x, int y) {
 }
 
 Modos_juego Partida::click(int x, int y) {
+
     int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
     int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
     int tam = min(ventana_w, ventana_h);
     int offsetX = (ventana_w - tam) / 2;
     int offsetY = (ventana_h - tam) / 2;
-    ETSIDI::play("assets/sonidos/click.mp3");
-    float cx = ((x - offsetX) / (float)tam) * 800 - 400;
-    float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
+    ETSIDI::play("assets/sonidos/click.mp3");
+
+    float cx = ((x - offsetX) / (float)tam) * 800.0f - 400.0f;
+    float cy = 400.0f - ((y - offsetY) / (float)tam) * 800.0f;
+
+    // EXIT - se comprueba SIEMPRE antes que nada
+    if (!mostrar_popup) {
+        if (cx >= 209.0f && cx <= 289.0f && cy >= -275.0f && cy <= -252.0f) {
+            mostrar_popup = true;
+            return Modos_juego::Partida;
+        }
+    }
+    else {
+        if (cx >= -153.0f && cx <= -57.0f && cy >= -43.0f && cy <= -5.0f) {
+            ETSIDI::stopMusica();
+            ETSIDI::playMusica("assets/sonidos/menu.mp3", true);
+            mostrar_popup = false;
+            return Modos_juego::MENU;
+        }
+        if (cx >= 15.0f && cx <= 108.0f && cy >= -46.0f && cy <= -4.0f) {
+            mostrar_popup = false;
+            return Modos_juego::Partida;
+        }
+        return Modos_juego::Partida;  // popup abierto bloquea tablero
+    }
+
+    // TABLERO
     float tam_casilla = MotorGrafico::TAM;
     float inicioX = MotorGrafico::INICIO_X;
     float inicioY = MotorGrafico::INICIO_Y;
     int col = (int)((cx - inicioX) / tam_casilla);
     int fil = (int)((cy - inicioY) / tam_casilla);
 
-    // Convertir coordenadas
-    float ox = ((float)x / 500.0f - 1.0f) * 400.0f;
-    float oy = (1.0f - (float)y / 500.0f) * 400.0f;
+    if (col >= 0 && col < 9 && fil >= 0 && fil < 9)
+        return procesarClickTablero(fil, col);
 
-    // Botones de habilidades
-    if (es_lider_seleccionado && personaje_seleccionado != nullptr) {  // ← añadir la comprobación
-        Menu_habilidades* menu = personaje_seleccionado->getMenu();
-        if (menu == nullptr) return Modos_juego::Partida;
-
-        // Revivir (-390,-390) → (-150,-340)
-        if (ox >= -390 && ox <= -150 && oy >= -390 && oy <= -340) {
-            int vida = personaje_seleccionado->getVidaActual();
-            int vidaMax = personaje_seleccionado->getVidaMax();
-            bool inmov = personaje_seleccionado->getInmovilizado();
-            int px = personaje_seleccionado->getPosX();
-            int py = personaje_seleccionado->getPosY();
-            menu->Usar_habilidad(habilidades::REVIVIR, vida, vidaMax, px, py, inmov);
-            personaje_seleccionado->setVida(vida);
-            modo_revivir = true;
-            return Modos_juego::Partida;
-        }
-
-        // Inmovilizar (-80,-390) → (80,-340)
-        if (ox >= -80 && ox <= 80 && oy >= -390 && oy <= -340) {
-            int vida = personaje_seleccionado->getVidaActual();
-            int vidaMax = personaje_seleccionado->getVidaMax();
-            bool inmov = personaje_seleccionado->getInmovilizado();
-            int px = personaje_seleccionado->getPosX();
-            int py = personaje_seleccionado->getPosY();
-            menu->Usar_habilidad(habilidades::INMOVILIZA, vida, vidaMax, px, py, inmov);
-            personaje_seleccionado->setInmovilizado(inmov);
-            modo_inmovilizar = true;
-            return Modos_juego::Partida;
-        }
-
-        // Teleport (150,-390) → (390,-340)
-        if (ox >= 150 && ox <= 390 && oy >= -390 && oy <= -340) {
-            modo_teleport = true;
-            return Modos_juego::Partida;
-        }
-    }
-
-    if (!mostrar_popup) {
-        if (cx >= 209 && cx <= 289 && cy >= -275 && cy <= -252)
-            mostrar_popup = true;
-        else if (col >= 0 && col < 9 && fil >= 0 && fil < 9)
-            return procesarClickTablero(fil, col);
-    }
-    else {
-        if (cx >= -153 && cx <= -57 && cy >= -43 && cy <= -5) {
-            ETSIDI::stopMusica();
-            ETSIDI::playMusica("assets/sonidos/menu.mp3", true);
-            return Modos_juego::MENU;
-        }
-        else if (cx >= 15 && cx <= 108 && cy >= -46 && cy <= -4)
-            mostrar_popup = false;
-    }
     return Modos_juego::Partida;
 }
 
@@ -131,44 +103,51 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
     Casilla& casilla = tab_.getCasilla(fil, col);
 
     if (modo_teleport) {
-        if (personaje_seleccionado == nullptr) { 
+        if (personaje_seleccionado == nullptr) {
             modo_teleport = false;
-            return Modos_juego::Partida;
+            return Modos_juego::Partida;;
         }
-        if (casilla.getPersonaje() == nullptr) {
-            personaje_seleccionado->getCasillaActual()->setPersonaje(nullptr);
-            casilla.setPersonaje(personaje_seleccionado);
-            personaje_seleccionado->setCasillaActual(&casilla);
+        Menu_habilidades* menu = personaje_seleccionado->getMenu();
+        if (menu != nullptr && menu->usarTeleport(personaje_seleccionado, &casilla)) {
+            turno_actual = 1 - turno_actual;
         }
         modo_teleport = false;
         personaje_seleccionado = nullptr;
-        turno_actual = 1 - turno_actual;
-        return Modos_juego::Partida;
+        es_lider_seleccionado = false;
+        return Modos_juego::Partida;;
     }
 
     if (modo_inmovilizar) {
+        if (personaje_seleccionado == nullptr) {
+            modo_inmovilizar = false;
+            return Modos_juego::Partida;;
+        }
+        Menu_habilidades* menu = personaje_seleccionado->getMenu();
         Personaje* objetivo = casilla.getPersonaje();
-        if (objetivo != nullptr && objetivo->getTurno() != personaje_seleccionado->getTurno()) {
-            objetivo->setInmovilizado(true);
+
+        if (menu != nullptr && menu->usarInmovilizar(personaje_seleccionado, objetivo)) {
+            turno_actual = 1 - turno_actual;
         }
         modo_inmovilizar = false;
         personaje_seleccionado = nullptr;
         es_lider_seleccionado = false;
-        turno_actual = 1 - turno_actual;
         return Modos_juego::Partida;
     }
 
     if (modo_revivir) {
+        if (personaje_seleccionado == nullptr) {
+            modo_revivir = false;
+            return Modos_juego::Partida;
+        }
+        Menu_habilidades* menu = personaje_seleccionado->getMenu();
         Personaje* objetivo = casilla.getPersonaje();
-        if (objetivo != nullptr
-            && objetivo->getTurno() == personaje_seleccionado->getTurno()
-            && !objetivo->estaVivo()) {
-            objetivo->setVida(objetivo->getVidaMax());
+
+        if (menu != nullptr && menu->usarRevivir(personaje_seleccionado, objetivo)) {
+            turno_actual = 1 - turno_actual;
         }
         modo_revivir = false;
         personaje_seleccionado = nullptr;
         es_lider_seleccionado = false;
-        turno_actual = 1 - turno_actual;
         return Modos_juego::Partida;
     }
 
@@ -211,6 +190,43 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
     return Modos_juego::Partida;
 }
 
+void Partida::tecladoHabilidades(unsigned char key) {
+    if (!es_lider_seleccionado) return;
+    if (personaje_seleccionado == nullptr) return;
+
+    Menu_habilidades* menu = personaje_seleccionado->getMenu();
+    if (menu == nullptr) return;
+
+    modo_revivir = false;
+    modo_inmovilizar = false;
+    modo_teleport = false;
+
+    switch (key) {
+    case '1':
+        if (menu->puedeUsarRevivir()) {
+            modo_revivir = true;
+        }
+        break;
+
+    case '2':
+        if (menu->puedeUsarInmovilizar()) {
+            modo_inmovilizar = true;
+        }
+        break;
+
+    case '3':
+        if (menu->puedeUsarTeleport()) {
+            modo_teleport = true;
+        }
+        break;
+
+    default:
+        break;
+    }
+
+    glutPostRedisplay();
+}
+
 void Partida::dibujaSeleccion() {
 
     if (personaje_seleccionado == nullptr) return;
@@ -250,50 +266,95 @@ void Partida::dibujaSeleccion() {
     glPopAttrib();  // restaura todo el estado anterior
 }
 
+void Partida::dibujarTextoBitmap(float x, float y, const char* texto) {
+    glRasterPos2f(x, y);
+    while (*texto) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *texto);
+        ++texto;
+    }
+}
+
 void Partida::dibujaHabilidades() {
     if (!es_lider_seleccionado) return;
-    if (modo_teleport || modo_inmovilizar || modo_revivir) return;  // Ocultar botones mientras espera destino
+    if (personaje_seleccionado == nullptr) return;
+
+    Menu_habilidades* menu = personaje_seleccionado->getMenu();
+    if (menu == nullptr) return;
+
+    int w = glutGet(GLUT_WINDOW_WIDTH);
+    int h = glutGet(GLUT_WINDOW_HEIGHT);
+
+    float panelX = 20.0f;
+    float panelY = h - 170.0f;
+    float panelW = 260.0f;
+    float panelH = 135.0f;
 
     glPushAttrib(GL_ALL_ATTRIB_BITS);
+
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    gluOrtho2D(-400, 400, -400, 400);
+    gluOrtho2D(0, w, h, 0);
+
     glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
     glLoadIdentity();
+
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_LIGHTING);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // Botón Revivir (izquierda)
-    glColor3f(0.2f, 0.6f, 0.2f);
+    // Fondo
+    glColor4f(0.08f, 0.08f, 0.08f, 0.78f);
     glBegin(GL_QUADS);
-    glVertex2f(-390, -390); glVertex2f(-150, -390);
-    glVertex2f(-150, -340); glVertex2f(-390, -340);
+    glVertex2f(panelX, panelY);
+    glVertex2f(panelX + panelW, panelY);
+    glVertex2f(panelX + panelW, panelY + panelH);
+    glVertex2f(panelX, panelY + panelH);
     glEnd();
 
-    // Botón Inmovilizar (centro)
-    glColor3f(0.6f, 0.2f, 0.2f);
-    glBegin(GL_QUADS);
-    glVertex2f(-80, -390); glVertex2f(80, -390);
-    glVertex2f(80, -340);  glVertex2f(-80, -340);
+    // Borde
+    glColor3f(0.85f, 0.85f, 0.85f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(panelX, panelY);
+    glVertex2f(panelX + panelW, panelY);
+    glVertex2f(panelX + panelW, panelY + panelH);
+    glVertex2f(panelX, panelY + panelH);
     glEnd();
 
-    // Botón Teleport (derecha)
-    glColor3f(0.2f, 0.2f, 0.7f);
-    glBegin(GL_QUADS);
-    glVertex2f(150, -390); glVertex2f(390, -390);
-    glVertex2f(390, -340); glVertex2f(150, -340);
+    // Título
+    glColor3f(1.0f, 1.0f, 0.7f);
+    dibujarTextoBitmap(panelX + 12.0f, panelY + 22.0f, "HABILIDADES");
+
+    // Línea separadora
+    glBegin(GL_LINES);
+    glVertex2f(panelX + 10.0f, panelY + 32.0f);
+    glVertex2f(panelX + panelW - 10.0f, panelY + 32.0f);
     glEnd();
 
+    // [1] Revivir
+    if (menu->puedeUsarRevivir()) glColor3f(0.9f, 0.9f, 0.9f);
+    else                          glColor3f(0.45f, 0.45f, 0.45f);
+    dibujarTextoBitmap(panelX + 15.0f, panelY + 58.0f, "[1] Revivir");
+
+    // [2] Inmovilizar
+    if (menu->puedeUsarInmovilizar()) glColor3f(0.9f, 0.9f, 0.9f);
+    else                              glColor3f(0.45f, 0.45f, 0.45f);
+    dibujarTextoBitmap(panelX + 15.0f, panelY + 86.0f, "[2] Inmovilizar");
+
+    // [3] Teleport
+    if (menu->puedeUsarTeleport()) glColor3f(0.9f, 0.9f, 0.9f);
+    else                           glColor3f(0.45f, 0.45f, 0.45f);
+    dibujarTextoBitmap(panelX + 15.0f, panelY + 114.0f, "[3] Teleport");
+
+    glPopMatrix();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+
     glPopAttrib();
 }
-
 void Partida::teclado(unsigned char key) {
     if (key == 32)
         tab_.avanzarCiclo();
