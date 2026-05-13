@@ -63,4 +63,7 @@ private:
     bool modo_teleport = false;
     bool modo_inmovilizar = false;
     bool modo_revivir = false;
+
+    ETSIDI::Sprite* carta_actual = nullptr;
+    std::string nombre_carta_cargada = "";
 };
