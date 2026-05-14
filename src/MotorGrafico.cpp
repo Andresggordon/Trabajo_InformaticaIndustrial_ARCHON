@@ -111,8 +111,8 @@ void MotorGrafico::dibujarPersonajesArena(Personaje* local, Personaje* invasor) 
 
     // Convertir posición en cuadrícula a coordenadas OpenGL
     float tamCasilla = 60.0f;
-    float inicioArenaX = -240.0f;
-    float inicioArenaY = -240.0f;
+    float inicioArenaX = -300.0f;
+    float inicioArenaY = -300.0f;
 
     if (local != nullptr) {
         float x = inicioArenaX + arena->getPosLocal().columna * tamCasilla;
