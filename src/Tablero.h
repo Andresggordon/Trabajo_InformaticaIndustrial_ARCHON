@@ -1,7 +1,9 @@
 #pragma once
 #include "Casilla.h"
-#include "personaje.h"
 
+class Personaje;
+class Casilla;
+enum class ResultadoMover;
 
 enum class FaseCiclo {
     MEDIODIA,

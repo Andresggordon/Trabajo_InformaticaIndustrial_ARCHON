@@ -320,7 +320,7 @@ public:
     Moto_petrol(Casilla& casillaInicial)
         : Terrestre("Moto Petrol", 60,
             Turno::TURNO_DE_TARDE,
-            Movimiento::TIERRA,
+            Movimiento::AIRE,
             stats("Gasolina", 16, 3, 4),
             casillaInicial) {
     }

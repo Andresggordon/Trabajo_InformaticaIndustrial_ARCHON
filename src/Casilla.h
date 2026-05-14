@@ -1,3 +1,4 @@
+
 #pragma once
 #include <vector>
 
@@ -8,7 +9,16 @@ class Casilla {
 public:
     Casilla();
 
-    // ── Enlace entre casillas ─────────────────────────────────────────────
+    EstadoCasilla getEstado() const;
+    void setEstado(EstadoCasilla e);
+    Personaje* getPersonaje() const;
+    void setPersonaje(Personaje* p);
+    int getFila() const;
+    int getCol() const;
+    void setPosicion(int fila, int col);
+
+
+    /*// ── Enlace entre casillas ─────────────────────────────────────────────
     // Registra una casilla vecina con su desplazamiento relativo (dx, dy).
     // El Tablero llama a esto al inicializarse para construir la red.
     void agregarCasillaVecina(Casilla* c, int dx, int dy);
@@ -19,25 +29,16 @@ public:
     // Recibe const Personaje& porque:
     //   · Solo necesita consultar datos del personaje (radio, tipo de movimiento)
     //   · No debe modificarlo — const lo garantiza
-    //   · & para no copiar el objeto entero 
-    bool puedeMoverseA(const Casilla& c_destino, const Personaje& p) const;  //Añadir metodo geom para saber qué casillas tienne disponibles de una en una 
-    
-
-    // ── Personaje que ocupa esta casilla ──────────────────────────────────
-    Personaje* getPersonaje() const;
-    void setPersonaje(Personaje* p);
-    
-    // ── Estado de la casilla ─────────────────────────────────────────
-    EstadoCasilla getEstado() const;
-    void setEstado(EstadoCasilla e);
-    
-    // ── Coordenadas de la casilla en el tablero ─────────────────────────────────────────
-    int getCol() const;
-    int getFila() const;
-    void setPosicion(int fila, int columna);
-
+    //   · & para no copiar el objeto entero
+    bool puedeMoverseA(const Casilla& c_destino, const Personaje& p) const;  //Añadir metodo geom para saber qué casillas tienne disponibles de una en una
+    */
 private:
     EstadoCasilla estado;
+    Personaje* personaje;
+    int fila_, col_;
+
+
+    /*EstadoCasilla estado;
     Personaje* personaje;  // puntero, no propietario, la casilla tampoco es que pueda destruir al personaje, en eso son independientes
 
     int fila_, col_; //Posición de la casilla en el tablero es privada porque no la debe cambiar cualquiera
@@ -46,7 +47,8 @@ private:
         Casilla* casilla;
         int dx, dy; 
     };
+    
 
     
-    std::vector<CasillaVecina> casillasvecinas; 
+    std::vector<CasillaVecina> casillasvecinas; */
 };

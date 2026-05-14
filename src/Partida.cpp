@@ -1,11 +1,13 @@
+
 #include "Partida.h"
 #include "MotorGrafico.h"
 #include <GL/freeglut.h>
 #include "tipo_personaje.h"
 #include "Modos_juego.h"
 #include "ArenaCombate.h"
-extern ArenaCombate* arena;
+#include "Geometria.h" // Necesario para calcular las casillas iluminadas
 
+extern ArenaCombate* arena;
 
 Partida::Partida() {
     fondo = new ETSIDI::Sprite("assets/menu_imagenes/fondo_partida.png", 0, 0, 800, 800);
@@ -50,7 +52,6 @@ void Partida::update(int x, int y) {
     float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
     if (!mostrar_popup) {
-        // ← CAMBIA estos valores por los que te dé el printf al pulsar el botón exit
         if (cx >= 304 && cx <= 342 && cy >= -354 && cy <= -274)
             boton_activo = 1;
         else
@@ -76,8 +77,6 @@ Modos_juego Partida::click(int x, int y) {
     float cx = ((x - offsetX) / (float)tam) * 800 - 400;
     float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
-    printf("cx=%.1f  cy=%.1f\n", cx, cy);
-
     float tam_casilla = MotorGrafico::TAM;
     float inicioX = MotorGrafico::INICIO_X;
     float inicioY = MotorGrafico::INICIO_Y;
@@ -100,7 +99,6 @@ Modos_juego Partida::click(int x, int y) {
     }
 
     // 2. Boton exit (abrir popup)
-    // ← CAMBIA estos valores por los que te dé el printf al pulsar el botón exit
     if (cx >= 304 && cx <= 342 && cy >= -354 && cy <= -274) {
         mostrar_popup = true;
         return Modos_juego::Partida;
@@ -161,6 +159,7 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
         }
         modo_teleport = false;
         personaje_seleccionado = nullptr;
+        casillas_iluminadas.clear();
         turno_actual = 1 - turno_actual;
         return Modos_juego::Partida;
     }
@@ -172,6 +171,7 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
         }
         modo_inmovilizar = false;
         personaje_seleccionado = nullptr;
+        casillas_iluminadas.clear();
         es_lider_seleccionado = false;
         turno_actual = 1 - turno_actual;
         return Modos_juego::Partida;
@@ -186,6 +186,7 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
         }
         modo_revivir = false;
         personaje_seleccionado = nullptr;
+        casillas_iluminadas.clear();
         es_lider_seleccionado = false;
         turno_actual = 1 - turno_actual;
         return Modos_juego::Partida;
@@ -200,6 +201,7 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
             if (turno_ok) {
                 personaje_seleccionado = p;
                 es_lider_seleccionado = (p->getMenu() != nullptr);
+                casillas_iluminadas = Geometria::getCasillasAccesibles(*personaje_seleccionado, tab_);
             }
         }
     }
@@ -219,11 +221,13 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
             );
             tab_.limpiarPendiente();
             personaje_seleccionado = nullptr;
+            casillas_iluminadas.clear();
             es_lider_seleccionado = false;
             return Modos_juego::Arena_Combate;
         }
 
         personaje_seleccionado = nullptr;
+        casillas_iluminadas.clear();
         es_lider_seleccionado = false;
         return Modos_juego::Partida;
     }
@@ -231,85 +235,14 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
 }
 
 void Partida::dibujaSeleccion() {
-    if (personaje_seleccionado == nullptr) return;
-
-    Casilla* c = personaje_seleccionado->getCasillaActual();
-    float tam = MotorGrafico::TAM;
-    float inicioX = MotorGrafico::INICIO_X;
-    float inicioY = MotorGrafico::INICIO_Y;
-
-    float x0 = inicioX + c->getCol() * tam;
-    float y0 = inicioY + c->getFila() * tam;
-
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_BLEND);
-    glDisable(GL_LIGHTING);
-
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(-400, 400, -400, 400);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glLineWidth(4.0f);
-    glBegin(GL_LINE_LOOP);
-    glVertex2f(x0, y0);
-    glVertex2f(x0 + tam, y0);
-    glVertex2f(x0 + tam, y0 + tam);
-    glVertex2f(x0, y0 + tam);
-    glEnd();
-
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopAttrib();
+    MotorGrafico::get_instance().dibujaSeleccion(personaje_seleccionado, casillas_iluminadas);
 }
 
 void Partida::dibujaHabilidades() {
     if (!es_lider_seleccionado) return;
     if (modo_teleport || modo_inmovilizar || modo_revivir) return;
 
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(-400, 400, -400, 400);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_LIGHTING);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    // Boton Revivir (izquierda)
-    glColor3f(0.2f, 0.6f, 0.2f);
-    glBegin(GL_QUADS);
-    glVertex2f(-390, -390); glVertex2f(-150, -390);
-    glVertex2f(-150, -340); glVertex2f(-390, -340);
-    glEnd();
-
-    // Boton Inmovilizar (centro)
-    glColor3f(0.6f, 0.2f, 0.2f);
-    glBegin(GL_QUADS);
-    glVertex2f(-80, -390); glVertex2f(80, -390);
-    glVertex2f(80, -340);  glVertex2f(-80, -340);
-    glEnd();
-
-    // Boton Teleport (derecha)
-    glColor3f(0.2f, 0.2f, 0.7f);
-    glBegin(GL_QUADS);
-    glVertex2f(150, -390); glVertex2f(390, -390);
-    glVertex2f(390, -340); glVertex2f(150, -340);
-    glEnd();
-
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glPopAttrib();
+    MotorGrafico::get_instance().dibujaHabilidades();
 }
 
 void Partida::teclado(unsigned char key) {

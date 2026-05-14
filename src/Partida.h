@@ -50,6 +50,8 @@ private:
 
     std::vector<Personaje*>       personajes;
     std::vector<DibujoPersonaje*> dibujos;
+    std::vector<Casilla*> casillas_iluminadas; //Saber las casillas en las que se moverá el personaje
+
 
     int modo_actual = 1;
     int turno_actual = 0;
