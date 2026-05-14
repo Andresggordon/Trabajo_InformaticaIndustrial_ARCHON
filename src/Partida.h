@@ -36,6 +36,9 @@ public:
     void dibujaextra();
     void dibujaSeleccion();
     void dibujaHabilidades();
+    void tecladoHabilidades(unsigned char key);
+    void dibujarTextoBitmap(float x, float y, const char* texto);
+    void dibujaInmovilizados();
 
 private:
     Partida();
@@ -63,4 +66,7 @@ private:
     bool modo_teleport = false;
     bool modo_inmovilizar = false;
     bool modo_revivir = false;
+
+    ETSIDI::Sprite* carta_actual = nullptr;
+    std::string nombre_carta_cargada = "";
 };

@@ -11,6 +11,7 @@ Personaje::Personaje(std::string nombre_, int vida_,
 
 Personaje::~Personaje() {}
 
+
 // SALUD
 
 void Personaje::recibirDano(int cantidad_) {
