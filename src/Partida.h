@@ -8,7 +8,6 @@
 #include "tipo_personaje.h"
 #include "Tablero_vista.h" 
 
-
 extern int equipo_j1;
 extern int equipo_j2;
 extern int modo_juego;
@@ -16,26 +15,28 @@ extern int turno_inicio;
 
 class Partida {
 public:
-    // Singleton
     static Partida& get_instance() {
         static Partida instance;
         return instance;
     }
 
-    // Getters del tablero
     Tablero& tablero() { return tab_; }
     const Tablero& tablero() const { return tab_; }
     const std::vector<DibujoPersonaje*>& getDibujos() const { return dibujos; }
 
-    // Métodos de juego
     void dibuja();
     void update(int x, int y);
     Modos_juego click(int x, int y);
     void teclado(unsigned char key);
     void reset();
     void dibujaextra();
+
+    // Dibujos y habilidades (Mezcla de ambos trabajos)
     void dibujaSeleccion();
     void dibujaHabilidades();
+    void tecladoHabilidades(unsigned char key);
+    void dibujarTextoBitmap(float x, float y, const char* texto);
+    void dibujaInmovilizados();
 
 private:
     Partida();
@@ -50,14 +51,15 @@ private:
 
     std::vector<Personaje*>       personajes;
     std::vector<DibujoPersonaje*> dibujos;
-    std::vector<Casilla*> casillas_iluminadas; //Saber las casillas en las que se moverá el personaje
 
+    // NUESTRO: Saber las casillas en las que se moverá el personaje
+    std::vector<Casilla*> casillas_iluminadas;
 
     int modo_actual = 1;
     int turno_actual = 0;
 
-    Personaje* personaje_seleccionado = nullptr;  // ← ya lo tienes
-    Modos_juego procesarClickTablero(int fil, int col);   // ← ya lo tienes
+    Personaje* personaje_seleccionado = nullptr;
+    Modos_juego procesarClickTablero(int fil, int col);
     bool es_lider_seleccionado = false;
 
     bool mostrar_popup;

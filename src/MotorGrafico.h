@@ -1,4 +1,3 @@
-
 #pragma once
 #include "Tablero.h"
 #include "ETSIDI.h"
@@ -7,15 +6,12 @@
 
 class Personaje;
 
-
 class MotorGrafico {
 public:
-
     static constexpr float TAM = 60.0f;
     static constexpr float INICIO_X = -270.0f;
     static constexpr float INICIO_Y = -270.0f;
 
-    // Singleton
     static MotorGrafico& get_instance() {
         static MotorGrafico instance;
         return instance;
@@ -23,25 +19,18 @@ public:
 
     void dibujar();
     void dibujarArena();
-    void dibujaSeleccion(Personaje* seleccionado, const std::vector<Casilla*>& iluminadas);
-    void dibujaHabilidades();
 
+    // FUNCIONES DE DIBUJO (Trasladadas desde Partida para cumplir normativa)
+    void dibujaSeleccion(Personaje* seleccionado, const std::vector<Casilla*>& iluminadas);
+    void dibujaHabilidades(Personaje* p, bool modo_t, bool modo_i, bool modo_r);
+    void dibujaInmovilizados(const Tablero& t);
 
 private:
     MotorGrafico() = default;
-    MotorGrafico(const MotorGrafico&) = delete; //Esto elimina el constructor de copia. Impide que se cree un nuevo objeto a partir de un objeto ya existente.
-	MotorGrafico& operator=(const MotorGrafico&) = delete; // Modifica el operador asignación para no permitir asignar un objeto a otro de motor gráfico.
-
-    // Parámetros del tablero
-    float tam;      // tamaño de cada casilla
-    float inicioX;  // donde empieza a dibujar en X
-    float inicioY;  // donde empieza a dibujar en Y
-
+    void dibujarTextoBitmap(float x, float y, const char* texto);
     void dibujarTablero(const Tablero& t);
     void dibujarPersonajes(const Tablero& t);
     void dibujaCuadrado(float x, float y, float r, float g, float b);
-
     void dibujarPersonajesArena(Personaje* local, Personaje* invasor);
     void dibujarFondoArena();
-   
- };
+};

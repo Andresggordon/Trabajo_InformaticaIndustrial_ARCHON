@@ -375,12 +375,11 @@ public:
             Turno::TURNO_DE_TARDE,
             Movimiento::AIRE,
             stats("Patas del micro", 22, 6, 2),
-            casillaInicial) {
-    }
+            casillaInicial) {}
 
     int getRadioMovimiento() const override { return 2; }
     std::string getNombreSprite() const override { return "CITAnimado"; }
-std::string getNombreCarta()  const override { return "assets/cartas/cartacit.png"; }
+    std::string getNombreCarta()  const override { return "assets/cartas/cartacit.png"; }
     float getTamanoSprite() const override { return 90.0f; }
 
     int getFramesIdle() const override { return 8; }

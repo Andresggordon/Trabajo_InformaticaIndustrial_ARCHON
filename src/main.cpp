@@ -59,6 +59,7 @@ void display() {
         Partida::get_instance().dibujaSeleccion(); // 3. Selección de casilla
         Partida::get_instance().dibujaHabilidades(); // 4. Dibujar habilidades
         Partida::get_instance().dibujaextra();        // 5. exit y popup encima de todo
+        Partida::get_instance().dibujaInmovilizados(); //6. Personaje inmovilizado
     }
     else if (estado == Modos_juego::Arena_Combate)
         MotorGrafico::get_instance().dibujarArena();
@@ -101,10 +102,8 @@ void mouseClick(int button, int estadoBtn, int x, int y) {
         if (estado == Modos_juego::Partida && estado_anterior != Modos_juego::Partida)
             Partida::get_instance().reset();
 
-        if (estado == Modos_juego::Partida && estado_anterior != Modos_juego::Partida)
-            Partida::get_instance().reset();
+        glutPostRedisplay();
     }
-    glutPostRedisplay();
 }
 
 void teclado(unsigned char key, int x, int y) {
@@ -115,6 +114,7 @@ void teclado(unsigned char key, int x, int y) {
     }
     else if (estado == Modos_juego::Partida) {
         Partida::get_instance().teclado(key);
+        Partida::get_instance().tecladoHabilidades(key);
     }
     else if (estado == Modos_juego::Arena_Combate) {  
         arena->teclado(key);
