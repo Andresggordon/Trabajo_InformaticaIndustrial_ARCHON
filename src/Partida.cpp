@@ -371,6 +371,52 @@ void Partida::dibujaHabilidades() {
 
     glPopAttrib();
 }
+
+void Partida::dibujaInmovilizados() {
+    float tam = MotorGrafico::TAM;
+    float inicioX = MotorGrafico::INICIO_X;
+    float inicioY = MotorGrafico::INICIO_Y;
+
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
+    glDisable(GL_LIGHTING);
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(-400, 400, -400, 400);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glLineWidth(4.0f);
+
+    for (int f = 0; f < Tablero::FILAS; f++) {
+        for (int c = 0; c < Tablero::COLUMNAS; c++) {
+            Casilla& casilla = tab_.getCasilla(f, c);  // referencia, no puntero
+
+            Personaje* p = casilla.getPersonaje();
+            if (p == nullptr || !p->getInmovilizado()) continue;
+
+            float x0 = inicioX + c * tam;
+            float y0 = inicioY + f * tam;
+
+            glBegin(GL_LINE_LOOP);
+            glVertex2f(x0, y0);
+            glVertex2f(x0 + tam, y0);
+            glVertex2f(x0 + tam, y0 + tam);
+            glVertex2f(x0, y0 + tam);
+            glEnd();
+        }
+    }
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopAttrib();
+}
+
 void Partida::teclado(unsigned char key) {
     if (key == 32)
         tab_.avanzarCiclo();

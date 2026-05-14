@@ -38,6 +38,7 @@ public:
     void dibujaHabilidades();
     void tecladoHabilidades(unsigned char key);
     void dibujarTextoBitmap(float x, float y, const char* texto);
+    void dibujaInmovilizados();
 
 private:
     Partida();
