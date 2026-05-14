@@ -7,8 +7,8 @@ void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo
 	invasor_ = invasor;
 	modo_ = modo;
 
-	posLocal_ = { 4,1 };
-	posInvasor_ = { 4,6 };
+	posLocal_ = { 5,1 };
+	posInvasor_ = { 5,9 };
 
 	combateTerminado_ = false;
 	resultado_ = ResultadoCombate::Gana_Local;

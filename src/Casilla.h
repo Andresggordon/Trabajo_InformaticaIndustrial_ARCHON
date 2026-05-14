@@ -20,7 +20,7 @@ public:
     //   · Solo necesita consultar datos del personaje (radio, tipo de movimiento)
     //   · No debe modificarlo — const lo garantiza
     //   · & para no copiar el objeto entero 
-    bool puedeMoverseA(const Casilla& c_destino, const Personaje& p) const; //Por qué const Personaje &p?
+    bool puedeMoverseA(const Casilla& c_destino, const Personaje& p) const;  //Añadir metodo geom para saber qué casillas tienne disponibles de una en una 
     
 
     // ── Personaje que ocupa esta casilla ──────────────────────────────────

@@ -37,8 +37,8 @@ private:
 	Personaje* invasor_ = nullptr;
 	int modo_ = 1;
 
-	static const int Filas_Arena = 8;
-	static const int Columnas_Arena = 8.95;
+	static const int Filas_Arena = 11;
+	static const int Columnas_Arena = 11;
 
 	PosArena posLocal_;
 	PosArena posInvasor_;
@@ -51,3 +51,4 @@ private:
 
 	ETSIDI::Sprite* fondo_arena = nullptr;
 };
+

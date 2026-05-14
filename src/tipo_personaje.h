@@ -39,8 +39,12 @@ public:
     }
 
     int getRadioMovimiento() const override { return 3; }
-    std::string getNombreSprite() const override { return "MicroprocesadorM"; }
-    float getTamanoSprite() const override { return 50.0f; }
+    std::string getNombreSprite() const override { return "MicroMAnimado"; }
+    float getTamanoSprite() const override { return 90.0f; }
+    float getOffsetX() const override { return 25.0f; }
+    float getOffsetY() const override { return -12.0f; }
+    int getFramesIdle() const override { return 8; }
+    int getTiempoAnimacion() const override { return 200; }
 
 
 
@@ -57,11 +61,13 @@ public:
     }
 
     int getRadioMovimiento() const override { return 3; }
-    std::string getNombreSprite() const override { return "AnimacionMultimetro"; }
+    std::string getNombreSprite() const override { return "MultimetroAnimado"; }
 
     int getFramesIdle() const override { return 4; }
     float getOffsetX() const override { return 30.0f; }
-    float getTamanoSprite() const override { return 60.0f; }
+    float getTamanoSprite() const override { return 70.0f; }
+    int getTiempoAnimacion() const override { return 500; }
+
 
 
 };
@@ -77,8 +83,15 @@ public:
     }
 
     int getRadioMovimiento() const override { return 1; }
-    std::string getNombreSprite() const override { return "PLC"; }
-    float getTamanoSprite() const override { return 60.0f; }
+    std::string getNombreSprite() const override { return "PLCAnimado"; }
+    float getTamanoSprite() const override { return 65.0f; }
+
+    int getFramesIdle() const override { return 8; }
+    float getOffsetX() const override { return 95.0f; }
+    float getOffsetY() const override { return 65.0f; }
+    int getTiempoAnimacion() const override { return 1000; }
+
+
 
 
 };
@@ -111,10 +124,13 @@ public:
     }
 
     int getRadioMovimiento() const override { return 4; }
-    std::string getNombreSprite() const override { return "MOTOELECTRIC"; }
+    std::string getNombreSprite() const override { return "MotoEAnimada"; }
     float getTamanoSprite() const override { return 60.0f; }
 
-
+    int getFramesIdle() const override { return 8; }
+    float getOffsetX() const override { return 35.0f; }
+    float getOffsetY() const override { return 0.0f; }
+    int getTiempoAnimacion() const override { return 80; }
 };
 
 class Copilot : public Volador {
@@ -151,10 +167,13 @@ public:
     }
 
     int getRadioMovimiento() const override { return 2; }
-    std::string getNombreSprite() const override { return "CINTEGRADOM"; }
-    float getTamanoSprite() const override { return 55.0f; }
+    std::string getNombreSprite() const override { return "CIMAnimado"; }
+    float getTamanoSprite() const override { return 90.0f; }
 
-
+    int getFramesIdle() const override { return 8; }
+    int getTiempoAnimacion() const override { return 1200; }
+    float getOffsetX() const override { return 20.0f; }
+    float getOffsetY() const override { return -20.0f; }
 
 };
 
@@ -176,7 +195,10 @@ public:
 
     float getOffsetX() const override { return 30.0f; }
 
-    int getTiempoAnimacion() const override { return 300; }
+    int getTiempoAnimacion() const override { return 350; }
+
+    Menu_habilidades* getMenu() override { return &menu; }
+
 
 };
 
@@ -191,8 +213,12 @@ public:
     }
 
     int getRadioMovimiento() const override { return 3; }
-    std::string getNombreSprite() const override { return "MicroprocesadorT"; }
-    float getTamanoSprite() const override { return 50.0f; }
+    std::string getNombreSprite() const override { return "MicroTAnimado"; }
+    float getTamanoSprite() const override { return 90.0f; }
+    float getOffsetX() const override { return 25.0f; }
+    float getOffsetY() const override { return -12.0f; }
+    int getFramesIdle() const override { return 8; }
+    int getTiempoAnimacion() const override { return 150; }
 
 
 
@@ -234,7 +260,7 @@ public:
 
     int getFramesIdle() const override { return 17; }
     float getOffsetY() const override { return 10.0f; }
-    int getTiempoAnimacion() const override {return 500;}
+    int getTiempoAnimacion() const override {return 300;}
 
     float getTamanoSprite() const override { return 90.0f; }
 
@@ -253,8 +279,13 @@ public:
     }
 
     int getRadioMovimiento() const override { return 5; }
-    std::string getNombreSprite() const override { return "FUENTECORRIENTE"; }
+    std::string getNombreSprite() const override { return "FuenteCorrienteAnimada"; }
     float getTamanoSprite() const override { return 70.0f; }
+    int getFramesIdle() const override { return 8; }
+
+    float getOffsetX() const override { return 30.0f; }
+
+    int getTiempoAnimacion() const override { return 350; }
 
 
 
@@ -271,9 +302,15 @@ public:
     }
 
     int getRadioMovimiento() const override { return 4; }
-    std::string getNombreSprite() const override { return "MOTOPETROL"; }
-    float getTamanoSprite() const override { return 60.0f; }
+    std::string getNombreSprite() const override { return "MotoPAnimada"; }
 
+    float getTamanoSprite() const override { return 60.0f; }
+    int getFramesIdle() const override { return 10; }
+
+    float getOffsetX() const override { return 130.0f; }
+    float getOffsetY() const override { return 100.0f; }
+
+    int getTiempoAnimacion() const override { return 100; }
 
 
 };
@@ -292,8 +329,10 @@ public:
     std::string getNombreSprite() const override { return "GEMINIAnimado"; }
     float getTamanoSprite() const override { return 55.0f; }
     int getFramesIdle() const override { return 8; }
-    int getTiempoAnimacion() const override { return 100 ; }
-    float getOffsetY() const override { return -20.0f; }
+    int getTiempoAnimacion() const override { return 150 ; }
+
+    float getOffsetX() const override { return 5.0f; }
+    float getOffsetY() const override { return -22.0f; }
 
 
 
@@ -312,8 +351,14 @@ public:
     }
 
     int getRadioMovimiento() const override { return 2; }
-    std::string getNombreSprite() const override { return "CINTEGRADOT"; }
-    float getTamanoSprite() const override { return 50.0f; }
+    std::string getNombreSprite() const override { return "CITAnimado"; }
+    float getTamanoSprite() const override { return 90.0f; }
+
+    int getFramesIdle() const override { return 8; }
+    int getTiempoAnimacion() const override { return 1200; }
+    float getOffsetX() const override { return 20.0f; }
+    float getOffsetY() const override { return -20.0f; }
+
 
 
 
