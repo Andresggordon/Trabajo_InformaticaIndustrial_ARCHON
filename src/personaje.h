@@ -9,6 +9,7 @@ enum class Turno { TURNO_DE_MANANA, TURNO_DE_TARDE };
 enum class Movimiento { TIERRA, AIRE, TELETRANSPORTE };
 enum class ResultadoMover { OK,ILEGAL,CHOQUE};
 
+
 class Personaje {
 public:
     Personaje(std::string nombre_, int vida_,
@@ -22,7 +23,7 @@ public:
     virtual int         getRadioMovimiento() const = 0;
     virtual std::string getNombreSprite()    const = 0;
     virtual float       getTamanoSprite()    const = 0;
-   
+    virtual std::string getNombreCarta() const = 0;
 
     virtual Menu_habilidades* getMenu() { return nullptr; }
 
