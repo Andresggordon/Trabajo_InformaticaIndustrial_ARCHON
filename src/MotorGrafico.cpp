@@ -257,9 +257,9 @@ void MotorGrafico::dibujarPersonajesArena(Personaje* local, Personaje* invasor) 
     const auto& dibujos = Partida::get_instance().getDibujos();
     extern ArenaCombate* arena;
 
-    float TAMCasilla = 60.0f;
-    float inicioArenaX = -300.0f;
-    float inicioArenaY = -300.0f;
+    float TAMCasilla = 45.0f;
+    float inicioArenaX = -245.0f;
+    float inicioArenaY = -245.0f;
 
     if (local != nullptr) {
         float x = inicioArenaX + arena->getPosLocal().columna * TAMCasilla;

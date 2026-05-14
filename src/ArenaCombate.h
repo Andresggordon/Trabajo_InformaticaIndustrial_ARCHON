@@ -25,6 +25,9 @@ public:
 	Personaje* getLocal()   const { return local_; }
 	Personaje* getInvasor() const { return invasor_; }
 
+	void update(int x, int y);
+	Modos_juego click(int x, int y);
+
 	struct PosArena
 	{
 		int fila, columna;
@@ -50,5 +53,11 @@ private:
 	bool moverEnArena(PosArena& pos, int df, int dc);
 
 	ETSIDI::Sprite* fondo_arena = nullptr;
+	ETSIDI::Sprite* abandonar_partida;
+	ETSIDI::Sprite* popup_salir;
+	bool mostrar_popup;
+	int boton_activo;
+	
+
 };
 
