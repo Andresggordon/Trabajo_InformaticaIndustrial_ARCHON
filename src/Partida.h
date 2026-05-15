@@ -38,6 +38,9 @@ public:
     void dibujarTextoBitmap(float x, float y, const char* texto);
     void dibujaInmovilizados();
 
+    Personaje* getPersonajeSeleccionado() const { return personaje_seleccionado; }
+    void dibujaBarrasVida();
+
 private:
     Partida();
     Partida(const Partida&) = delete;

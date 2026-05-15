@@ -30,6 +30,7 @@ void Partida::dibujaextra() {
             nombre_carta_cargada = ruta;
         }
         carta_actual->draw();
+        MotorGrafico::get_instance().dibujarVidaPanel(personaje_seleccionado);
     }
     else { nombre_carta_cargada = ""; }
 }
@@ -162,6 +163,7 @@ void Partida::tecladoHabilidades(unsigned char key) {
 void Partida::dibujaSeleccion() { MotorGrafico::get_instance().dibujaSeleccion(personaje_seleccionado, casillas_iluminadas); }
 void Partida::dibujaHabilidades() { MotorGrafico::get_instance().dibujaHabilidades(personaje_seleccionado, modo_teleport, modo_inmovilizar, modo_revivir); }
 void Partida::dibujaInmovilizados() { MotorGrafico::get_instance().dibujaInmovilizados(tab_); }
+void Partida::dibujaBarrasVida() { MotorGrafico::get_instance().dibujaBarrasVida(tab_, personaje_seleccionado);}
 
 void Partida::teclado(unsigned char key) {
     if (key == 32) tab_.avanzarCiclo();

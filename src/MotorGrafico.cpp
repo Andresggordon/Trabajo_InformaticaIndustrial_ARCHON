@@ -11,7 +11,7 @@ void MotorGrafico::dibujar() {
 
     const Tablero& t = Partida::get_instance().tablero();
     dibujarTablero(t);
-    dibujarPersonajes(t);
+    dibujarPersonajes(t, Partida::get_instance().getPersonajeSeleccionado());
 }
 
 void MotorGrafico::dibujarTextoBitmap(float x, float y, const char* texto) {
@@ -207,21 +207,17 @@ void MotorGrafico::dibujarTablero(const Tablero& t) {
     glPopAttrib();
 }
 
-void MotorGrafico::dibujarPersonajes(const Tablero& t) {
+void MotorGrafico::dibujarPersonajes(const Tablero& t, Personaje* seleccionado) {
     const auto& dibujos = Partida::get_instance().getDibujos();
 
     for (int fila = 0; fila < Tablero::FILAS; fila++) {
         for (int col = 0; col < Tablero::COLUMNAS; col++) {
             float x = INICIO_X + col * TAM;
             float y = INICIO_Y + fila * TAM;
-
             Personaje* p = t.getCasilla(fila, col).getPersonaje();
             if (p != nullptr) {
                 for (auto d : dibujos) {
-                    if (d->getPersonaje() == p) {
-                        d->dibujar(x, y);
-                        break;
-                    }
+                    if (d->getPersonaje() == p) { d->dibujar(x, y); break; }
                 }
             }
         }
@@ -282,6 +278,159 @@ void MotorGrafico::dibujarPersonajesArena(Personaje* local, Personaje* invasor) 
             }
         }
     }
+}
+
+void MotorGrafico::dibujarBarraVida(float x, float y, Personaje* p) {
+    if (p == nullptr || !p->estaVivo()) return;
+
+    float porcentaje = p->getPorcentajeVida();
+    float anchoTotal = TAM * 0.8f;
+    float anchoVida = anchoTotal * porcentaje;
+    float barraX = x + TAM * 0.1f;
+    float barraY = y + TAM - 6.0f;
+    float alturaBarra = 4.0f;
+
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Fondo gris
+    glColor4f(0.2f, 0.2f, 0.2f, 0.8f);
+    glBegin(GL_QUADS);
+    glVertex2f(barraX, barraY);
+    glVertex2f(barraX + anchoTotal, barraY);
+    glVertex2f(barraX + anchoTotal, barraY + alturaBarra);
+    glVertex2f(barraX, barraY + alturaBarra);
+    glEnd();
+
+    // Color según porcentaje
+    if (porcentaje > 0.6f) glColor4f(0.2f, 0.85f, 0.2f, 0.9f); // verde
+    else if (porcentaje > 0.3f) glColor4f(1.0f, 0.65f, 0.0f, 0.9f); // naranja
+    else                        glColor4f(0.9f, 0.1f, 0.1f, 0.9f); // rojo
+
+    glBegin(GL_QUADS);
+    glVertex2f(barraX, barraY);
+    glVertex2f(barraX + anchoVida, barraY);
+    glVertex2f(barraX + anchoVida, barraY + alturaBarra);
+    glVertex2f(barraX, barraY + alturaBarra);
+    glEnd();
+
+    glDisable(GL_BLEND);
+}
+
+void MotorGrafico::dibujarVidaTexto(float x, float y, Personaje* p) {
+    if (p == nullptr) return;
+
+    std::string texto = std::to_string(p->getVidaActual()) + "/" + std::to_string(p->getVidaMax());
+
+    int w = glutGet(GLUT_WINDOW_WIDTH);
+    int h = glutGet(GLUT_WINDOW_HEIGHT);
+
+    float px = (x + TAM * 0.5f + 400.0f) / 800.0f * (float)w;
+    float py = (float)h - ((y + TAM + 10.0f + 400.0f) / 800.0f * (float)h);
+
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, w, h, 0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glRasterPos2f(px - 12.0f, py);
+    for (char c : texto) glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glPopAttrib();
+}
+
+void MotorGrafico::dibujaBarrasVida(const Tablero& t, Personaje* seleccionado) {
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(-400, 400, -400, 400);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    for (int fila = 0; fila < Tablero::FILAS; fila++) {
+        for (int col = 0; col < Tablero::COLUMNAS; col++) {
+            float x = INICIO_X + col * TAM;
+            float y = INICIO_Y + fila * TAM;
+            Personaje* p = t.getCasilla(fila, col).getPersonaje();
+            if (p != nullptr) {
+                dibujarBarraVida(x, y, p);
+                if (p == seleccionado) dibujarVidaTexto(x, y, p);
+            }
+        }
+    }
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glPopAttrib();
+}
+
+void MotorGrafico::dibujarVidaPanel(Personaje* p) {
+    if (p == nullptr) return;
+
+    int w = glutGet(GLUT_WINDOW_WIDTH);
+    int h = glutGet(GLUT_WINDOW_HEIGHT);
+
+    float porcentaje = p->getPorcentajeVida();
+    std::string texto = std::to_string(p->getVidaActual()) + " / " + std::to_string(p->getVidaMax());
+
+
+    float panelX = w * 0.877f;
+    float panelAncho = w * 0.1f;
+    float barraY = h * 0.55f;   
+    float barraAlto = h * 0.020f;
+
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, w, h, 0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Fondo oscuro de la barra
+    glColor4f(0.15f, 0.15f, 0.15f, 0.85f);
+    glBegin(GL_QUADS);
+    glVertex2f(panelX, barraY);
+    glVertex2f(panelX + panelAncho, barraY);
+    glVertex2f(panelX + panelAncho, barraY + barraAlto);
+    glVertex2f(panelX, barraY + barraAlto);
+    glEnd();
+
+    // Barra de vida coloreada
+    if (porcentaje > 0.6f) glColor4f(0.2f, 0.85f, 0.2f, 0.95f);
+    else if (porcentaje > 0.3f) glColor4f(1.0f, 0.65f, 0.0f, 0.95f);
+    else                        glColor4f(0.9f, 0.1f, 0.1f, 0.95f);
+
+    glBegin(GL_QUADS);
+    glVertex2f(panelX, barraY);
+    glVertex2f(panelX + panelAncho * porcentaje, barraY);
+    glVertex2f(panelX + panelAncho * porcentaje, barraY + barraAlto);
+    glVertex2f(panelX, barraY + barraAlto);
+    glEnd();
+
+    glDisable(GL_BLEND);
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glRasterPos2f(panelX + panelAncho * 0.25f, barraY + barraAlto + h * 0.025f);
+    for (char c : texto) glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c);
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glPopAttrib();
 }
 
 
