@@ -4,9 +4,7 @@
 #include <vector>
 #include "Modos_juego.h"
 
-// ============================================================
 //  Enum que indica el estado de la partida
-// ============================================================
 enum class CondicionVictoria {
     NINGUNA,                  // partida en curso
     GANA_MANANA_POR_PIEZAS,   // manana elimino todas las piezas de tarde
@@ -15,7 +13,7 @@ enum class CondicionVictoria {
     GANA_TARDE_POR_PUNTOS,    // tarde controla los 5 puntos de poder
 };
 
-// ============================================================
+
 //  Clase FinPartida  
 //
 //  RESPONSABILIDAD UNICA: detectar si la partida ha terminado
@@ -24,7 +22,7 @@ enum class CondicionVictoria {
 //  Es logica pura: no dibuja, no conoce el ratón ni el teclado.
 //  Solo lee datos del Tablero y del vector de personajes.
 //  Esto cumple alta cohesion / bajo acoplamiento.
-// ============================================================
+
 class FinPartida {
 public:
     // Comprueba el estado actual de la partida.

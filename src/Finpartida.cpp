@@ -1,10 +1,7 @@
 #include "FinPartida.h"
 
 
-// ── Puntos de poder en el tablero 9x9 ────────────────────────────────────────
-// Formato: {fila, columna}
-// Son el centro + los 4 puntos medios de cada borde,
-// como en el juego original Archon.
+
 const int FinPartida::PUNTOS_PODER[5][2] = {
     {4, 4}, // centro
     {0, 4}, // borde superior, centro
@@ -13,9 +10,7 @@ const int FinPartida::PUNTOS_PODER[5][2] = {
     {4, 8}, // borde derecho, centro
 };
 
-// ============================================================
-//  PRIVADOS
-// ============================================================
+
 
 int FinPartida::contarVivas(
     const std::vector<Personaje*>& personajes,
@@ -56,9 +51,6 @@ int FinPartida::puntosDePoderControlados(
     return count;
 }
 
-// ============================================================
-//  PUBLICO
-// ============================================================
 
 CondicionVictoria FinPartida::comprobar(
     const std::vector<Personaje*>& personajes,
@@ -78,15 +70,11 @@ CondicionVictoria FinPartida::comprobar(
     if (pp_manana >= NUM_PUNTOS_PODER) return CondicionVictoria::GANA_MANANA_POR_PUNTOS;
     if (pp_tarde >= NUM_PUNTOS_PODER)  return CondicionVictoria::GANA_TARDE_POR_PUNTOS;
 
-    // ── Condicion 3: rival con una sola pieza encarcelada ───────────────────
-    // TODO: pendiente. Requiere que personaje.h exponga estaEncarcelado() como
-    //       getter publico. Hablarlo con Andres y Fer antes de implementar.
-
     // Si no se cumple nada, la partida sigue
     return CondicionVictoria::NINGUNA;
 }
 
-// ── Helpers de consulta del resultado ────────────────────────────────────────
+// consulta del resultado
 
 bool FinPartida::ganaManana(CondicionVictoria c) {
     return c == CondicionVictoria::GANA_MANANA_POR_PIEZAS
