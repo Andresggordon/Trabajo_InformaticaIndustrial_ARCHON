@@ -79,3 +79,31 @@ void Tablero::limpiarPendiente() {
     pendienteLocal_ = nullptr;
     pendienteInvasor_ = nullptr;
 }
+
+void Tablero::resolverCombate(ResultadoCombate resultado) {
+    Personaje* local = pendienteLocal_;
+    Personaje* invasor = pendienteInvasor_;
+
+    if (resultado == ResultadoCombate::Gana_Invasor) {
+        // Local pierde — vaciar su casilla pero no borrarlo
+        // El invasor ocupa la casilla del local
+        Casilla* casillaLocal = local->getCasillaActual();
+        Casilla* casillaInvasor = invasor->getCasillaActual();
+
+        casillaLocal->setPersonaje(invasor);
+        casillaInvasor->setPersonaje(nullptr);
+        invasor->setCasillaActual(casillaLocal);
+
+        // Local queda sin casilla pero sigue en memoria
+        local->setCasillaActual(nullptr);
+
+    }
+    else {
+        // Invasor pierde — vaciar su casilla pero no borrarlo
+        Casilla* casillaInvasor = invasor->getCasillaActual();
+        casillaInvasor->setPersonaje(nullptr);
+        invasor->setCasillaActual(nullptr);
+    }
+
+    limpiarPendiente();
+}

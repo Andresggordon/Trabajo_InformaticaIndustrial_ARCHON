@@ -18,6 +18,8 @@ public:
 
     virtual ~Personaje();
 
+    stats getArma() const { return arma; }
+
 
     // Métodos virtuales puros — cada subclase los implementa
     virtual int         getRadioMovimiento() const = 0;

@@ -62,7 +62,11 @@ void display() {
         Partida::get_instance().dibujaInmovilizados(); //6. Personaje inmovilizado
     }
     else if (estado == Modos_juego::Arena_Combate)
+    {
         MotorGrafico::get_instance().dibujarArena();
+        arena->dibujaPopup();
+    }
+       
     glutSwapBuffers();
 }
 
@@ -79,6 +83,8 @@ void mouseMove(int x, int y) {
         ranking->update(x, y);
     else if (estado == Modos_juego::Partida)
         Partida::get_instance().update(x, y);
+    else if (estado == Modos_juego::Arena_Combate)
+        arena->update(x, y);
     glutPostRedisplay();
 }
 
@@ -98,6 +104,8 @@ void mouseClick(int button, int estadoBtn, int x, int y) {
             estado = ranking->click(x, y);
         else if (estado == Modos_juego::Partida)
             estado = Partida::get_instance().click(x, y);
+        else if (estado == Modos_juego::Arena_Combate)
+            estado = arena->click(x, y);
 
         if (estado == Modos_juego::Partida && estado_anterior != Modos_juego::Partida)
             Partida::get_instance().reset();
@@ -134,7 +142,22 @@ void reposo() {
         if (pantalla_carga->carga_completa)
             estado = Modos_juego::MENU;
     }
+    else if (estado == Modos_juego::Arena_Combate)
+    {
+        arena->actualizar();
+
+        if (arena->combateTerminado()) {
+            Partida::get_instance().tablero().resolverCombate(arena->getResultado());
+            arena->finalizarCombate();
+            estado = Modos_juego::Partida;
+        } 
+    }
     glutPostRedisplay();
+}
+
+void tecladoUp(unsigned char key, int x, int y) {
+    if (estado == Modos_juego::Arena_Combate)
+        arena->teclaLevantada(key);
 }
 
 int main(int argc, char** argv) {
@@ -165,6 +188,7 @@ int main(int argc, char** argv) {
     glutIdleFunc(reposo);
     glutReshapeFunc(reshape);
     glutSpecialFunc(tecladoEspecial);
+    glutKeyboardUpFunc(tecladoUp);
     glutMainLoop();
     return 0;
 }

@@ -34,8 +34,8 @@ bool Personaje::estaVivo() const { return vida_actual > 0; }
 
 // GETTERS
 std::string Personaje::getNombre() const { return nombre; }
-int Personaje::getPosX() const { return casilla_actual->getCol(); }
-int Personaje::getPosY() const { return casilla_actual->getFila(); }
+int Personaje::getPosX() const { return casilla_actual ? casilla_actual->getCol():-1; }
+int Personaje::getPosY() const { return casilla_actual ? casilla_actual->getFila():-1; }
 float Personaje::getPorcentajeVida() const { return (float)vida_actual / vida_Max; }
 int Personaje::getVidaActual() const { return vida_actual; }
 int Personaje::getVidaMax() const { return vida_Max; }

@@ -22,11 +22,13 @@ public:
 	void dibuja();
 	void teclado(unsigned char key);
 	void tecladoEspecial(int key);
+	void teclaLevantada(unsigned char key);
 	Personaje* getLocal()   const { return local_; }
 	Personaje* getInvasor() const { return invasor_; }
 
 	void update(int x, int y);
 	Modos_juego click(int x, int y);
+	void dibujaPopup();
 
 	struct PosArena
 	{
@@ -34,6 +36,8 @@ public:
 	};
 	PosArena getPosLocal()   const { return posLocal_; }
 	PosArena getPosInvasor() const { return posInvasor_; }
+
+	void actualizar();
 
 private:
 	Personaje* local_ = nullptr; //Declaración de los personajes
@@ -55,9 +59,24 @@ private:
 	ETSIDI::Sprite* fondo_arena = nullptr;
 	ETSIDI::Sprite* abandonar_partida;
 	ETSIDI::Sprite* popup_salir;
-	bool mostrar_popup;
-	int boton_activo;
-	
+	bool mostrar_popup=false;
+	int boton_activo=0;
 
+	//Lógica de Ataque
+	//Temporizadores de ataque (ms)
+	int tiempoUltimoAtaqueLocal_ = 0;
+	int tiempoUltimoAtaqueInvasor_ = 0;
+
+	//Métodos de ataque 
+	void aplicarAtaque(Personaje* atacante, Personaje* defensor);
+	
+	//Teclas pulsadas
+	bool teclaW = false;
+	bool teclaS = false;
+	bool teclaA = false;
+	bool teclaD = false;
+
+	int tiempoUltimoMovimiento_ = 0;
+	static const int INTERVALO_MOVIMIENTO = 150;
 };
 

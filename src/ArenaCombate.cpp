@@ -1,5 +1,7 @@
 #include "ArenaCombate.h"
 #include "MotorGrafico.h"
+#include "personaje.h"
+#include "tipo_personaje.h"
 #include <GL/freeglut.h>
 
 void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo)
@@ -13,6 +15,14 @@ void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo
 
 	combateTerminado_ = false;
 	resultado_ = ResultadoCombate::Gana_Local;
+
+	mostrar_popup = false;
+
+	int ahora = glutGet(GLUT_ELAPSED_TIME);
+	tiempoUltimoAtaqueLocal_ = ahora;
+	tiempoUltimoAtaqueInvasor_ = ahora;
+
+	tiempoUltimoMovimiento_ = glutGet(GLUT_ELAPSED_TIME);
 }
 
 bool ArenaCombate::moverEnArena(PosArena& pos, int df, int dc)
@@ -43,16 +53,27 @@ void ArenaCombate::teclado(unsigned char key)
 	switch (key)
 	{
 	case 'w':
-		moverEnArena(posLocal_, 1, 0);
+		teclaW=true;
 		break;
 	case 's':
-		moverEnArena(posLocal_, -1, 0);
+		teclaS=true;
 		break;
 	case 'a':
-		moverEnArena(posLocal_, 0, -1);
+		teclaA=true;
 		break;
 	case 'd':
-		moverEnArena(posLocal_, 0, 1);
+		teclaD=true;
+		break;
+
+		// Ataque jugador 1 (espacio) — funciona en modo 1 y 2
+	case 32:
+		aplicarAtaque(local_, invasor_);
+		break;
+
+		// Ataque jugador 2 (Enter) — solo modo 2 jugadores
+	case 13:
+		if (modo_ == 2)
+			aplicarAtaque(invasor_, local_);
 		break;
 	}
 }
@@ -113,14 +134,17 @@ ResultadoCombate ArenaCombate::getResultado() const
 ArenaCombate::ArenaCombate() {
 	fondo_arena = new ETSIDI::Sprite("assets/menu_imagenes/ArenaCombate1.png", 0, 0, 600, 600);
 	abandonar_partida = new ETSIDI::Sprite("assets/menu_imagenes/boton_abandonar.png", 0, 0, 800, 800);
-	mostrar_popup = false;
-	boton_activo = 0;
+	popup_salir = new ETSIDI::Sprite("assets/menu_imagenes/popup_salir.png", 0, 0, 800, 800);
 	posLocal_ = { 5, 2 };
 	posInvasor_ = { 5, 8 };
 }
 
 void ArenaCombate::dibuja() {
 	fondo_arena->draw();
+}
+
+void ArenaCombate::dibujaPopup()
+{
 	abandonar_partida->draw();
 	if (mostrar_popup) popup_salir->draw();
 }
@@ -173,4 +197,46 @@ Modos_juego ArenaCombate::click(int x, int y) {
 		mostrar_popup = true;
 		return Modos_juego::Arena_Combate;
 	}
+	return Modos_juego::Arena_Combate;
 } 
+
+void ArenaCombate::aplicarAtaque(Personaje* atacante, Personaje* defensor) {
+	// Calcular distancia entre los dos personajes en la cuadrícula
+	int distFila = abs(posLocal_.fila - posInvasor_.fila);
+	int distCol = abs(posLocal_.columna - posInvasor_.columna);
+	int distancia = max(distFila, distCol);
+
+	// Comprobar que el atacante tiene alcance suficiente
+	int alcance = atacante->getArma().getAlcance();
+	if (distancia > alcance) return;  // fuera de rango
+
+	// Aplicar daño
+	defensor->recibirDano(atacante->getArma().getDanio());
+
+	// Comprobar si murió
+	if (!defensor->estaVivo())
+		resolverResultado();
+}
+
+void ArenaCombate::actualizar() {
+	if (combateTerminado_) return;
+
+	int ahora = glutGet(GLUT_ELAPSED_TIME);
+
+	if (ahora - tiempoUltimoMovimiento_ >= INTERVALO_MOVIMIENTO) {
+		if (teclaW) moverEnArena(posLocal_, 1, 0);
+		if (teclaS) moverEnArena(posLocal_, -1, 0);
+		if (teclaA) moverEnArena(posLocal_, 0, -1);
+		if (teclaD) moverEnArena(posLocal_, 0, 1);
+		tiempoUltimoMovimiento_ = ahora;
+	}
+}
+
+void ArenaCombate::teclaLevantada(unsigned char key) {
+	switch (key) {
+	case 'w': teclaW = false; break;
+	case 's': teclaS = false; break;
+	case 'a': teclaA = false; break;
+	case 'd': teclaD = false; break;
+	}
+}

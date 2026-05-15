@@ -1,5 +1,6 @@
 #pragma once
 #include "Casilla.h"
+#include "ArenaCombate.h"
 
 class Personaje;
 class Casilla;
@@ -20,6 +21,8 @@ public:
     void avanzarCiclo();
 
     ResultadoMover moverPersonaje(Personaje* p, Casilla& destino);
+
+    void resolverCombate(ResultadoCombate resultado);
 
 
     // Ahora devuelven el objeto Casilla directamente
