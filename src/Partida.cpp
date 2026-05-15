@@ -89,22 +89,20 @@ Modos_juego Partida::click(int x, int y) {
 
 Modos_juego Partida::procesarClickTablero(int fil, int col) {
     Casilla& casilla = tab_.getCasilla(fil, col);
+    Menu_habilidades* menu = personaje_seleccionado ? personaje_seleccionado->getMenu() : nullptr;
 
     if (modo_teleport) {
-        if (personaje_seleccionado && casilla.getPersonaje() == nullptr) {
-            personaje_seleccionado->getCasillaActual()->setPersonaje(nullptr);
-            casilla.setPersonaje(personaje_seleccionado);
-            personaje_seleccionado->setCasillaActual(&casilla);
-            turno_actual = 1 - turno_actual;
-        }
+        if (menu) menu->usarTeleport(personaje_seleccionado, &casilla); 
+        if (menu && menu->puedeUsarTeleport() == false) turno_actual = 1 - turno_actual;
         modo_teleport = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
         return Modos_juego::Partida;
     }
 
     if (modo_inmovilizar) {
         Personaje* obj = casilla.getPersonaje();
-        if (personaje_seleccionado && obj && obj->getTurno() != personaje_seleccionado->getTurno()) {
-            obj->setInmovilizado(true); turno_actual = 1 - turno_actual;
+        if (menu && obj) {
+            bool ejecutado = menu->usarInmovilizar(personaje_seleccionado, obj); 
+            if (ejecutado) turno_actual = 1 - turno_actual;
         }
         modo_inmovilizar = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
         return Modos_juego::Partida;
@@ -112,8 +110,9 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
 
     if (modo_revivir) {
         Personaje* obj = casilla.getPersonaje();
-        if (personaje_seleccionado && obj && obj->getTurno() == personaje_seleccionado->getTurno() && !obj->estaVivo()) {
-            obj->setVida(obj->getVidaMax()); turno_actual = 1 - turno_actual;
+        if (menu && obj) {
+            bool ejecutado = menu->usarRevivir(personaje_seleccionado, obj); 
+            if (ejecutado) turno_actual = 1 - turno_actual;
         }
         modo_revivir = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
         return Modos_juego::Partida;
