@@ -11,15 +11,8 @@ EvaluadorMovimiento::EvaluadorMovimiento()
       peso_color_propio_(15) {
 }
 
-bool EvaluadorMovimiento::esLider(const Personaje& p) const {
-    // getMenu() es no-const en Personaje; solo lo consultamos para saber si
-    // existe (los magos lo sobreescriben para devolver su menu). El const_cast
-    // queda confinado a esta unica linea para no propagar el problema.
-    return const_cast<Personaje&>(p).getMenu() != nullptr;
-}
-
 int EvaluadorMovimiento::valorPieza(const Personaje& p) const {
-    if (esLider(p))
+    if (p.esLider())
         return peso_captura_mago_;
 
     // Pieza normal: peligrosa segun lo que pega, su alcance y lo que aguanta.

@@ -29,6 +29,10 @@ public:
 
     virtual Menu_habilidades* getMenu() { return nullptr; }
 
+    // Identifica al lider/mago del bando. Solo lo sobreescriben los profesores.
+    // Es const para poder consultarse desde codigo de solo lectura (p.ej. la IA).
+    virtual bool esLider() const { return false; }
+
     virtual int getFramesIdle() const { return 1; } // por defecto 1, no es puro
 	virtual int getTiempoAnimacion() const { return 500; } // por defecto 500ms, no es puro
 

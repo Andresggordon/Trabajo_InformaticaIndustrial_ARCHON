@@ -67,8 +67,11 @@ private:
 	int tiempoUltimoAtaqueLocal_ = 0;
 	int tiempoUltimoAtaqueInvasor_ = 0;
 
-	//Métodos de ataque 
+	//Métodos de ataque
 	void aplicarAtaque(Personaje* atacante, Personaje* defensor);
+
+	//IA de la maquina en modo 1 jugador: el invasor persigue y ataca al jugador.
+	void moverMaquina();
 	
 	//Teclas pulsadas
 	bool teclaW = false;
@@ -78,5 +81,10 @@ private:
 
 	int tiempoUltimoMovimiento_ = 0;
 	static const int INTERVALO_MOVIMIENTO = 150;
+
+	//Cadencias propias de la IA de la arena (solo modo 1 jugador)
+	int tiempoUltimoMovimientoIA_ = 0;
+	static const int INTERVALO_MOVIMIENTO_IA = 180;
+	static const int INTERVALO_ATAQUE_IA = 600;
 };
 

@@ -138,12 +138,51 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
             for (auto p : personajes) p->decrementarInmovilizacion();
         }
         else if (res == ResultadoMover::CHOQUE) {
+            // NO limpiar pendientes aqui: Tablero::resolverCombate() los necesita
+            // al terminar el combate y ya hace limpiarPendiente() al final.
             arena->iniciarCombate(tab_.getPendienteLocal(), tab_.getPendienteInvasor(), modo_actual);
-            tab_.limpiarPendiente();
             personaje_seleccionado = nullptr; casillas_iluminadas.clear();
             return Modos_juego::Arena_Combate;
         }
         personaje_seleccionado = nullptr; casillas_iluminadas.clear();
+    }
+    return Modos_juego::Partida;
+}
+
+Modos_juego Partida::turnoMaquina() {
+    // Solo juega la maquina en modo 1 jugador.
+    if (modo_actual != 1) return Modos_juego::Partida;
+    // No mover si el humano tiene abierto el popup de salir.
+    if (mostrar_popup)    return Modos_juego::Partida;
+
+    // equipo_j2 = bando de la IA (1 = mañana, 2 = tarde).
+    // turno_actual usa otra codificacion (0 = mañana, 1 = tarde).
+    int idxTurnoIA = equipo_j2 - 1;
+    if (turno_actual != idxTurnoIA) return Modos_juego::Partida;
+
+    Turno turnoIA = (equipo_j2 == 1) ? Turno::TURNO_DE_MANANA
+                                     : Turno::TURNO_DE_TARDE;
+
+    ResultadoMover res = ia_.jugarTurno(tab_, turnoIA);
+
+    if (res == ResultadoMover::CHOQUE) {
+        // Mismo flujo que el humano: abrir la arena de combate. NO limpiar
+        // pendientes aqui; resolverCombate() los consume y limpia al final.
+        arena->iniciarCombate(tab_.getPendienteLocal(),
+                               tab_.getPendienteInvasor(), modo_actual);
+        personaje_seleccionado = nullptr;
+        casillas_iluminadas.clear();
+        return Modos_juego::Arena_Combate;
+    }
+
+    if (res == ResultadoMover::OK) {
+        turno_actual = 1 - turno_actual;
+        for (auto p : personajes) p->decrementarInmovilizacion();
+    }
+    else {
+        // ILEGAL: la maquina no encontro jugada. Cede el turno para que la
+        // partida no se bloquee (caso extremo, casi imposible en la practica).
+        turno_actual = 1 - turno_actual;
     }
     return Modos_juego::Partida;
 }
@@ -174,6 +213,17 @@ void Partida::reset() {
     for (int f = 0; f < 9; f++) for (int c = 0; c < 9; c++) tab_.getCasilla(f, c).setPersonaje(nullptr);
     ETSIDI::stopMusica(); ETSIDI::playMusica("assets/sonidos/partida.mp3", true);
     mostrar_popup = false; modo_actual = modo_juego; turno_actual = turno_inicio;
+
+    // Limpiar estado transitorio que pueda apuntar a objetos que vamos a
+    // borrar, para no dejar punteros colgando al reiniciar la partida.
+    personaje_seleccionado = nullptr;
+    es_lider_seleccionado = false;
+    modo_teleport = modo_inmovilizar = modo_revivir = false;
+    casillas_iluminadas.clear();
+    delete carta_actual; carta_actual = nullptr;
+    nombre_carta_cargada = "";
+    tab_.limpiarPendiente();
+
     for (auto p : personajes) delete p; for (auto d : dibujos) delete d;
     personajes.clear(); dibujos.clear();
 

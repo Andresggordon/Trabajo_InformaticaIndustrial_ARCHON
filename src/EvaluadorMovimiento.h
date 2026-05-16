@@ -27,11 +27,6 @@ private:
     // que capturas (cuanto ganas) como lo que arriesgas (cuanto puedes perder).
     int valorPieza(const Personaje& p) const;
 
-    // Un mago/lider muerto = partida perdida, asi que vale muchisimo. La unica
-    // senal disponible para distinguirlo es getMenu() (no-const en Personaje),
-    // por eso el const_cast queda aislado AQUI y solo aqui.
-    bool esLider(const Personaje& p) const;
-
     // ¿Algun enemigo podria alcanzar `destino` en su proximo turno?
     bool casillaAmenazada(const Casilla& destino, const Personaje& piezaPropia,
                           const Tablero& tablero) const;

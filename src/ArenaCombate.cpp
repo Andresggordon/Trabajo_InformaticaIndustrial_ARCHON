@@ -23,6 +23,7 @@ void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo
 	tiempoUltimoAtaqueInvasor_ = ahora;
 
 	tiempoUltimoMovimiento_ = glutGet(GLUT_ELAPSED_TIME);
+	tiempoUltimoMovimientoIA_ = ahora;
 }
 
 bool ArenaCombate::moverEnArena(PosArena& pos, int df, int dc)
@@ -229,6 +230,48 @@ void ArenaCombate::actualizar() {
 		if (teclaA) moverEnArena(posLocal_, 0, -1);
 		if (teclaD) moverEnArena(posLocal_, 0, 1);
 		tiempoUltimoMovimiento_ = ahora;
+	}
+
+	// En modo 1 jugador la maquina controla al invasor_.
+	if (modo_ == 1) moverMaquina();
+}
+
+void ArenaCombate::moverMaquina() {
+	// La maquina (invasor_) persigue al jugador (local_) y le ataca cuando
+	// lo tiene a tiro. Solo se llama en modo 1 jugador: no afecta al modo 2.
+	if (combateTerminado_) return;
+	if (invasor_ == nullptr || local_ == nullptr) return;
+
+	int ahora = glutGet(GLUT_ELAPSED_TIME);
+
+	int distFila = abs(posLocal_.fila - posInvasor_.fila);
+	int distCol  = abs(posLocal_.columna - posInvasor_.columna);
+	int distancia = max(distFila, distCol);
+	int alcance = invasor_->getArma().getAlcance();
+
+	// 1. Si esta a tiro, atacar con su propia cadencia.
+	if (distancia <= alcance) {
+		if (ahora - tiempoUltimoAtaqueInvasor_ >= INTERVALO_ATAQUE_IA) {
+			aplicarAtaque(invasor_, local_);
+			tiempoUltimoAtaqueInvasor_ = ahora;
+		}
+		return;
+	}
+
+	// 2. Si esta lejos, un paso hacia el jugador con su propia cadencia.
+	if (ahora - tiempoUltimoMovimientoIA_ >= INTERVALO_MOVIMIENTO_IA) {
+		int df = 0, dc = 0;
+		if (posInvasor_.fila < posLocal_.fila) df = 1;
+		else if (posInvasor_.fila > posLocal_.fila) df = -1;
+		if (posInvasor_.columna < posLocal_.columna) dc = 1;
+		else if (posInvasor_.columna > posLocal_.columna) dc = -1;
+
+		// Intentar la diagonal; si esa celda esta bloqueada, probar por ejes.
+		if (!moverEnArena(posInvasor_, df, dc)) {
+			if (df != 0) moverEnArena(posInvasor_, df, 0);
+			else if (dc != 0) moverEnArena(posInvasor_, 0, dc);
+		}
+		tiempoUltimoMovimientoIA_ = ahora;
 	}
 }
 

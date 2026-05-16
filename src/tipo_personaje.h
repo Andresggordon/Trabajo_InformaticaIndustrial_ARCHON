@@ -26,6 +26,7 @@ public:
     int getFramesIdle() const override { return 8; }
 
     Menu_habilidades* getMenu() override { return &menu; }
+    bool esLider() const override { return true; }
 
 };
 
@@ -214,6 +215,7 @@ public:
     int getTiempoAnimacion() const override { return 350; }
 
     Menu_habilidades* getMenu() override { return &menu; }
+    bool esLider() const override { return true; }
 
 
 };

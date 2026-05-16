@@ -6,7 +6,8 @@
 #include "dibujo_personajes.h"
 #include "personaje.h"
 #include "tipo_personaje.h"
-#include "Tablero_vista.h" 
+#include "Tablero_vista.h"
+#include "IAJugador.h"
 
 extern int equipo_j1;
 extern int equipo_j2;
@@ -27,6 +28,7 @@ public:
     void dibuja();
     void update(int x, int y);
     Modos_juego click(int x, int y);
+    Modos_juego turnoMaquina();          // juega la maquina si le toca (modo 1 jug.)
     void teclado(unsigned char key);
     void reset();
     void dibujaextra();
@@ -47,6 +49,7 @@ private:
     Partida& operator=(const Partida&) = delete;
 
     Tablero tab_;
+    IAJugador ia_;   // cerebro de la maquina (modo 1 jugador)
 
     ETSIDI::Sprite* fondo;
     ETSIDI::Sprite* abandonar_partida;

@@ -152,7 +152,11 @@ void reposo() {
             Partida::get_instance().tablero().resolverCombate(arena->getResultado());
             arena->finalizarCombate();
             estado = Modos_juego::Partida;
-        } 
+        }
+    }
+    else if (estado == Modos_juego::Partida) {
+        // En modo 1 jugador, deja que la maquina mueva si es su turno.
+        estado = Partida::get_instance().turnoMaquina();
     }
     glutPostRedisplay();
 }
