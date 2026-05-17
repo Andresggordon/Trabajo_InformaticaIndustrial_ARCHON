@@ -124,10 +124,12 @@ void ArenaCombate::resolverResultado()
 	if (local_->estaVivo())
 	{
 		resultado_ = ResultadoCombate::Gana_Local;
+		local_->curar(local_->getVidaMax());
 	}
 	else
 	{
 		resultado_ = ResultadoCombate::Gana_Invasor;
+		invasor_->curar(invasor_->getVidaMax());
 	}
 }
 
@@ -142,7 +144,7 @@ ResultadoCombate ArenaCombate::getResultado() const
 }
 
 ArenaCombate::ArenaCombate() {
-	fondo_arena = new ETSIDI::Sprite("assets/menu_imagenes/gulag123.png", 0, 0, 600, 600);
+	fondo_arena = new ETSIDI::Sprite("assets/menu_imagenes/GulagDefinitivo.png", 0, 0, 600, 600);
 	abandonar_partida = new ETSIDI::Sprite("assets/menu_imagenes/boton_abandonar.png", 0, 0, 800, 800);
 	popup_salir = new ETSIDI::Sprite("assets/menu_imagenes/popup_salir.png", 0, 0, 800, 800);
 	posLocal_ = { 5, 2 };
@@ -189,6 +191,7 @@ Modos_juego ArenaCombate::click(int x, int y) {
 	float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
 	ETSIDI::play("assets/sonidos/click.mp3");
+
 
 	int col = (int)((cx - MotorGrafico::INICIO_X) / MotorGrafico::TAM);
 	int fil = (int)((cy - MotorGrafico::INICIO_Y) / MotorGrafico::TAM);

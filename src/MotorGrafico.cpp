@@ -242,6 +242,7 @@ void MotorGrafico::dibujarArena() {
 
     dibujarFondoArena();
     dibujarPersonajesArena(local, invasor);
+    dibujarBarrasHP(local, invasor);
 }
 
 void MotorGrafico::dibujarFondoArena() {
@@ -433,5 +434,76 @@ void MotorGrafico::dibujarVidaPanel(Personaje* p) {
     glPopAttrib();
 }
 
+void MotorGrafico::dibujarBarrasHP(Personaje* local, Personaje* invasor) {
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(-400, 400, -400, 400);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
+    glDisable(GL_LIGHTING);
+
+    // ── Barra HP local (izquierda) ──────────────
+    float xIniL = -228.f, xFinL = -76.f;
+    float ySupL = -265.f, yInfL = -274.f;
+
+    if (local != nullptr) {
+        float pct = local->getPorcentajeVida();
+        float xVidaL = xIniL + (xFinL - xIniL) * pct;
+
+        // Fondo rojo (vida perdida)
+        glColor3f(0.6f, 0.0f, 0.0f);
+        glBegin(GL_QUADS);
+        glVertex2f(xIniL, yInfL);
+        glVertex2f(xFinL, yInfL);
+        glVertex2f(xFinL, ySupL);
+        glVertex2f(xIniL, ySupL);
+        glEnd();
+
+        // Verde (vida restante)
+        glColor3f(0.0f, 0.8f, 0.0f);
+        glBegin(GL_QUADS);
+        glVertex2f(xIniL, yInfL);
+        glVertex2f(xVidaL, yInfL);
+        glVertex2f(xVidaL, ySupL);
+        glVertex2f(xIniL, ySupL);
+        glEnd();
+    }
+
+    // ── Barra HP invasor (derecha) ───────────────
+    float xIniR = 104.f, xFinR = 255.f;
+    float ySupR = -265.f, yInfR = -274.f;
+
+    if (invasor != nullptr) {
+        float pct = invasor->getPorcentajeVida();
+        float xVidaR = xIniR + (xFinR - xIniR) * pct;
+
+        // Fondo rojo (vida perdida)
+        glColor3f(0.6f, 0.0f, 0.0f);
+        glBegin(GL_QUADS);
+        glVertex2f(xIniR, yInfR);
+        glVertex2f(xFinR, yInfR);
+        glVertex2f(xFinR, ySupR);
+        glVertex2f(xIniR, ySupR);
+        glEnd();
+
+        // Verde (vida restante)
+        glColor3f(0.0f, 0.8f, 0.0f);
+        glBegin(GL_QUADS);
+        glVertex2f(xIniR, yInfR);
+        glVertex2f(xVidaR, yInfR);
+        glVertex2f(xVidaR, ySupR);
+        glVertex2f(xIniR, ySupR);
+        glEnd();
+    }
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopAttrib();
+}
 
 

@@ -19,6 +19,7 @@ public:
 
     void dibujar();
     void dibujarArena();
+    void dibujarBarrasHP(Personaje* local, Personaje* invasor);
 
     // FUNCIONES DE DIBUJO (Trasladadas desde Partida para cumplir normativa)
     void dibujaSeleccion(Personaje* seleccionado, const std::vector<Casilla*>& iluminadas);
