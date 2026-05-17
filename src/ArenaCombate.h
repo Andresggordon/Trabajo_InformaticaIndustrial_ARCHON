@@ -2,7 +2,10 @@
 #include "personaje.h"
 #include "Modos_juego.h"
 #include "ETSIDI.h"
+#include <vector>
 
+
+class Proyectil;
 
 //El personaje LOCAL es aquel que se encuentra en la casilla mientras el INVASOR es el personaje que se desplaza a la casilla
 
@@ -29,6 +32,7 @@ public:
 	void update(int x, int y);
 	Modos_juego click(int x, int y);
 	void dibujaPopup();
+	void dibujarProyectiles();
 
 	struct PosArena
 	{
@@ -43,6 +47,9 @@ private:
 	Personaje* local_ = nullptr; //Declaración de los personajes
 	Personaje* invasor_ = nullptr;
 	int modo_ = 1;
+
+
+	std::vector<Proyectil*> proyectiles_;
 
 	static const int Filas_Arena = 11;
 	static const int Columnas_Arena = 11;
@@ -84,7 +91,7 @@ private:
 
 	//Cadencias propias de la IA de la arena (solo modo 1 jugador)
 	int tiempoUltimoMovimientoIA_ = 0;
-	static const int INTERVALO_MOVIMIENTO_IA = 180;
+	static const int INTERVALO_MOVIMIENTO_IA = 150;
 	static const int INTERVALO_ATAQUE_IA = 600;
 };
 

@@ -20,6 +20,9 @@ public:
 
     stats getArma() const { return arma; }
 
+    virtual std::string getNombreProyectil() const { return ""; }
+    virtual float getVelocidadProyectil() const { return 5.0f; }
+
 
     // Métodos virtuales puros — cada subclase los implementa
     virtual int         getRadioMovimiento() const = 0;

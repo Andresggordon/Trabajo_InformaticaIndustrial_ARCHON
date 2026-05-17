@@ -49,8 +49,10 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartamicrom
     int getFramesIdle() const override { return 8; }
     int getTiempoAnimacion() const override { return 200; }
 
-
-
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/cero.png";
+    }
+    float getVelocidadProyectil() const override { return 6.0f; }
 };
 
 class Multimetro : public Terrestre {
@@ -142,6 +144,11 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartamotoe.
     float getOffsetX() const override { return 35.0f; }
     float getOffsetY() const override { return 0.0f; }
     int getTiempoAnimacion() const override { return 80; }
+
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/rayo.png";
+    }
+    float getVelocidadProyectil() const override { return 9.0f; }
 };
 
 class Copilot : public Volador {
@@ -240,7 +247,10 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartamicrot
     int getFramesIdle() const override { return 8; }
     int getTiempoAnimacion() const override { return 150; }
 
-
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/uno.png";
+    }
+    float getVelocidadProyectil() const override { return 6.0f; }
 
 };
 
@@ -340,7 +350,11 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartamotop.
 
     int getTiempoAnimacion() const override { return 100; }
 
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/gasolina.png";
+    }
 
+    float getVelocidadProyectil() const override { return 8.0f; }
 };
 
 class Gemini : public Volador {

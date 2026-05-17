@@ -3,6 +3,15 @@
 #include "personaje.h"
 #include "tipo_personaje.h"
 #include <GL/freeglut.h>
+#include "Proyectil.h"
+
+// Convierte posición en cuadrícula a coordenadas OpenGL
+static float arenaToX(int columna) {
+	return -270.0f + columna * 55.0f;
+}
+static float arenaToY(int fila) {
+	return -270.0f + fila * 55.0f;
+}
 
 void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo)
 {
@@ -133,7 +142,7 @@ ResultadoCombate ArenaCombate::getResultado() const
 }
 
 ArenaCombate::ArenaCombate() {
-	fondo_arena = new ETSIDI::Sprite("assets/menu_imagenes/ArenaCombate1.png", 0, 0, 600, 600);
+	fondo_arena = new ETSIDI::Sprite("assets/menu_imagenes/gulag123.png", 0, 0, 600, 600);
 	abandonar_partida = new ETSIDI::Sprite("assets/menu_imagenes/boton_abandonar.png", 0, 0, 800, 800);
 	popup_salir = new ETSIDI::Sprite("assets/menu_imagenes/popup_salir.png", 0, 0, 800, 800);
 	posLocal_ = { 5, 2 };
@@ -202,21 +211,28 @@ Modos_juego ArenaCombate::click(int x, int y) {
 } 
 
 void ArenaCombate::aplicarAtaque(Personaje* atacante, Personaje* defensor) {
-	// Calcular distancia entre los dos personajes en la cuadrícula
+	if (atacante == nullptr || defensor == nullptr) return;
+	if (combateTerminado_) return;
+
 	int distFila = abs(posLocal_.fila - posInvasor_.fila);
 	int distCol = abs(posLocal_.columna - posInvasor_.columna);
 	int distancia = max(distFila, distCol);
 
-	// Comprobar que el atacante tiene alcance suficiente
 	int alcance = atacante->getArma().getAlcance();
-	if (distancia > alcance) return;  // fuera de rango
+	if (distancia > alcance) return;
 
-	// Aplicar daño
-	defensor->recibirDano(atacante->getArma().getDanio());
+	bool esLocal = (atacante == local_);
+	float ox = arenaToX(esLocal ? posLocal_.columna : posInvasor_.columna);
+	float oy = arenaToY(esLocal ? posLocal_.fila : posInvasor_.fila);
+	float dx = arenaToX(esLocal ? posInvasor_.columna : posLocal_.columna);
+	float dy = arenaToY(esLocal ? posInvasor_.fila : posLocal_.fila);
+	float velocidad = atacante->getVelocidadProyectil();
 
-	// Comprobar si murió
-	if (!defensor->estaVivo())
-		resolverResultado();
+	proyectiles_.push_back(new Proyectil(ox, oy, dx, dy,
+		atacante->getArma().getDanio(),
+		velocidad,
+		atacante->getNombreProyectil(),
+		esLocal));
 }
 
 void ArenaCombate::actualizar() {
@@ -230,6 +246,33 @@ void ArenaCombate::actualizar() {
 		if (teclaA) moverEnArena(posLocal_, 0, -1);
 		if (teclaD) moverEnArena(posLocal_, 0, 1);
 		tiempoUltimoMovimiento_ = ahora;
+	}
+	// Actualizar proyectiles
+	for (auto p : proyectiles_)
+		p->actualizar();
+
+	// Detectar impactos y aplicar daño
+	for (auto p : proyectiles_) {
+		if (p->haLlegado()) {
+			// Determinar quién recibe el daño
+			Personaje* defensor = p->esDeLocal() ? invasor_ : local_;
+			if (defensor != nullptr && defensor->estaVivo()) {
+				defensor->recibirDano(p->getDano());
+				if (!defensor->estaVivo())
+					resolverResultado();
+			}
+		}
+	}
+
+	// Eliminar proyectiles que han llegado
+	for (auto it = proyectiles_.begin(); it != proyectiles_.end();) {
+		if ((*it)->haLlegado()) {
+			delete* it;
+			it = proyectiles_.erase(it);
+		}
+		else {
+			++it;
+		}
 	}
 
 	// En modo 1 jugador la maquina controla al invasor_.
@@ -282,4 +325,9 @@ void ArenaCombate::teclaLevantada(unsigned char key) {
 	case 'a': teclaA = false; break;
 	case 'd': teclaD = false; break;
 	}
+}
+
+void ArenaCombate::dibujarProyectiles() {
+	for (auto p : proyectiles_)
+		p->dibujar();
 }
