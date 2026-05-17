@@ -60,31 +60,18 @@ Modos_juego Eleccion2_1jugador::click(int x, int y) {
         return Modos_juego::Eleccion_1jugador;
     }
     else if (cx >= -88 && cx <= 106 && cy >= 31 && cy <= 51) {
-            ETSIDI::play("assets/sonidos/click.mp3");
-            return Modos_juego::Partida;
-    }
-        else if (cx >= -65 && cx <= 85 && cy >= -5 && cy <= 14) {
-            ETSIDI::play("assets/sonidos/click.mp3");
-            return Modos_juego::Partida;
-        }
-        else if (cx >= -89 && cx <= 2 && cy >= -39 && cy <= -20) {
-            ETSIDI::play("assets/sonidos/click.mp3");
-            return Modos_juego::Partida;
-        }
-
-    else if (cx >= -88 && cx <= 106 && cy >= 31 && cy <= 51) {
         ETSIDI::play("assets/sonidos/click.mp3");
-        turno_inicio = 1;  // mañana primero
+        turno_inicio = 0;  // mañana primero (0 = mañana, misma codificacion que turno_actual)
         return Modos_juego::Partida;
     }
     else if (cx >= -65 && cx <= 85 && cy >= -5 && cy <= 14) {
         ETSIDI::play("assets/sonidos/click.mp3");
-        turno_inicio = 2;  // tarde primero
+        turno_inicio = 1;  // tarde primero (1 = tarde, misma codificacion que turno_actual)
         return Modos_juego::Partida;
     }
     else if (cx >= -89 && cx <= 2 && cy >= -39 && cy <= -20) {
         ETSIDI::play("assets/sonidos/click.mp3");
-        turno_inicio = ETSIDI::lanzaMoneda() ? 1 : 2;  // random
+        turno_inicio = ETSIDI::lanzaMoneda() ? 0 : 1;  // aleatorio
         return Modos_juego::Partida;
     }
     return Modos_juego::Eleccion2_1jugador;

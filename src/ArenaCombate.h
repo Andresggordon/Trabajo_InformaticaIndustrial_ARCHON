@@ -2,7 +2,10 @@
 #include "personaje.h"
 #include "Modos_juego.h"
 #include "ETSIDI.h"
+#include <vector>
 
+
+class Proyectil;
 
 //El personaje LOCAL es aquel que se encuentra en la casilla mientras el INVASOR es el personaje que se desplaza a la casilla
 
@@ -22,8 +25,14 @@ public:
 	void dibuja();
 	void teclado(unsigned char key);
 	void tecladoEspecial(int key);
+	void teclaLevantada(unsigned char key);
 	Personaje* getLocal()   const { return local_; }
 	Personaje* getInvasor() const { return invasor_; }
+
+	void update(int x, int y);
+	Modos_juego click(int x, int y);
+	void dibujaPopup();
+	void dibujarProyectiles();
 
 	struct PosArena
 	{
@@ -32,13 +41,18 @@ public:
 	PosArena getPosLocal()   const { return posLocal_; }
 	PosArena getPosInvasor() const { return posInvasor_; }
 
+	void actualizar();
+
 private:
 	Personaje* local_ = nullptr; //Declaración de los personajes
 	Personaje* invasor_ = nullptr;
 	int modo_ = 1;
 
-	static const int Filas_Arena = 8;
-	static const int Columnas_Arena = 8.95;
+
+	std::vector<Proyectil*> proyectiles_;
+
+	static const int Filas_Arena = 11;
+	static const int Columnas_Arena = 11;
 
 	PosArena posLocal_;
 	PosArena posInvasor_;
@@ -50,4 +64,34 @@ private:
 	bool moverEnArena(PosArena& pos, int df, int dc);
 
 	ETSIDI::Sprite* fondo_arena = nullptr;
+	ETSIDI::Sprite* abandonar_partida;
+	ETSIDI::Sprite* popup_salir;
+	bool mostrar_popup=false;
+	int boton_activo=0;
+
+	//Lógica de Ataque
+	//Temporizadores de ataque (ms)
+	int tiempoUltimoAtaqueLocal_ = 0;
+	int tiempoUltimoAtaqueInvasor_ = 0;
+
+	//Métodos de ataque
+	void aplicarAtaque(Personaje* atacante, Personaje* defensor);
+
+	//IA de la maquina en modo 1 jugador: el invasor persigue y ataca al jugador.
+	void moverMaquina();
+	
+	//Teclas pulsadas
+	bool teclaW = false;
+	bool teclaS = false;
+	bool teclaA = false;
+	bool teclaD = false;
+
+	int tiempoUltimoMovimiento_ = 0;
+	static const int INTERVALO_MOVIMIENTO = 150;
+
+	//Cadencias propias de la IA de la arena (solo modo 1 jugador)
+	int tiempoUltimoMovimientoIA_ = 0;
+	static const int INTERVALO_MOVIMIENTO_IA = 150;
+	static const int INTERVALO_ATAQUE_IA = 600;
 };
+

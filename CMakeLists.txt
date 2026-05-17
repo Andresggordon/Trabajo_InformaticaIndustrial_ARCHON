@@ -5,7 +5,7 @@ project(TRABAJO_ARCHON)
 # 3. Configuración del estándar de C++
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-# 4. Escaneo automático de fuentes
+# 4. Escaneo automático de fuentes (incluye FinPartida, IAJugador, etc.)
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 file(GLOB_RECURSE HEADERS "src/*.h")
 # 5. Rutas de cabeceras (.h)
@@ -20,7 +20,7 @@ link_directories(
     lib/ETSIDI_2019
 )
 # 7. Crear el ejecutable ARCHON
-add_executable(ARCHON ${SOURCES} ${HEADERS} "src/Finpartida.cpp" "src/Finpartida.h")
+add_executable(ARCHON ${SOURCES} ${HEADERS})
 # 8. Directorio de trabajo del depurador
 set_target_properties(ARCHON PROPERTIES
     VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:ARCHON>"

@@ -8,7 +8,7 @@ DibujoPersonaje::DibujoPersonaje(Personaje* p)
 
     if (p->getFramesIdle() > 1) {
         anim = new ETSIDI::SpriteSequence(ruta.c_str(),
-            p->getFramesIdle(), 1, 800, true); 
+            p->getFramesIdle(), 1, p->getTiempoAnimacion(), true);
     }
     else {
         sprite = new ETSIDI::Sprite(ruta.c_str());

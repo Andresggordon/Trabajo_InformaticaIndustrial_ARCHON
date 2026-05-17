@@ -1,7 +1,10 @@
 #pragma once
 #include "Casilla.h"
-#include "personaje.h"
+#include "ArenaCombate.h"
 
+class Personaje;
+class Casilla;
+enum class ResultadoMover;
 
 enum class FaseCiclo {
     MEDIODIA,
@@ -18,6 +21,8 @@ public:
     void avanzarCiclo();
 
     ResultadoMover moverPersonaje(Personaje* p, Casilla& destino);
+
+    void resolverCombate(ResultadoCombate resultado);
 
 
     // Ahora devuelven el objeto Casilla directamente

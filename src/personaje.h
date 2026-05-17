@@ -9,6 +9,7 @@ enum class Turno { TURNO_DE_MANANA, TURNO_DE_TARDE };
 enum class Movimiento { TIERRA, AIRE, TELETRANSPORTE };
 enum class ResultadoMover { OK,ILEGAL,CHOQUE};
 
+
 class Personaje {
 public:
     Personaje(std::string nombre_, int vida_,
@@ -17,16 +18,26 @@ public:
 
     virtual ~Personaje();
 
+    stats getArma() const { return arma; }
+
+    virtual std::string getNombreProyectil() const { return ""; }
+    virtual float getVelocidadProyectil() const { return 5.0f; }
+
 
     // Métodos virtuales puros — cada subclase los implementa
     virtual int         getRadioMovimiento() const = 0;
     virtual std::string getNombreSprite()    const = 0;
     virtual float       getTamanoSprite()    const = 0;
-   
+    virtual std::string getNombreCarta() const = 0;
 
     virtual Menu_habilidades* getMenu() { return nullptr; }
 
+    // Identifica al lider/mago del bando. Solo lo sobreescriben los profesores.
+    // Es const para poder consultarse desde codigo de solo lectura (p.ej. la IA).
+    virtual bool esLider() const { return false; }
+
     virtual int getFramesIdle() const { return 1; } // por defecto 1, no es puro
+	virtual int getTiempoAnimacion() const { return 500; } // por defecto 500ms, no es puro
 
     // Offset de cada sprite
     virtual float getOffsetX() const { return 0.0f; }
@@ -48,20 +59,7 @@ public:
     bool        getInmovilizado()    const { return turnos_inmovilizado > 0; }
     Movimiento  getMovimiento()      const;
     Turno       getTurno()           const { return turno; }
-
-
-    int getPosX() const;
-    int getPosY() const;
-    Casilla* getCasillaActual() const;
-
-    float getPorcentajeVida() const;
-    int getVidaActual() const;
-    int getVidaMax() const;
-    bool getInmovilizado() const { return turnos_inmovilizado > 0; }
-    Movimiento getMovimiento() const;
-
-    Turno getTurno() const { return turno; }
-    bool estaEncarcelado() const { return encarcelado; }
+    bool        estaEncarcelado()    const { return encarcelado; }
 
     // Setters
     /*void setPosicion(int x_, int y_);*/

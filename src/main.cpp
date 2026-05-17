@@ -59,9 +59,17 @@ void display() {
         Partida::get_instance().dibujaSeleccion(); // 3. Selección de casilla
         Partida::get_instance().dibujaHabilidades(); // 4. Dibujar habilidades
         Partida::get_instance().dibujaextra();        // 5. exit y popup encima de todo
+        Partida::get_instance().dibujaInmovilizados(); //6. Personaje inmovilizado
+        Partida::get_instance().dibujaBarrasVida(); // 7. Barras de vida  
+
     }
     else if (estado == Modos_juego::Arena_Combate)
+    {
         MotorGrafico::get_instance().dibujarArena();
+        arena->dibujarProyectiles();
+        arena->dibujaPopup();
+    }
+       
     glutSwapBuffers();
 }
 
@@ -78,6 +86,8 @@ void mouseMove(int x, int y) {
         ranking->update(x, y);
     else if (estado == Modos_juego::Partida)
         Partida::get_instance().update(x, y);
+    else if (estado == Modos_juego::Arena_Combate)
+        arena->update(x, y);
     glutPostRedisplay();
 }
 
@@ -97,14 +107,14 @@ void mouseClick(int button, int estadoBtn, int x, int y) {
             estado = ranking->click(x, y);
         else if (estado == Modos_juego::Partida)
             estado = Partida::get_instance().click(x, y);
+        else if (estado == Modos_juego::Arena_Combate)
+            estado = arena->click(x, y);
 
         if (estado == Modos_juego::Partida && estado_anterior != Modos_juego::Partida)
             Partida::get_instance().reset();
 
-        if (estado == Modos_juego::Partida && estado_anterior != Modos_juego::Partida)
-            Partida::get_instance().reset();
+        glutPostRedisplay();
     }
-    glutPostRedisplay();
 }
 
 void teclado(unsigned char key, int x, int y) {
@@ -115,6 +125,7 @@ void teclado(unsigned char key, int x, int y) {
     }
     else if (estado == Modos_juego::Partida) {
         Partida::get_instance().teclado(key);
+        Partida::get_instance().tecladoHabilidades(key);
     }
     else if (estado == Modos_juego::Arena_Combate) {  
         arena->teclado(key);
@@ -134,7 +145,26 @@ void reposo() {
         if (pantalla_carga->carga_completa)
             estado = Modos_juego::MENU;
     }
+    else if (estado == Modos_juego::Arena_Combate)
+    {
+        arena->actualizar();
+
+        if (arena->combateTerminado()) {
+            Partida::get_instance().tablero().resolverCombate(arena->getResultado());
+            arena->finalizarCombate();
+            estado = Modos_juego::Partida;
+        }
+    }
+    else if (estado == Modos_juego::Partida) {
+        // En modo 1 jugador, deja que la maquina mueva si es su turno.
+        estado = Partida::get_instance().turnoMaquina();
+    }
     glutPostRedisplay();
+}
+
+void tecladoUp(unsigned char key, int x, int y) {
+    if (estado == Modos_juego::Arena_Combate)
+        arena->teclaLevantada(key);
 }
 
 int main(int argc, char** argv) {
@@ -165,6 +195,7 @@ int main(int argc, char** argv) {
     glutIdleFunc(reposo);
     glutReshapeFunc(reshape);
     glutSpecialFunc(tecladoEspecial);
+    glutKeyboardUpFunc(tecladoUp);
     glutMainLoop();
     return 0;
 }

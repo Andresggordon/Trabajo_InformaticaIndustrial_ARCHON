@@ -1,5 +1,17 @@
 #include "ArenaCombate.h"
+#include "MotorGrafico.h"
+#include "personaje.h"
+#include "tipo_personaje.h"
 #include <GL/freeglut.h>
+#include "Proyectil.h"
+
+// Convierte posición en cuadrícula a coordenadas OpenGL
+static float arenaToX(int columna) {
+	return -270.0f + columna * 55.0f;
+}
+static float arenaToY(int fila) {
+	return -270.0f + fila * 55.0f;
+}
 
 void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo)
 {
@@ -7,11 +19,20 @@ void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo
 	invasor_ = invasor;
 	modo_ = modo;
 
-	posLocal_ = { 4,1 };
-	posInvasor_ = { 4,6 };
+	posLocal_ = { 5,2 };
+	posInvasor_ = { 5,8 };
 
 	combateTerminado_ = false;
 	resultado_ = ResultadoCombate::Gana_Local;
+
+	mostrar_popup = false;
+
+	int ahora = glutGet(GLUT_ELAPSED_TIME);
+	tiempoUltimoAtaqueLocal_ = ahora;
+	tiempoUltimoAtaqueInvasor_ = ahora;
+
+	tiempoUltimoMovimiento_ = glutGet(GLUT_ELAPSED_TIME);
+	tiempoUltimoMovimientoIA_ = ahora;
 }
 
 bool ArenaCombate::moverEnArena(PosArena& pos, int df, int dc)
@@ -42,16 +63,27 @@ void ArenaCombate::teclado(unsigned char key)
 	switch (key)
 	{
 	case 'w':
-		moverEnArena(posLocal_, 1, 0);
+		teclaW=true;
 		break;
 	case 's':
-		moverEnArena(posLocal_, -1, 0);
+		teclaS=true;
 		break;
 	case 'a':
-		moverEnArena(posLocal_, 0, -1);
+		teclaA=true;
 		break;
 	case 'd':
-		moverEnArena(posLocal_, 0, 1);
+		teclaD=true;
+		break;
+
+		// Ataque jugador 1 (espacio) — funciona en modo 1 y 2
+	case 32:
+		aplicarAtaque(local_, invasor_);
+		break;
+
+		// Ataque jugador 2 (Enter) — solo modo 2 jugadores
+	case 13:
+		if (modo_ == 2)
+			aplicarAtaque(invasor_, local_);
 		break;
 	}
 }
@@ -92,10 +124,12 @@ void ArenaCombate::resolverResultado()
 	if (local_->estaVivo())
 	{
 		resultado_ = ResultadoCombate::Gana_Local;
+		local_->curar(local_->getVidaMax());
 	}
 	else
 	{
 		resultado_ = ResultadoCombate::Gana_Invasor;
+		invasor_->curar(invasor_->getVidaMax());
 	}
 }
 
@@ -110,11 +144,193 @@ ResultadoCombate ArenaCombate::getResultado() const
 }
 
 ArenaCombate::ArenaCombate() {
-	fondo_arena = new ETSIDI::Sprite("assets/menu_imagenes/ArenaCombate1.png", 0, 0, 600, 600);
-	posLocal_ = { 5, 1 };
-	posInvasor_ = { 5, 9 };
+	fondo_arena = new ETSIDI::Sprite("assets/menu_imagenes/GulagDefinitivo.png", 0, 0, 600, 600);
+	abandonar_partida = new ETSIDI::Sprite("assets/menu_imagenes/boton_abandonar.png", 0, 0, 800, 800);
+	popup_salir = new ETSIDI::Sprite("assets/menu_imagenes/popup_salir.png", 0, 0, 800, 800);
+	posLocal_ = { 5, 2 };
+	posInvasor_ = { 5, 8 };
 }
 
 void ArenaCombate::dibuja() {
 	fondo_arena->draw();
+}
+
+void ArenaCombate::dibujaPopup()
+{
+	abandonar_partida->draw();
+	if (mostrar_popup) popup_salir->draw();
+}
+
+void ArenaCombate::update(int x, int y) {
+	int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
+	int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
+	int tam = min(ventana_w, ventana_h);
+	int offsetX = (ventana_w - tam) / 2;
+	int offsetY = (ventana_h - tam) / 2;
+	float cx = ((x - offsetX) / (float)tam) * 800 - 400;
+	float cy = 400 - ((y - offsetY) / (float)tam) * 800;
+
+	if (!mostrar_popup) {
+		if (cx >= 304 && cx <= 342 && cy >= -354 && cy <= -274) boton_activo = 1;
+		else boton_activo = 0;
+	}
+	else {
+		if (cx >= -153 && cx <= -57 && cy >= -43 && cy <= -5) boton_activo = 2;
+		else if (cx >= 15 && cx <= 108 && cy >= -46 && cy <= -4) boton_activo = 3;
+		else boton_activo = 0;
+	}
+}
+
+Modos_juego ArenaCombate::click(int x, int y) {
+	int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
+	int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
+	int tam = min(ventana_w, ventana_h);
+	int offsetX = (ventana_w - tam) / 2;
+	int offsetY = (ventana_h - tam) / 2;
+	float cx = ((x - offsetX) / (float)tam) * 800 - 400;
+	float cy = 400 - ((y - offsetY) / (float)tam) * 800;
+
+	ETSIDI::play("assets/sonidos/click.mp3");
+
+
+	int col = (int)((cx - MotorGrafico::INICIO_X) / MotorGrafico::TAM);
+	int fil = (int)((cy - MotorGrafico::INICIO_Y) / MotorGrafico::TAM);
+
+	if (mostrar_popup) {
+		if (cx >= -153 && cx <= -57 && cy >= -43 && cy <= -5) {
+			ETSIDI::stopMusica();
+			ETSIDI::playMusica("assets/sonidos/menu.mp3", true);
+			return Modos_juego::MENU;
+		}
+		else if (cx >= 15 && cx <= 108 && cy >= -46 && cy <= -4) mostrar_popup = false;
+		return Modos_juego::Arena_Combate;
+	}
+
+	if (cx >= 304 && cx <= 342 && cy >= -354 && cy <= -274) {
+		mostrar_popup = true;
+		return Modos_juego::Arena_Combate;
+	}
+	return Modos_juego::Arena_Combate;
+} 
+
+void ArenaCombate::aplicarAtaque(Personaje* atacante, Personaje* defensor) {
+	if (atacante == nullptr || defensor == nullptr) return;
+	if (combateTerminado_) return;
+
+	int distFila = abs(posLocal_.fila - posInvasor_.fila);
+	int distCol = abs(posLocal_.columna - posInvasor_.columna);
+	int distancia = max(distFila, distCol);
+
+	int alcance = atacante->getArma().getAlcance();
+	if (distancia > alcance) return;
+
+	bool esLocal = (atacante == local_);
+	float ox = arenaToX(esLocal ? posLocal_.columna : posInvasor_.columna);
+	float oy = arenaToY(esLocal ? posLocal_.fila : posInvasor_.fila);
+	float dx = arenaToX(esLocal ? posInvasor_.columna : posLocal_.columna);
+	float dy = arenaToY(esLocal ? posInvasor_.fila : posLocal_.fila);
+	float velocidad = atacante->getVelocidadProyectil();
+
+	proyectiles_.push_back(new Proyectil(ox, oy, dx, dy,
+		atacante->getArma().getDanio(),
+		velocidad,
+		atacante->getNombreProyectil(),
+		esLocal));
+}
+
+void ArenaCombate::actualizar() {
+	if (combateTerminado_) return;
+
+	int ahora = glutGet(GLUT_ELAPSED_TIME);
+
+	if (ahora - tiempoUltimoMovimiento_ >= INTERVALO_MOVIMIENTO) {
+		if (teclaW) moverEnArena(posLocal_, 1, 0);
+		if (teclaS) moverEnArena(posLocal_, -1, 0);
+		if (teclaA) moverEnArena(posLocal_, 0, -1);
+		if (teclaD) moverEnArena(posLocal_, 0, 1);
+		tiempoUltimoMovimiento_ = ahora;
+	}
+	// Actualizar proyectiles
+	for (auto p : proyectiles_)
+		p->actualizar();
+
+	// Detectar impactos y aplicar daño
+	for (auto p : proyectiles_) {
+		if (p->haLlegado()) {
+			// Determinar quién recibe el daño
+			Personaje* defensor = p->esDeLocal() ? invasor_ : local_;
+			if (defensor != nullptr && defensor->estaVivo()) {
+				defensor->recibirDano(p->getDano());
+				if (!defensor->estaVivo())
+					resolverResultado();
+			}
+		}
+	}
+
+	// Eliminar proyectiles que han llegado
+	for (auto it = proyectiles_.begin(); it != proyectiles_.end();) {
+		if ((*it)->haLlegado()) {
+			delete* it;
+			it = proyectiles_.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+
+	// En modo 1 jugador la maquina controla al invasor_.
+	if (modo_ == 1) moverMaquina();
+}
+
+void ArenaCombate::moverMaquina() {
+	// La maquina (invasor_) persigue al jugador (local_) y le ataca cuando
+	// lo tiene a tiro. Solo se llama en modo 1 jugador: no afecta al modo 2.
+	if (combateTerminado_) return;
+	if (invasor_ == nullptr || local_ == nullptr) return;
+
+	int ahora = glutGet(GLUT_ELAPSED_TIME);
+
+	int distFila = abs(posLocal_.fila - posInvasor_.fila);
+	int distCol  = abs(posLocal_.columna - posInvasor_.columna);
+	int distancia = max(distFila, distCol);
+	int alcance = invasor_->getArma().getAlcance();
+
+	// 1. Si esta a tiro, atacar con su propia cadencia.
+	if (distancia <= alcance) {
+		if (ahora - tiempoUltimoAtaqueInvasor_ >= INTERVALO_ATAQUE_IA) {
+			aplicarAtaque(invasor_, local_);
+			tiempoUltimoAtaqueInvasor_ = ahora;
+		}
+		return;
+	}
+
+	// 2. Si esta lejos, un paso hacia el jugador con su propia cadencia.
+	if (ahora - tiempoUltimoMovimientoIA_ >= INTERVALO_MOVIMIENTO_IA) {
+		int df = 0, dc = 0;
+		if (posInvasor_.fila < posLocal_.fila) df = 1;
+		else if (posInvasor_.fila > posLocal_.fila) df = -1;
+		if (posInvasor_.columna < posLocal_.columna) dc = 1;
+		else if (posInvasor_.columna > posLocal_.columna) dc = -1;
+
+		// Intentar la diagonal; si esa celda esta bloqueada, probar por ejes.
+		if (!moverEnArena(posInvasor_, df, dc)) {
+			if (df != 0) moverEnArena(posInvasor_, df, 0);
+			else if (dc != 0) moverEnArena(posInvasor_, 0, dc);
+		}
+		tiempoUltimoMovimientoIA_ = ahora;
+	}
+}
+
+void ArenaCombate::teclaLevantada(unsigned char key) {
+	switch (key) {
+	case 'w': teclaW = false; break;
+	case 's': teclaS = false; break;
+	case 'a': teclaA = false; break;
+	case 'd': teclaD = false; break;
+	}
+}
+
+void ArenaCombate::dibujarProyectiles() {
+	for (auto p : proyectiles_)
+		p->dibujar();
 }

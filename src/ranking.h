@@ -9,8 +9,6 @@ public:
     void update(int x, int y);
     Modos_juego click(int x, int y);
 
-
-
 private:
     ETSIDI::Sprite* fondo2;
     ETSIDI::Sprite* back;

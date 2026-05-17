@@ -4,10 +4,12 @@
 #include "tipo_personaje.h"
 #include "Modos_juego.h"
 #include "ArenaCombate.h"
-#include "FinPartida.h"
-#include <iostream> 
-extern ArenaCombate* arena;
+#include "Finpartida.h"
+#include "Geometria.h"
+#include <iostream>
+#include <string>
 
+extern ArenaCombate* arena;
 
 Partida::Partida() {
     fondo = new ETSIDI::Sprite("assets/menu_imagenes/fondo_partida.png", 0, 0, 800, 800);
@@ -17,16 +19,23 @@ Partida::Partida() {
     boton_activo = 0;
 }
 
-void Partida::dibuja() {
-    fondo->draw();  // solo el fondo
-}
+void Partida::dibuja() { fondo->draw(); }
 
 void Partida::dibujaextra() {
-    abandonar_partida->draw();  // exit encima de todo
-    if (mostrar_popup)
-        popup_salir->draw();
+    abandonar_partida->draw();
+    if (mostrar_popup) popup_salir->draw();
+    if (personaje_seleccionado != nullptr) {
+        std::string ruta = personaje_seleccionado->getNombreCarta();
+        if (ruta != nombre_carta_cargada) {
+            delete carta_actual;
+            carta_actual = new ETSIDI::Sprite(ruta.c_str(), 0, 0, 800, 800);
+            nombre_carta_cargada = ruta;
+        }
+        carta_actual->draw();
+        MotorGrafico::get_instance().dibujarVidaPanel(personaje_seleccionado);
+    }
+    else { nombre_carta_cargada = ""; }
 }
-
 
 void Partida::update(int x, int y) {
     int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
@@ -38,18 +47,13 @@ void Partida::update(int x, int y) {
     float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
     if (!mostrar_popup) {
-        if (cx >= 209 && cx <= 289 && cy >= -275 && cy <= -252)
-            boton_activo = 1;
-        else
-            boton_activo = 0;
+        if (cx >= 304 && cx <= 342 && cy >= -354 && cy <= -274) boton_activo = 1;
+        else boton_activo = 0;
     }
     else {
-        if (cx >= -153 && cx <= -57 && cy >= -43 && cy <= -5)
-            boton_activo = 2;
-        else if (cx >= 15 && cx <= 108 && cy >= -46 && cy <= -4)
-            boton_activo = 3;
-        else
-            boton_activo = 0;
+        if (cx >= -153 && cx <= -57 && cy >= -43 && cy <= -5) boton_activo = 2;
+        else if (cx >= 15 && cx <= 108 && cy >= -46 && cy <= -4) boton_activo = 3;
+        else boton_activo = 0;
     }
 }
 
@@ -59,329 +63,195 @@ Modos_juego Partida::click(int x, int y) {
     int tam = min(ventana_w, ventana_h);
     int offsetX = (ventana_w - tam) / 2;
     int offsetY = (ventana_h - tam) / 2;
-    ETSIDI::play("assets/sonidos/click.mp3");
     float cx = ((x - offsetX) / (float)tam) * 800 - 400;
     float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
-    float tam_casilla = MotorGrafico::TAM;
-    float inicioX = MotorGrafico::INICIO_X;
-    float inicioY = MotorGrafico::INICIO_Y;
-    int col = (int)((cx - inicioX) / tam_casilla);
-    int fil = (int)((cy - inicioY) / tam_casilla);
+    ETSIDI::play("assets/sonidos/click.mp3");
 
-    // Convertir coordenadas
-    float ox = ((float)x / 500.0f - 1.0f) * 400.0f;
-    float oy = (1.0f - (float)y / 500.0f) * 400.0f;
+    int col = (int)((cx - MotorGrafico::INICIO_X) / MotorGrafico::TAM);
+    int fil = (int)((cy - MotorGrafico::INICIO_Y) / MotorGrafico::TAM);
 
-    // Botones de habilidades
-    if (es_lider_seleccionado && personaje_seleccionado != nullptr) {  // ← añadir la comprobación
-        Menu_habilidades* menu = personaje_seleccionado->getMenu();
-        if (menu == nullptr) return Modos_juego::Partida;
-
-        // Revivir (-390,-390) → (-150,-340)
-        if (ox >= -390 && ox <= -150 && oy >= -390 && oy <= -340) {
-            int vida = personaje_seleccionado->getVidaActual();
-            int vidaMax = personaje_seleccionado->getVidaMax();
-            bool inmov = personaje_seleccionado->getInmovilizado();
-            int px = personaje_seleccionado->getPosX();
-            int py = personaje_seleccionado->getPosY();
-            menu->Usar_habilidad(habilidades::REVIVIR, vida, vidaMax, px, py, inmov);
-            personaje_seleccionado->setVida(vida);
-            modo_revivir = true;
-            return Modos_juego::Partida;
-        }
-
-        // Inmovilizar (-80,-390) → (80,-340)
-        if (ox >= -80 && ox <= 80 && oy >= -390 && oy <= -340) {
-            int vida = personaje_seleccionado->getVidaActual();
-            int vidaMax = personaje_seleccionado->getVidaMax();
-            bool inmov = personaje_seleccionado->getInmovilizado();
-            int px = personaje_seleccionado->getPosX();
-            int py = personaje_seleccionado->getPosY();
-            menu->Usar_habilidad(habilidades::INMOVILIZA, vida, vidaMax, px, py, inmov);
-            personaje_seleccionado->setInmovilizado(inmov);
-            modo_inmovilizar = true;
-            return Modos_juego::Partida;
-        }
-
-        // Teleport (150,-390) → (390,-340)
-        if (ox >= 150 && ox <= 390 && oy >= -390 && oy <= -340) {
-            modo_teleport = true;
-            return Modos_juego::Partida;
-        }
-    }
-
-    if (!mostrar_popup) {
-        if (cx >= 209 && cx <= 289 && cy >= -275 && cy <= -252)
-            mostrar_popup = true;
-        else if (col >= 0 && col < 9 && fil >= 0 && fil < 9)
-            return procesarClickTablero(fil, col);
-    }
-    else {
+    if (mostrar_popup) {
         if (cx >= -153 && cx <= -57 && cy >= -43 && cy <= -5) {
             ETSIDI::stopMusica();
             ETSIDI::playMusica("assets/sonidos/menu.mp3", true);
             return Modos_juego::MENU;
         }
-        else if (cx >= 15 && cx <= 108 && cy >= -46 && cy <= -4)
-            mostrar_popup = false;
+        else if (cx >= 15 && cx <= 108 && cy >= -46 && cy <= -4) mostrar_popup = false;
+        return Modos_juego::Partida;
     }
+
+    if (cx >= 304 && cx <= 342 && cy >= -354 && cy <= -274) {
+        mostrar_popup = true;
+        return Modos_juego::Partida;
+    }
+
+    if (col >= 0 && col < 9 && fil >= 0 && fil < 9) return procesarClickTablero(fil, col);
     return Modos_juego::Partida;
 }
 
 Modos_juego Partida::procesarClickTablero(int fil, int col) {
     Casilla& casilla = tab_.getCasilla(fil, col);
+    Menu_habilidades* menu = personaje_seleccionado ? personaje_seleccionado->getMenu() : nullptr;
 
     if (modo_teleport) {
-        if (personaje_seleccionado == nullptr) { 
-            modo_teleport = false;
-            return Modos_juego::Partida;
-        }
-        if (casilla.getPersonaje() == nullptr) {
-            personaje_seleccionado->getCasillaActual()->setPersonaje(nullptr);
-            casilla.setPersonaje(personaje_seleccionado);
-            personaje_seleccionado->setCasillaActual(&casilla);
-        }
-        modo_teleport = false;
-        personaje_seleccionado = nullptr;
-        turno_actual = 1 - turno_actual;
-        //return Modos_juego::Partida;
+        if (menu) menu->usarTeleport(personaje_seleccionado, &casilla);
+        if (menu && menu->puedeUsarTeleport() == false) turno_actual = 1 - turno_actual;
+        modo_teleport = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
         return comprobarFinPartida();
     }
 
     if (modo_inmovilizar) {
-        Personaje* objetivo = casilla.getPersonaje();
-        if (objetivo != nullptr && objetivo->getTurno() != personaje_seleccionado->getTurno()) {
-            objetivo->setInmovilizado(true);
+        Personaje* obj = casilla.getPersonaje();
+        if (menu && obj) {
+            bool ejecutado = menu->usarInmovilizar(personaje_seleccionado, obj);
+            if (ejecutado) turno_actual = 1 - turno_actual;
         }
-        modo_inmovilizar = false;
-        personaje_seleccionado = nullptr;
-        es_lider_seleccionado = false;
-        turno_actual = 1 - turno_actual;
-       // return Modos_juego::Partida;
+        modo_inmovilizar = false; personaje_seleccionado = nullptr;
+        es_lider_seleccionado = false; casillas_iluminadas.clear();
         return comprobarFinPartida();
     }
 
     if (modo_revivir) {
-        Personaje* objetivo = casilla.getPersonaje();
-        if (objetivo != nullptr
-            && objetivo->getTurno() == personaje_seleccionado->getTurno()
-            && !objetivo->estaVivo()) {
-            objetivo->setVida(objetivo->getVidaMax());
+        Personaje* obj = casilla.getPersonaje();
+        if (menu && obj) {
+            bool ejecutado = menu->usarRevivir(personaje_seleccionado, obj);
+            if (ejecutado) turno_actual = 1 - turno_actual;
         }
-        modo_revivir = false;
-        personaje_seleccionado = nullptr;
-        es_lider_seleccionado = false;
-        turno_actual = 1 - turno_actual;
-        //return Modos_juego::Partida;
+        modo_revivir = false; personaje_seleccionado = nullptr;
+        es_lider_seleccionado = false; casillas_iluminadas.clear();
         return comprobarFinPartida();
     }
 
     if (personaje_seleccionado == nullptr) {
         Personaje* p = casilla.getPersonaje();
-        if (p != nullptr && p->estaVivo()) {
-            bool es_manana = (p->getTurno() == Turno::TURNO_DE_MANANA);
-            bool turno_ok = (turno_actual == 0 && es_manana) ||
-                (turno_actual == 1 && !es_manana);
+        if (p && p->estaVivo()) {
+            bool turno_ok = (turno_actual == 0 && p->getTurno() == Turno::TURNO_DE_MANANA) ||
+                (turno_actual == 1 && p->getTurno() == Turno::TURNO_DE_TARDE);
             if (turno_ok) {
                 personaje_seleccionado = p;
                 es_lider_seleccionado = (p->getMenu() != nullptr);
+                casillas_iluminadas = Geometria::getCasillasAccesibles(*p, tab_);
             }
         }
     }
     else {
         ResultadoMover res = tab_.moverPersonaje(personaje_seleccionado, casilla);
-
         if (res == ResultadoMover::OK) {
             turno_actual = 1 - turno_actual;
-            for (auto p : personajes)
-                p->decrementarInmovilizacion();
+            for (auto p : personajes) p->decrementarInmovilizacion();
 
             Modos_juego fin = comprobarFinPartida();
             if (fin != Modos_juego::Partida) return fin;
         }
         else if (res == ResultadoMover::CHOQUE) {
-            arena->iniciarCombate(
-                tab_.getPendienteLocal(),
-                tab_.getPendienteInvasor(),
-                modo_actual
-            );
-            tab_.limpiarPendiente();
-            personaje_seleccionado = nullptr;
-            es_lider_seleccionado = false;
+            // NO limpiar pendientes aqui: Tablero::resolverCombate() los necesita
+            // al terminar el combate y ya hace limpiarPendiente() al final.
+            arena->iniciarCombate(tab_.getPendienteLocal(), tab_.getPendienteInvasor(), modo_actual);
+            personaje_seleccionado = nullptr; casillas_iluminadas.clear();
             return Modos_juego::Arena_Combate;
         }
-
-        personaje_seleccionado = nullptr;
-        es_lider_seleccionado = false;
-        return Modos_juego::Partida;
+        personaje_seleccionado = nullptr; casillas_iluminadas.clear();
     }
     return Modos_juego::Partida;
 }
 
-void Partida::dibujaSeleccion() {
+Modos_juego Partida::turnoMaquina() {
+    // Solo juega la maquina en modo 1 jugador.
+    if (modo_actual != 1) return Modos_juego::Partida;
+    // No mover si el humano tiene abierto el popup de salir.
+    if (mostrar_popup)    return Modos_juego::Partida;
 
-    if (personaje_seleccionado == nullptr) return;
+    // equipo_j2 = bando de la IA (1 = mañana, 2 = tarde).
+    // turno_actual usa otra codificacion (0 = mañana, 1 = tarde).
+    int idxTurnoIA = equipo_j2 - 1;
+    if (turno_actual != idxTurnoIA) return Modos_juego::Partida;
 
-    Casilla* c = personaje_seleccionado->getCasillaActual();
-    float tam = MotorGrafico::TAM;
-    float inicioX = MotorGrafico::INICIO_X;
-    float inicioY = MotorGrafico::INICIO_Y;
+    Turno turnoIA = (equipo_j2 == 1) ? Turno::TURNO_DE_MANANA
+                                     : Turno::TURNO_DE_TARDE;
 
-    float x0 = inicioX + c->getCol() * tam;
-    float y0 = inicioY + c->getFila() * tam;
+    ResultadoMover res = ia_.jugarTurno(tab_, turnoIA);
 
-    glPushAttrib(GL_ALL_ATTRIB_BITS);  // guarda todo el estado
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_BLEND);
-    glDisable(GL_LIGHTING);
+    if (res == ResultadoMover::CHOQUE) {
+        // Mismo flujo que el humano: abrir la arena de combate. NO limpiar
+        // pendientes aqui; resolverCombate() los consume y limpia al final.
+        arena->iniciarCombate(tab_.getPendienteLocal(),
+                               tab_.getPendienteInvasor(), modo_actual);
+        personaje_seleccionado = nullptr;
+        casillas_iluminadas.clear();
+        return Modos_juego::Arena_Combate;
+    }
 
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(-400, 400, -400, 400);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glColor3f(0.0f, 1.0f, 0.0f);  // verde puro
-    glLineWidth(4.0f);
-    glBegin(GL_LINE_LOOP);
-    glVertex2f(x0, y0);
-    glVertex2f(x0 + tam, y0);
-    glVertex2f(x0 + tam, y0 + tam);
-    glVertex2f(x0, y0 + tam);
-    glEnd();
-
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopAttrib();  // restaura todo el estado anterior
+    if (res == ResultadoMover::OK) {
+        turno_actual = 1 - turno_actual;
+        for (auto p : personajes) p->decrementarInmovilizacion();
+    }
+    else {
+        // ILEGAL: la maquina no encontro jugada. Cede el turno para que la
+        // partida no se bloquee (caso extremo, casi imposible en la practica).
+        turno_actual = 1 - turno_actual;
+    }
+    return Modos_juego::Partida;
 }
 
-void Partida::dibujaHabilidades() {
-    if (!es_lider_seleccionado) return;
-    if (modo_teleport || modo_inmovilizar || modo_revivir) return;  // Ocultar botones mientras espera destino
-
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(-400, 400, -400, 400);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_LIGHTING);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    // Botón Revivir (izquierda)
-    glColor3f(0.2f, 0.6f, 0.2f);
-    glBegin(GL_QUADS);
-    glVertex2f(-390, -390); glVertex2f(-150, -390);
-    glVertex2f(-150, -340); glVertex2f(-390, -340);
-    glEnd();
-
-    // Botón Inmovilizar (centro)
-    glColor3f(0.6f, 0.2f, 0.2f);
-    glBegin(GL_QUADS);
-    glVertex2f(-80, -390); glVertex2f(80, -390);
-    glVertex2f(80, -340);  glVertex2f(-80, -340);
-    glEnd();
-
-    // Botón Teleport (derecha)
-    glColor3f(0.2f, 0.2f, 0.7f);
-    glBegin(GL_QUADS);
-    glVertex2f(150, -390); glVertex2f(390, -390);
-    glVertex2f(390, -340); glVertex2f(150, -340);
-    glEnd();
-
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glPopAttrib();
+void Partida::tecladoHabilidades(unsigned char key) {
+    if (!es_lider_seleccionado || !personaje_seleccionado) return;
+    Menu_habilidades* menu = personaje_seleccionado->getMenu();
+    if (!menu) return;
+    modo_revivir = false; modo_inmovilizar = false; modo_teleport = false;
+    if (key == '1' && menu->puedeUsarRevivir()) modo_revivir = true;
+    if (key == '2' && menu->puedeUsarInmovilizar()) modo_inmovilizar = true;
+    if (key == '3' && menu->puedeUsarTeleport()) modo_teleport = true;
+    glutPostRedisplay();
 }
+
+void Partida::dibujaSeleccion() { MotorGrafico::get_instance().dibujaSeleccion(personaje_seleccionado, casillas_iluminadas); }
+void Partida::dibujaHabilidades() { MotorGrafico::get_instance().dibujaHabilidades(personaje_seleccionado, modo_teleport, modo_inmovilizar, modo_revivir); }
+void Partida::dibujaInmovilizados() { MotorGrafico::get_instance().dibujaInmovilizados(tab_); }
+void Partida::dibujaBarrasVida() { MotorGrafico::get_instance().dibujaBarrasVida(tab_, personaje_seleccionado);}
 
 void Partida::teclado(unsigned char key) {
-    if (key == 32)
-        tab_.avanzarCiclo();
-    if (key == 27)
-        mostrar_popup = false;
+    if (key == 32) tab_.avanzarCiclo();
+    if (key == 27) mostrar_popup = false;
+    tecladoHabilidades(key);
 }
 
 void Partida::reset() {
+    for (int f = 0; f < 9; f++) for (int c = 0; c < 9; c++) tab_.getCasilla(f, c).setPersonaje(nullptr);
+    ETSIDI::stopMusica(); ETSIDI::playMusica("assets/sonidos/partida.mp3", true);
+    mostrar_popup = false; modo_actual = modo_juego; turno_actual = turno_inicio;
 
-    //LIMPIAMOS TODAS LAS CASILLAS
-    for (int fila = 0; fila < Tablero::FILAS; fila++)
-        for (int col = 0; col < Tablero::COLUMNAS; col++)
-            tab_.getCasilla(fila, col).setPersonaje(nullptr);
+    // Limpiar estado transitorio que pueda apuntar a objetos que vamos a
+    // borrar, para no dejar punteros colgando al reiniciar la partida.
+    personaje_seleccionado = nullptr;
+    es_lider_seleccionado = false;
+    modo_teleport = modo_inmovilizar = modo_revivir = false;
+    casillas_iluminadas.clear();
+    delete carta_actual; carta_actual = nullptr;
+    nombre_carta_cargada = "";
+    tab_.limpiarPendiente();
 
-    ETSIDI::stopMusica();
-    ETSIDI::playMusica("assets/sonidos/partida.mp3", true);
-    mostrar_popup = false;
-    boton_activo = 0;
+    for (auto p : personajes) delete p; for (auto d : dibujos) delete d;
+    personajes.clear(); dibujos.clear();
 
-
-    modo_actual = modo_juego;      // 1=1jugador, 2=2jugadores
-    turno_actual = turno_inicio;   // 1=mañana primero, 2=tarde primero
-
-
-    // Limpiar listas por si reset() se llama más de una vez
-    for (auto p : personajes) delete p;
-    for (auto d : dibujos)    delete d;
-    personajes.clear();
-    dibujos.clear();
-
-    // (FILAS , COLUMNAS)
-    // ── Equipo mañana  ──
+    // Piezas UPM
     personajes.push_back(new Profesor_SS(tab_.getCasilla(4, 0)));
-   
-    personajes.push_back(new PLC(tab_.getCasilla(1, 0)));
-    personajes.push_back(new PLC(tab_.getCasilla(7, 0)));
-
-    personajes.push_back(new Moto_electrica(tab_.getCasilla(2, 0)));
-    personajes.push_back(new Moto_electrica(tab_.getCasilla(6, 0)));
-
+    personajes.push_back(new PLC(tab_.getCasilla(1, 0))); personajes.push_back(new PLC(tab_.getCasilla(7, 0)));
+    personajes.push_back(new Moto_electrica(tab_.getCasilla(2, 0))); personajes.push_back(new Moto_electrica(tab_.getCasilla(6, 0)));
     personajes.push_back(new Fuente_de_tension_de_bateria(tab_.getCasilla(3, 0)));
-
     personajes.push_back(new Copilot(tab_.getCasilla(5, 0)));
+    personajes.push_back(new Microprocesador_M(tab_.getCasilla(0, 0))); personajes.push_back(new Microprocesador_M(tab_.getCasilla(8, 0)));
+    personajes.push_back(new Multimetro(tab_.getCasilla(0, 1))); personajes.push_back(new Multimetro(tab_.getCasilla(8, 1)));
+    for (int i = 1; i <= 7; i++) personajes.push_back(new Circuito_integrado_M(tab_.getCasilla(i, 1)));
 
-    personajes.push_back(new Microprocesador_M(tab_.getCasilla(0, 0)));
-    personajes.push_back(new Microprocesador_M(tab_.getCasilla(8, 0)));
-
-    personajes.push_back(new Multimetro(tab_.getCasilla(0, 1)));
-    personajes.push_back(new Multimetro(tab_.getCasilla(8, 1)));
-    for (int i = 1; i <= 7; i++)
-    {
-        personajes.push_back(new Circuito_integrado_M(tab_.getCasilla(i, 1)));
-
-    }
-    // (FILAS , COLUMNAS)
-
-    // ── Equipo tarde ── 
     personajes.push_back(new Profesor_MH(tab_.getCasilla(4, 8)));
-
-    personajes.push_back(new Microprocesador_T(tab_.getCasilla(0, 8)));
-    personajes.push_back(new Microprocesador_T(tab_.getCasilla(8, 8)));
-
-    personajes.push_back(new Osciloscopio(tab_.getCasilla(0, 7)));
-    personajes.push_back(new Osciloscopio(tab_.getCasilla(8, 7)));
-
-
-    personajes.push_back(new Brazo_robot(tab_.getCasilla(1, 8)));
-    personajes.push_back(new Brazo_robot(tab_.getCasilla(7, 8)));
-
+    personajes.push_back(new Microprocesador_T(tab_.getCasilla(0, 8))); personajes.push_back(new Microprocesador_T(tab_.getCasilla(8, 8)));
+    personajes.push_back(new Osciloscopio(tab_.getCasilla(0, 7))); personajes.push_back(new Osciloscopio(tab_.getCasilla(8, 7)));
+    personajes.push_back(new Brazo_robot(tab_.getCasilla(1, 8))); personajes.push_back(new Brazo_robot(tab_.getCasilla(7, 8)));
     personajes.push_back(new Fuente_de_corriente(tab_.getCasilla(3, 8)));
-
-    personajes.push_back(new Moto_petrol(tab_.getCasilla(2, 8)));
-    personajes.push_back(new Moto_petrol(tab_.getCasilla(6, 8)));
-
+    personajes.push_back(new Moto_petrol(tab_.getCasilla(2, 8))); personajes.push_back(new Moto_petrol(tab_.getCasilla(6, 8)));
     personajes.push_back(new Gemini(tab_.getCasilla(5, 8)));
-
-	for (int i = 1; i <= 7; i++)
-    {
-        personajes.push_back(new Circuito_integrado_T(tab_.getCasilla(i, 7)));
-    }
+    for (int i = 1; i <= 7; i++) personajes.push_back(new Circuito_integrado_T(tab_.getCasilla(i, 7)));
 
     // Crear un DibujoPersonaje por cada personaje
     for (auto p : personajes)

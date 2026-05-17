@@ -6,8 +6,8 @@
 #include "dibujo_personajes.h"
 #include "personaje.h"
 #include "tipo_personaje.h"
-#include "Tablero_vista.h" 
-
+#include "Tablero_vista.h"
+#include "IAJugador.h"
 
 extern int equipo_j1;
 extern int equipo_j2;
@@ -16,26 +16,32 @@ extern int turno_inicio;
 
 class Partida {
 public:
-    // Singleton
     static Partida& get_instance() {
         static Partida instance;
         return instance;
     }
 
-    // Getters del tablero
     Tablero& tablero() { return tab_; }
     const Tablero& tablero() const { return tab_; }
     const std::vector<DibujoPersonaje*>& getDibujos() const { return dibujos; }
 
-    // Métodos de juego
     void dibuja();
     void update(int x, int y);
     Modos_juego click(int x, int y);
+    Modos_juego turnoMaquina();          // juega la maquina si le toca (modo 1 jug.)
     void teclado(unsigned char key);
     void reset();
     void dibujaextra();
+
+    // Dibujos y habilidades (Mezcla de ambos trabajos)
     void dibujaSeleccion();
     void dibujaHabilidades();
+    void tecladoHabilidades(unsigned char key);
+    void dibujarTextoBitmap(float x, float y, const char* texto);
+    void dibujaInmovilizados();
+
+    Personaje* getPersonajeSeleccionado() const { return personaje_seleccionado; }
+    void dibujaBarrasVida();
 
 private:
     Partida();
@@ -45,6 +51,7 @@ private:
     Modos_juego comprobarFinPartida();
 
     Tablero tab_;
+    IAJugador ia_;   // cerebro de la maquina (modo 1 jugador)
 
     ETSIDI::Sprite* fondo;
     ETSIDI::Sprite* abandonar_partida;
@@ -53,11 +60,14 @@ private:
     std::vector<Personaje*>       personajes;
     std::vector<DibujoPersonaje*> dibujos;
 
+    // NUESTRO: Saber las casillas en las que se moverá el personaje
+    std::vector<Casilla*> casillas_iluminadas;
+
     int modo_actual = 1;
     int turno_actual = 0;
 
-    Personaje* personaje_seleccionado = nullptr;  // ← ya lo tienes
-    Modos_juego procesarClickTablero(int fil, int col);   // ← ya lo tienes
+    Personaje* personaje_seleccionado = nullptr;
+    Modos_juego procesarClickTablero(int fil, int col);
     bool es_lider_seleccionado = false;
 
     bool mostrar_popup;
@@ -65,4 +75,7 @@ private:
     bool modo_teleport = false;
     bool modo_inmovilizar = false;
     bool modo_revivir = false;
+
+    ETSIDI::Sprite* carta_actual = nullptr;
+    std::string nombre_carta_cargada = "";
 };

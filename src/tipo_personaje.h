@@ -15,13 +15,18 @@ public:
             casillaInicial) {}
     Menu_habilidades menu;
     int getRadioMovimiento()  const override { return 4; }
-    std::string getNombreSprite() const override { return "PSSanimado"; }
+    std::string getNombreSprite() const override { return "SanseAnimado"; }
+    std::string getNombreCarta()  const override { return "assets/cartas/cartass.png"; }
 
-    float getTamanoSprite() const override { return 55.0f; }
+    float getOffsetX() const override { return 35.0f; }
+    float getOffsetY() const override { return 20.0f; }
+
+    float getTamanoSprite() const override { return 65.0f; }
 
     int getFramesIdle() const override { return 8; }
 
     Menu_habilidades* getMenu() override { return &menu; }
+    bool esLider() const override { return true; }
 
 };
 
@@ -36,11 +41,18 @@ public:
     }
 
     int getRadioMovimiento() const override { return 3; }
-    std::string getNombreSprite() const override { return "MicroprocesadorM"; }
-    float getTamanoSprite() const override { return 50.0f; }
+    std::string getNombreSprite() const override { return "MicroMAnimado"; }
+std::string getNombreCarta()  const override { return "assets/cartas/cartamicrom.png"; }
+    float getTamanoSprite() const override { return 90.0f; }
+    float getOffsetX() const override { return 25.0f; }
+    float getOffsetY() const override { return -12.0f; }
+    int getFramesIdle() const override { return 8; }
+    int getTiempoAnimacion() const override { return 200; }
 
-
-
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/cero.png";
+    }
+    float getVelocidadProyectil() const override { return 6.0f; }
 };
 
 class Multimetro : public Terrestre {
@@ -54,11 +66,15 @@ public:
     }
 
     int getRadioMovimiento() const override { return 3; }
-    std::string getNombreSprite() const override { return "AnimacionMultimetro"; }
+    std::string getNombreSprite() const override { return "MultimetroAnimado"; }
+std::string getNombreCarta()  const override { return "assets/cartas/cartamulti.png"; }
+ 
 
     int getFramesIdle() const override { return 4; }
     float getOffsetX() const override { return 30.0f; }
-    float getTamanoSprite() const override { return 60.0f; }
+    float getTamanoSprite() const override { return 70.0f; }
+    int getTiempoAnimacion() const override { return 500; }
+
 
 
 };
@@ -74,8 +90,17 @@ public:
     }
 
     int getRadioMovimiento() const override { return 1; }
-    std::string getNombreSprite() const override { return "PLC"; }
-    float getTamanoSprite() const override { return 60.0f; }
+    std::string getNombreSprite() const override { return "PLCAnimado"; }
+std::string getNombreCarta()  const override { return "assets/cartas/cartaPLC.png"; }
+ 
+    float getTamanoSprite() const override { return 65.0f; }
+
+    int getFramesIdle() const override { return 8; }
+    float getOffsetX() const override { return 95.0f; }
+    float getOffsetY() const override { return 65.0f; }
+    int getTiempoAnimacion() const override { return 1000; }
+
+
 
 
 };
@@ -92,6 +117,8 @@ public:
 
     int getRadioMovimiento() const override { return 5; }
     std::string getNombreSprite() const override { return "Bateria"; }
+std::string getNombreCarta()  const override { return "assets/cartas/cartafuenteV.png"; }
+
     float getTamanoSprite() const override { return 60.0f; }
 
 
@@ -108,10 +135,20 @@ public:
     }
 
     int getRadioMovimiento() const override { return 4; }
-    std::string getNombreSprite() const override { return "MOTOELECTRIC"; }
+    std::string getNombreSprite() const override { return "MotoEAnimada"; }
+std::string getNombreCarta()  const override { return "assets/cartas/cartamotoe.png"; }
+
     float getTamanoSprite() const override { return 60.0f; }
 
+    int getFramesIdle() const override { return 8; }
+    float getOffsetX() const override { return 35.0f; }
+    float getOffsetY() const override { return 0.0f; }
+    int getTiempoAnimacion() const override { return 80; }
 
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/rayo.png";
+    }
+    float getVelocidadProyectil() const override { return 9.0f; }
 };
 
 class Copilot : public Volador {
@@ -125,8 +162,16 @@ public:
     }
 
     int getRadioMovimiento() const override { return 4; }
-    std::string getNombreSprite() const override { return "COPILOT"; }
+    std::string getNombreSprite() const override { return "COPILOTAnimado"; }
+ std::string getNombreCarta()  const override { return "assets/cartas/cartacopilot.png"; }
+ 
+    int getFramesIdle() const override { return 8; }
+
     float getTamanoSprite() const override { return 60.0f; }
+    float getOffsetY() const override { return -30.0f; }
+
+    int getTiempoAnimacion() const override { return 150; }
+
 
 
 };
@@ -142,10 +187,15 @@ public:
     }
 
     int getRadioMovimiento() const override { return 2; }
-    std::string getNombreSprite() const override { return "CINTEGRADOM"; }
-    float getTamanoSprite() const override { return 55.0f; }
+    std::string getNombreSprite() const override { return "CIMAnimado"; }
+std::string getNombreCarta()  const override { return "assets/cartas/cartacim.png"; }
 
+    float getTamanoSprite() const override { return 90.0f; }
 
+    int getFramesIdle() const override { return 8; }
+    int getTiempoAnimacion() const override { return 1200; }
+    float getOffsetX() const override { return 20.0f; }
+    float getOffsetY() const override { return -20.0f; }
 
 };
 
@@ -161,8 +211,18 @@ public:
             casillaInicial) {}
     Menu_habilidades menu;
     int getRadioMovimiento() const override { return 4; }
-    std::string getNombreSprite() const override { return "MH"; }
-    float getTamanoSprite() const override { return 65.0f; }
+    std::string getNombreSprite() const override { return "MHAnimado"; }
+ std::string getNombreCarta()  const override { return "assets/cartas/cartamh.png"; }
+
+    float getTamanoSprite() const override { return 80.0f; }
+    int getFramesIdle() const override { return 8; }
+
+    float getOffsetX() const override { return 30.0f; }
+
+    int getTiempoAnimacion() const override { return 350; }
+
+    Menu_habilidades* getMenu() override { return &menu; }
+    bool esLider() const override { return true; }
 
 
 };
@@ -178,10 +238,19 @@ public:
     }
 
     int getRadioMovimiento() const override { return 3; }
-    std::string getNombreSprite() const override { return "MicroprocesadorT"; }
-    float getTamanoSprite() const override { return 50.0f; }
+    std::string getNombreSprite() const override { return "MicroTAnimado"; }
+std::string getNombreCarta()  const override { return "assets/cartas/cartamicrot.png"; }
+ 
+    float getTamanoSprite() const override { return 90.0f; }
+    float getOffsetX() const override { return 25.0f; }
+    float getOffsetY() const override { return -12.0f; }
+    int getFramesIdle() const override { return 8; }
+    int getTiempoAnimacion() const override { return 150; }
 
-
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/uno.png";
+    }
+    float getVelocidadProyectil() const override { return 6.0f; }
 
 };
 
@@ -197,8 +266,11 @@ public:
 
     int getRadioMovimiento() const override { return 3; }
     std::string getNombreSprite() const override { return "OsciloscopioAnimacion"; }
+std::string getNombreCarta()  const override { return "assets/cartas/cartaosci.png"; }
+ 
     int getFramesIdle() const override { return 8; }
     float getOffsetY() const override { return -15.0f; }
+    int getTiempoAnimacion() const override { return 300; }
 
     float getTamanoSprite() const override { return 60.0f; }
 
@@ -216,8 +288,15 @@ public:
     }
 
     int getRadioMovimiento() const override { return 1; }
-    std::string getNombreSprite() const override { return "BRAZOROBOT"; }
-    float getTamanoSprite() const override { return 60.0f; }
+    std::string getNombreSprite() const override { return "BRAZOANIMADO2"; }
+std::string getNombreCarta()  const override { return "assets/cartas/cartarobot.png"; }
+
+
+    int getFramesIdle() const override { return 17; }
+    float getOffsetY() const override { return 10.0f; }
+    int getTiempoAnimacion() const override {return 300;}
+
+    float getTamanoSprite() const override { return 90.0f; }
 
 
 
@@ -234,8 +313,15 @@ public:
     }
 
     int getRadioMovimiento() const override { return 5; }
-    std::string getNombreSprite() const override { return "FUENTECORRIENTE"; }
+    std::string getNombreSprite() const override { return "FuenteCorrienteAnimada"; }
+std::string getNombreCarta()  const override { return "assets/cartas/cartafuenteI.png"; }
+ 
     float getTamanoSprite() const override { return 70.0f; }
+    int getFramesIdle() const override { return 8; }
+
+    float getOffsetX() const override { return 30.0f; }
+
+    int getTiempoAnimacion() const override { return 350; }
 
 
 
@@ -246,17 +332,29 @@ public:
     Moto_petrol(Casilla& casillaInicial)
         : Terrestre("Moto Petrol", 60,
             Turno::TURNO_DE_TARDE,
-            Movimiento::TIERRA,
+            Movimiento::AIRE,
             stats("Gasolina", 16, 3, 4),
             casillaInicial) {
     }
 
     int getRadioMovimiento() const override { return 4; }
-    std::string getNombreSprite() const override { return "MOTOPETROL"; }
+    std::string getNombreSprite() const override { return "MotoPAnimada"; }
+std::string getNombreCarta()  const override { return "assets/cartas/cartamotop.png"; }
+
+
     float getTamanoSprite() const override { return 60.0f; }
+    int getFramesIdle() const override { return 10; }
 
+    float getOffsetX() const override { return 130.0f; }
+    float getOffsetY() const override { return 100.0f; }
 
+    int getTiempoAnimacion() const override { return 100; }
 
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/gasolina.png";
+    }
+
+    float getVelocidadProyectil() const override { return 8.0f; }
 };
 
 class Gemini : public Volador {
@@ -270,8 +368,17 @@ public:
     }
 
     int getRadioMovimiento() const override { return 4; }
-    std::string getNombreSprite() const override { return "GEMINI"; }
+    std::string getNombreSprite() const override { return "GEMINIAnimado"; }
+ std::string getNombreCarta()  const override { return "assets/cartas/cartagemini.png"; }
+
     float getTamanoSprite() const override { return 55.0f; }
+    int getFramesIdle() const override { return 8; }
+    int getTiempoAnimacion() const override { return 150 ; }
+
+    float getOffsetX() const override { return 5.0f; }
+    float getOffsetY() const override { return -22.0f; }
+
+
 
 
 
@@ -284,13 +391,15 @@ public:
             Turno::TURNO_DE_TARDE,
             Movimiento::AIRE,
             stats("Patas del micro", 22, 6, 2),
-            casillaInicial) {
-    }
+            casillaInicial) {}
 
     int getRadioMovimiento() const override { return 2; }
-    std::string getNombreSprite() const override { return "CINTEGRADOT"; }
-    float getTamanoSprite() const override { return 50.0f; }
+    std::string getNombreSprite() const override { return "CITAnimado"; }
+    std::string getNombreCarta()  const override { return "assets/cartas/cartacit.png"; }
+    float getTamanoSprite() const override { return 90.0f; }
 
-
-
+    int getFramesIdle() const override { return 8; }
+    int getTiempoAnimacion() const override { return 1200; }
+    float getOffsetX() const override { return 20.0f; }
+    float getOffsetY() const override { return -20.0f; }
 };
