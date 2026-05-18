@@ -67,13 +67,13 @@ void MotorGrafico::dibujaHabilidades(Personaje* p, bool modo_t, bool modo_i, boo
     glColor3f(1.0f, 1.0f, 0.7f);
     dibujarTextoBitmap(32, h - 148, "HABILIDADES");
 
-    if (menu->puedeUsarRevivir()) glColor3f(0.9f, 0.9f, 0.9f); else glColor3f(0.4f, 0.4f, 0.4f);
+    if (menu->puedeUsar(1)) glColor3f(0.9f, 0.9f, 0.9f); else glColor3f(0.4f, 0.4f, 0.4f);
     dibujarTextoBitmap(35, h - 112, "[1] Revivir");
 
-    if (menu->puedeUsarInmovilizar()) glColor3f(0.9f, 0.9f, 0.9f); else glColor3f(0.4f, 0.4f, 0.4f);
+    if (menu->puedeUsar(2)) glColor3f(0.9f, 0.9f, 0.9f); else glColor3f(0.4f, 0.4f, 0.4f);
     dibujarTextoBitmap(35, h - 84, "[2] Inmovilizar");
 
-    if (menu->puedeUsarTeleport()) glColor3f(0.9f, 0.9f, 0.9f); else glColor3f(0.4f, 0.4f, 0.4f);
+    if (menu->puedeUsar(0)) glColor3f(0.9f, 0.9f, 0.9f); else glColor3f(0.4f, 0.4f, 0.4f);
     dibujarTextoBitmap(35, h - 56, "[3] Teleport");
 
     // Limpiar matrices

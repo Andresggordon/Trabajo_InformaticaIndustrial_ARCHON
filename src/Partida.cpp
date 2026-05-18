@@ -93,8 +93,8 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
     Menu_habilidades* menu = personaje_seleccionado ? personaje_seleccionado->getMenu() : nullptr;
 
     if (modo_teleport) {
-        if (menu) menu->usarTeleport(personaje_seleccionado, &casilla); 
-        if (menu && menu->puedeUsarTeleport() == false) turno_actual = 1 - turno_actual;
+        if (menu) menu->activarHabilidad(0, personaje_seleccionado, nullptr, &casilla);
+        if (menu && !menu->puedeUsar(0)) turno_actual = 1 - turno_actual;
         modo_teleport = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
         return Modos_juego::Partida;
     }
@@ -102,7 +102,7 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
     if (modo_inmovilizar) {
         Personaje* obj = casilla.getPersonaje();
         if (menu && obj) {
-            bool ejecutado = menu->usarInmovilizar(personaje_seleccionado, obj); 
+            bool ejecutado = menu->activarHabilidad(2, personaje_seleccionado, obj, nullptr);
             if (ejecutado) turno_actual = 1 - turno_actual;
         }
         modo_inmovilizar = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
@@ -112,7 +112,7 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
     if (modo_revivir) {
         Personaje* obj = casilla.getPersonaje();
         if (menu && obj) {
-            bool ejecutado = menu->usarRevivir(personaje_seleccionado, obj); 
+            bool ejecutado = menu->activarHabilidad(1, personaje_seleccionado, obj, nullptr);
             if (ejecutado) turno_actual = 1 - turno_actual;
         }
         modo_revivir = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
@@ -191,10 +191,9 @@ void Partida::tecladoHabilidades(unsigned char key) {
     if (!es_lider_seleccionado || !personaje_seleccionado) return;
     Menu_habilidades* menu = personaje_seleccionado->getMenu();
     if (!menu) return;
-    modo_revivir = false; modo_inmovilizar = false; modo_teleport = false;
-    if (key == '1' && menu->puedeUsarRevivir()) modo_revivir = true;
-    if (key == '2' && menu->puedeUsarInmovilizar()) modo_inmovilizar = true;
-    if (key == '3' && menu->puedeUsarTeleport()) modo_teleport = true;
+    if (key == '1' && menu->puedeUsar(1)) modo_revivir = true;
+    if (key == '2' && menu->puedeUsar(2)) modo_inmovilizar = true;
+    if (key == '3' && menu->puedeUsar(0)) modo_teleport = true;
     glutPostRedisplay();
 }
 
