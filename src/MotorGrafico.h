@@ -27,6 +27,8 @@ public:
     void dibujaInmovilizados(const Tablero& t);
     void dibujaBarrasVida(const Tablero& t, Personaje* p);
     void dibujarVidaPanel(Personaje* p);
+    void dibujaEscudos(const Tablero& t);
+    void dibujaInmunidad(const Tablero& t);
 
 private:
     MotorGrafico() = default;

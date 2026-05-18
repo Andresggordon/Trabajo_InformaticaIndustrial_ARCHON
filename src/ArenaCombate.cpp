@@ -260,9 +260,14 @@ void ArenaCombate::actualizar() {
 			// Determinar quién recibe el daño
 			Personaje* defensor = p->esDeLocal() ? invasor_ : local_;
 			if (defensor != nullptr && defensor->estaVivo()) {
-				defensor->recibirDano(p->getDano());
-				if (!defensor->estaVivo())
-					resolverResultado();
+				if (defensor->getEscudo()) {
+					defensor->decrementarEscudo();
+				}
+				else {
+					defensor->recibirDano(p->getDano());
+					if (!defensor->estaVivo())
+						resolverResultado();
+				}
 			}
 		}
 	}

@@ -39,6 +39,8 @@ public:
     void tecladoHabilidades(unsigned char key);
     void dibujarTextoBitmap(float x, float y, const char* texto);
     void dibujaInmovilizados();
+    void dibujaEscudos();
+    void dibujaInmunidad();
 
     Personaje* getPersonajeSeleccionado() const { return personaje_seleccionado; }
     void dibujaBarrasVida();
@@ -73,6 +75,9 @@ private:
     bool modo_teleport = false;
     bool modo_inmovilizar = false;
     bool modo_revivir = false;
+    bool modo_curar = false;
+    bool modo_escudo = false;
+    bool modo_inmunidad = false;
 
     ETSIDI::Sprite* carta_actual = nullptr;
     std::string nombre_carta_cargada = "";
