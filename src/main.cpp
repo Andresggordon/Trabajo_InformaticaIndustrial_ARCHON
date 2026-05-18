@@ -60,7 +60,9 @@ void display() {
         Partida::get_instance().dibujaHabilidades(); // 4. Dibujar habilidades
         Partida::get_instance().dibujaextra();        // 5. exit y popup encima de todo
         Partida::get_instance().dibujaInmovilizados(); //6. Personaje inmovilizado
-        Partida::get_instance().dibujaBarrasVida(); // 7. Barras de vida  
+        Partida::get_instance().dibujaBarrasVida(); // 7. Barras de vida 
+        Partida::get_instance().dibujaEscudos(); // 8. Escudo casilla
+        Partida::get_instance().dibujaInmunidad();// 9. Inmunidad casilla
 
     }
     else if (estado == Modos_juego::Arena_Combate)

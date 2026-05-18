@@ -31,52 +31,62 @@ void MotorGrafico::dibujaHabilidades(Personaje* p, bool modo_t, bool modo_i, boo
     int h = glutGet(GLUT_WINDOW_HEIGHT);
 
     glPushAttrib(GL_ALL_ATTRIB_BITS);
-
-    // Configurar cámara 2D
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
     gluOrtho2D(0, w, h, 0);
-
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
-
-    // --- LA SOLUCIÓN AL BUG ---
     glDisable(GL_TEXTURE_2D);
-    glDisable(GL_LIGHTING);     // ¡CLAVE! Evita que el texto se vuelva negro
-    glDisable(GL_DEPTH_TEST);   // Asegura que el menú esté por encima de todo el juego
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // 1. Dibujar el fondo del panel
+    float panelX1 = w * 0.02f;
+    float panelX2 = w * 0.16f;
+    float panelY1 = h * 0.72f;
+    float panelY2 = h * 1.0f;
+    float margenX  = w * 0.03f;
+    float lineaAlto = (panelY2 - panelY1) / 8.0f;
+
+    // Fondo
     glColor4f(0.08f, 0.08f, 0.08f, 0.78f);
     glBegin(GL_QUADS);
-    glVertex2f(20, h - 170); glVertex2f(280, h - 170);
-    glVertex2f(280, h - 35);  glVertex2f(20, h - 35);
+    glVertex2f(panelX1, panelY1); glVertex2f(panelX2, panelY1);
+    glVertex2f(panelX2, panelY2); glVertex2f(panelX1, panelY2);
     glEnd();
 
-    // 2. Dibujar el borde
+    // Borde
     glColor3f(0.85f, 0.85f, 0.85f);
     glBegin(GL_LINE_LOOP);
-    glVertex2f(20, h - 170); glVertex2f(280, h - 170);
-    glVertex2f(280, h - 35);  glVertex2f(20, h - 35);
+    glVertex2f(panelX1, panelY1); glVertex2f(panelX2, panelY1);
+    glVertex2f(panelX2, panelY2); glVertex2f(panelX1, panelY2);
     glEnd();
 
-    // 3. Dibujar los Textos de habilidades 
+    // Textos
     glColor3f(1.0f, 1.0f, 0.7f);
-    dibujarTextoBitmap(32, h - 148, "HABILIDADES");
+    dibujarTextoBitmap(margenX, panelY1 + lineaAlto * 0.8f, "HABILIDADES");
 
     if (menu->puedeUsar(1)) glColor3f(0.9f, 0.9f, 0.9f); else glColor3f(0.4f, 0.4f, 0.4f);
-    dibujarTextoBitmap(35, h - 112, "[1] Revivir");
+    dibujarTextoBitmap(margenX, panelY1 + lineaAlto * 1.8f, "[1] Revivir");
 
     if (menu->puedeUsar(2)) glColor3f(0.9f, 0.9f, 0.9f); else glColor3f(0.4f, 0.4f, 0.4f);
-    dibujarTextoBitmap(35, h - 84, "[2] Inmovilizar");
+    dibujarTextoBitmap(margenX, panelY1 + lineaAlto * 2.8f, "[2] Inmovilizar");
 
     if (menu->puedeUsar(0)) glColor3f(0.9f, 0.9f, 0.9f); else glColor3f(0.4f, 0.4f, 0.4f);
-    dibujarTextoBitmap(35, h - 56, "[3] Teleport");
+    dibujarTextoBitmap(margenX, panelY1 + lineaAlto * 3.8f, "[3] Teleport");
 
-    // Limpiar matrices
+    if (menu->puedeUsar(3)) glColor3f(0.9f, 0.9f, 0.9f); else glColor3f(0.4f, 0.4f, 0.4f);
+    dibujarTextoBitmap(margenX, panelY1 + lineaAlto * 4.8f, "[4] Curar");
+
+    if (menu->puedeUsar(4)) glColor3f(0.9f, 0.9f, 0.9f); else glColor3f(0.4f, 0.4f, 0.4f);
+    dibujarTextoBitmap(margenX, panelY1 + lineaAlto * 5.8f, "[5] Escudo");
+
+    if (menu->puedeUsar(5)) glColor3f(0.9f, 0.9f, 0.9f); else glColor3f(0.4f, 0.4f, 0.4f);
+    dibujarTextoBitmap(margenX, panelY1 + lineaAlto * 6.8f, "[6] Inmunidad");
+
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
@@ -86,6 +96,8 @@ void MotorGrafico::dibujaHabilidades(Personaje* p, bool modo_t, bool modo_i, boo
 void MotorGrafico::dibujaInmovilizados(const Tablero& t) {
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -117,7 +129,6 @@ void MotorGrafico::dibujaSeleccion(Personaje* seleccionado, const std::vector<Ca
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_LIGHTING);
-
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -166,7 +177,64 @@ void MotorGrafico::dibujaSeleccion(Personaje* seleccionado, const std::vector<Ca
     glPopAttrib();
 }
 
+void MotorGrafico::dibujaEscudos(const Tablero& t) {
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);    
+    glDisable(GL_DEPTH_TEST);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(-400, 400, -400, 400);
 
+    glColor3f(0.0f, 0.4f, 1.0f); 
+    glLineWidth(4.0f);
+
+    for (int f = 0; f < 9; f++) {
+        for (int c = 0; c < 9; c++) {
+            Personaje* p = t.getCasilla(f, c).getPersonaje();
+            if (p != nullptr && p->getEscudo()) { 
+                float x = INICIO_X + c * TAM;
+                float y = INICIO_Y + f * TAM;
+                glBegin(GL_LINE_LOOP);
+                glVertex2f(x, y);         glVertex2f(x + TAM, y);
+                glVertex2f(x + TAM, y + TAM); glVertex2f(x, y + TAM);
+                glEnd();
+            }
+        }
+    }
+    glPopMatrix();
+    glPopAttrib();
+}
+
+void MotorGrafico::dibujaInmunidad(const Tablero& t) {
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(-400, 400, -400, 400);
+    glColor3f(1.0f, 0.85f, 0.0f); 
+    glLineWidth(4.0f);
+
+    for (int f = 0; f < 9; f++) {
+        for (int c = 0; c < 9; c++) {
+            Personaje* p = t.getCasilla(f, c).getPersonaje();
+            if (p != nullptr && p->getInmune()) {
+                float x = INICIO_X + c * TAM;
+                float y = INICIO_Y + f * TAM;
+                glBegin(GL_LINE_LOOP);
+                glVertex2f(x, y);             glVertex2f(x + TAM, y);
+                glVertex2f(x + TAM, y + TAM); glVertex2f(x, y + TAM);
+                glEnd();
+            }
+        }
+    }
+    glPopMatrix();
+    glPopAttrib();
+}
 
 
 void MotorGrafico::dibujarTablero(const Tablero& t) {

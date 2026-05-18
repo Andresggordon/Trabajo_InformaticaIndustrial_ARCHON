@@ -6,9 +6,6 @@
 class Personaje;
 class Casilla;
 
-// ────────────────────────────────────────
-// CLASE BASE ABSTRACTA
-// ────────────────────────────────────────
 class Habilidad {
 public:
     explicit Habilidad(const std::string& nombre)
@@ -27,9 +24,6 @@ protected:
     bool        usada;
 };
 
-// ────────────────────────────────────────
-// SUBCLASES (una por habilidad)
-// ────────────────────────────────────────
 class HabilidadTeleport : public Habilidad {
 public:
     HabilidadTeleport() : Habilidad("Teleport") {}
@@ -45,6 +39,24 @@ public:
 class HabilidadInmovilizar : public Habilidad {
 public:
     HabilidadInmovilizar() : Habilidad("Inmovilizar") {}
+    bool usar(Personaje* usuario, Personaje* objetivo, Casilla* destino) override;
+};
+
+class HabilidadCurar : public Habilidad {
+public:
+    HabilidadCurar() : Habilidad("Curar") {}
+    bool usar(Personaje* usuario, Personaje* objetivo, Casilla* destino) override;
+};
+
+class HabilidadEscudo : public Habilidad {
+public:
+    HabilidadEscudo() : Habilidad("Escudo") {}
+    bool usar(Personaje* usuario, Personaje* objetivo, Casilla* destino) override;
+};
+
+class HabilidadInmunidad : public Habilidad {
+public:
+    HabilidadInmunidad() : Habilidad("Inmunidad") {}
     bool usar(Personaje* usuario, Personaje* objetivo, Casilla* destino) override;
 };
 

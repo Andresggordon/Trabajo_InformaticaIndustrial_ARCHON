@@ -119,6 +119,36 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
         return Modos_juego::Partida;
     }
 
+    if (modo_curar) {
+        Personaje* obj = casilla.getPersonaje();
+        if (menu && obj) {
+            bool ejecutado = menu->activarHabilidad(3, personaje_seleccionado, obj, nullptr);
+            if (ejecutado) turno_actual = 1 - turno_actual;
+        }
+        modo_curar = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
+        return Modos_juego::Partida;
+    }
+
+    if (modo_escudo) {
+        Personaje* obj = casilla.getPersonaje();
+        if (menu && obj) {
+            bool ejecutado = menu->activarHabilidad(4, personaje_seleccionado, obj, nullptr);
+            if (ejecutado) turno_actual = 1 - turno_actual;
+        }
+        modo_escudo = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
+        return Modos_juego::Partida;
+    }
+
+    if (modo_inmunidad) {
+        Personaje* obj = casilla.getPersonaje();
+        if (menu && obj) {
+            bool ejecutado = menu->activarHabilidad(5, personaje_seleccionado, obj, nullptr);
+            if (ejecutado) turno_actual = 1 - turno_actual;
+        }
+        modo_inmunidad = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
+        return Modos_juego::Partida;
+    }
+
     if (personaje_seleccionado == nullptr) {
         Personaje* p = casilla.getPersonaje();
         if (p && p->estaVivo()) {
@@ -136,10 +166,19 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
         if (res == ResultadoMover::OK) {
             turno_actual = 1 - turno_actual;
             for (auto p : personajes) p->decrementarInmovilizacion();
+            for (auto p : personajes) p->decrementarInmunidad();
         }
         else if (res == ResultadoMover::CHOQUE) {
-            // NO limpiar pendientes aqui: Tablero::resolverCombate() los necesita
-            // al terminar el combate y ya hace limpiarPendiente() al final.
+            Personaje* defensor = tab_.getPendienteLocal();
+            if (defensor != nullptr && defensor->getInmune()) {
+                defensor->decrementarInmunidad();
+                tab_.limpiarPendiente();
+                turno_actual = 1 - turno_actual;
+                for (auto p : personajes) p->decrementarInmovilizacion();
+                for (auto p : personajes) p->decrementarInmunidad();
+                personaje_seleccionado = nullptr; casillas_iluminadas.clear();
+                return Modos_juego::Partida;
+            }
             arena->iniciarCombate(tab_.getPendienteLocal(), tab_.getPendienteInvasor(), modo_actual);
             personaje_seleccionado = nullptr; casillas_iluminadas.clear();
             return Modos_juego::Arena_Combate;
@@ -166,18 +205,27 @@ Modos_juego Partida::turnoMaquina() {
     ResultadoMover res = ia_.jugarTurno(tab_, turnoIA);
 
     if (res == ResultadoMover::CHOQUE) {
+        Personaje* defensor = tab_.getPendienteLocal();
         // Mismo flujo que el humano: abrir la arena de combate. NO limpiar
-        // pendientes aqui; resolverCombate() los consume y limpia al final.
-        arena->iniciarCombate(tab_.getPendienteLocal(),
-                               tab_.getPendienteInvasor(), modo_actual);
-        personaje_seleccionado = nullptr;
-        casillas_iluminadas.clear();
+      // pendientes aqui; resolverCombate() los consume y limpia al final.
+        if (defensor != nullptr && defensor->getInmune()) {
+            defensor->decrementarInmunidad();
+            tab_.limpiarPendiente();
+            turno_actual = 1 - turno_actual;
+            for (auto p : personajes) p->decrementarInmovilizacion();
+            for (auto p : personajes) p->decrementarInmunidad();
+            personaje_seleccionado = nullptr; casillas_iluminadas.clear();
+            return Modos_juego::Partida;
+        }
+        arena->iniciarCombate(tab_.getPendienteLocal(), tab_.getPendienteInvasor(), modo_actual);
+        personaje_seleccionado = nullptr; casillas_iluminadas.clear();
         return Modos_juego::Arena_Combate;
     }
-
+     
     if (res == ResultadoMover::OK) {
         turno_actual = 1 - turno_actual;
         for (auto p : personajes) p->decrementarInmovilizacion();
+        for (auto p : personajes) p->decrementarInmunidad();
     }
     else {
         // ILEGAL: la maquina no encontro jugada. Cede el turno para que la
@@ -194,6 +242,9 @@ void Partida::tecladoHabilidades(unsigned char key) {
     if (key == '1' && menu->puedeUsar(1)) modo_revivir = true;
     if (key == '2' && menu->puedeUsar(2)) modo_inmovilizar = true;
     if (key == '3' && menu->puedeUsar(0)) modo_teleport = true;
+    if (key == '4' && menu->puedeUsar(3)) modo_curar = true;
+    if (key == '5' && menu->puedeUsar(4)) modo_escudo = true;
+    if (key == '6' && menu->puedeUsar(5)) modo_inmunidad = true;
     glutPostRedisplay();
 }
 
@@ -201,6 +252,8 @@ void Partida::dibujaSeleccion() { MotorGrafico::get_instance().dibujaSeleccion(p
 void Partida::dibujaHabilidades() { MotorGrafico::get_instance().dibujaHabilidades(personaje_seleccionado, modo_teleport, modo_inmovilizar, modo_revivir); }
 void Partida::dibujaInmovilizados() { MotorGrafico::get_instance().dibujaInmovilizados(tab_); }
 void Partida::dibujaBarrasVida() { MotorGrafico::get_instance().dibujaBarrasVida(tab_, personaje_seleccionado);}
+void Partida::dibujaEscudos() { MotorGrafico::get_instance().dibujaEscudos(tab_); }
+void Partida::dibujaInmunidad() { MotorGrafico::get_instance().dibujaInmunidad(tab_); }
 
 void Partida::teclado(unsigned char key) {
     if (key == 32) tab_.avanzarCiclo();
@@ -218,6 +271,7 @@ void Partida::reset() {
     personaje_seleccionado = nullptr;
     es_lider_seleccionado = false;
     modo_teleport = modo_inmovilizar = modo_revivir = false;
+    modo_curar = modo_escudo = modo_inmunidad = false;
     casillas_iluminadas.clear();
     delete carta_actual; carta_actual = nullptr;
     nombre_carta_cargada = "";
