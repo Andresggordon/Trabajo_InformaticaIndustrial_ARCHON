@@ -200,7 +200,7 @@ Modos_juego Partida::turnoMaquina() {
     if (turno_actual != idxTurnoIA) return Modos_juego::Partida;
 
     Turno turnoIA = (equipo_j2 == 1) ? Turno::TURNO_DE_MANANA
-                                     : Turno::TURNO_DE_TARDE;
+        : Turno::TURNO_DE_TARDE;
 
     ResultadoMover res = ia_.jugarTurno(tab_, turnoIA);
 
@@ -221,7 +221,7 @@ Modos_juego Partida::turnoMaquina() {
         personaje_seleccionado = nullptr; casillas_iluminadas.clear();
         return Modos_juego::Arena_Combate;
     }
-     
+
     if (res == ResultadoMover::OK) {
         turno_actual = 1 - turno_actual;
         for (auto p : personajes) p->decrementarInmovilizacion();
@@ -251,12 +251,11 @@ void Partida::tecladoHabilidades(unsigned char key) {
 void Partida::dibujaSeleccion() { MotorGrafico::get_instance().dibujaSeleccion(personaje_seleccionado, casillas_iluminadas); }
 void Partida::dibujaHabilidades() { MotorGrafico::get_instance().dibujaHabilidades(personaje_seleccionado, modo_teleport, modo_inmovilizar, modo_revivir); }
 void Partida::dibujaInmovilizados() { MotorGrafico::get_instance().dibujaInmovilizados(tab_); }
-void Partida::dibujaBarrasVida() { MotorGrafico::get_instance().dibujaBarrasVida(tab_, personaje_seleccionado);}
+void Partida::dibujaBarrasVida() { MotorGrafico::get_instance().dibujaBarrasVida(tab_, personaje_seleccionado); }
 void Partida::dibujaEscudos() { MotorGrafico::get_instance().dibujaEscudos(tab_); }
 void Partida::dibujaInmunidad() { MotorGrafico::get_instance().dibujaInmunidad(tab_); }
 
 void Partida::teclado(unsigned char key) {
-    if (key == 32) tab_.avanzarCiclo();
     if (key == 27) mostrar_popup = false;
     tecladoHabilidades(key);
 }
