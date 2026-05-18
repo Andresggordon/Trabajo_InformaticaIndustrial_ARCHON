@@ -5,11 +5,13 @@
 #include "Modos_juego.h"
 #include "ArenaCombate.h"
 #include "Finpartida.h"
+#include "PantallaFinal.h"
 #include "Geometria.h"
 #include <iostream>
 #include <string>
 
 extern ArenaCombate* arena;
+extern PantallaFinal* pantalla_final;
 
 Partida::Partida() {
     fondo = new ETSIDI::Sprite("assets/menu_imagenes/fondo_partida.png", 0, 0, 800, 800);
@@ -185,6 +187,9 @@ Modos_juego Partida::turnoMaquina() {
     if (res == ResultadoMover::OK) {
         turno_actual = 1 - turno_actual;
         for (auto p : personajes) p->decrementarInmovilizacion();
+
+        Modos_juego fin = comprobarFinPartida();
+        if (fin != Modos_juego::Partida) return fin;
     }
     else {
         // ILEGAL: la maquina no encontro jugada. Cede el turno para que la
@@ -271,22 +276,28 @@ Modos_juego Partida::comprobarFinPartida() {
         return Modos_juego::Partida;
 
     // ── DEBUG: imprimir en consola quien ha ganado ──────────────
-    std::cout << "[FIN PARTIDA] ";
-    switch (r) {
-    case CondicionVictoria::GANA_MANANA_POR_PIEZAS:
-        std::cout << "MANANA gana por eliminacion de piezas\n"; break;
-    case CondicionVictoria::GANA_TARDE_POR_PIEZAS:
-        std::cout << "TARDE  gana por eliminacion de piezas\n"; break;
-    case CondicionVictoria::GANA_MANANA_POR_PUNTOS:
-        std::cout << "MANANA gana por puntos de poder\n"; break;
-    case CondicionVictoria::GANA_TARDE_POR_PUNTOS:
-        std::cout << "TARDE  gana por puntos de poder\n"; break;
-    default: break;
-    }
+    bool ganaMan = FinPartida::ganaManana(r);
+    ResultadoPartida res = ganaMan ? ResultadoPartida::VICTORIA_MANANA
+                                   : ResultadoPartida::VICTORIA_TARDE;
+    Turno bandoGanador = ganaMan ? Turno::TURNO_DE_MANANA : Turno::TURNO_DE_TARDE;
 
-    // De momento, volvemos al MENU. En el siguiente paso conectaremos
-    // esto con PantallaFinal para mostrar el ganador.
+    // Puntuacion sencilla: piezas que le quedan en juego al ganador.
+    int piezas = 0;
+    for (auto* p : personajes)
+        if (p && p->estaVivo() && p->getCasillaActual() != nullptr
+            && p->getTurno() == bandoGanador)
+            piezas++;
+    int puntuacion = piezas * 100;
+    std::string nombre = ganaMan ? "Turno de Manana" : "Turno de Tarde";
+
+    std::cout << "[FIN PARTIDA] gana "
+              << (ganaMan ? "MANANA" : "TARDE")
+              << " (puntuacion " << puntuacion << ")\n";
+
+    if (pantalla_final != nullptr)
+        pantalla_final->setResultado(res, puntuacion, nombre);
+
     ETSIDI::stopMusica();
     ETSIDI::playMusica("assets/sonidos/menu.mp3", true);
-    return Modos_juego::MENU;
+    return Modos_juego::Pantalla_Final;
 }

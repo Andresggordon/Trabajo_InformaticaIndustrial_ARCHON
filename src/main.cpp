@@ -9,6 +9,7 @@
 #include "Partida.h"
 #include "MotorGrafico.h"
 #include "ArenaCombate.h"
+#include "PantallaFinal.h"
 
 
 int equipo_j1 = 0;
@@ -24,6 +25,7 @@ Eleccion2_1jugador* eleccion2_1jugador = nullptr;
 Ranking* ranking = nullptr;
 Pantalla_carga* pantalla_carga = nullptr;
 ArenaCombate* arena = nullptr;
+PantallaFinal* pantalla_final = nullptr;
 
 Modos_juego estado = Modos_juego::Pantalla_carga;
 
@@ -69,7 +71,9 @@ void display() {
         arena->dibujarProyectiles();
         arena->dibujaPopup();
     }
-       
+    else if (estado == Modos_juego::Pantalla_Final)
+        pantalla_final->dibuja();
+
     glutSwapBuffers();
 }
 
@@ -88,6 +92,8 @@ void mouseMove(int x, int y) {
         Partida::get_instance().update(x, y);
     else if (estado == Modos_juego::Arena_Combate)
         arena->update(x, y);
+    else if (estado == Modos_juego::Pantalla_Final)
+        pantalla_final->update(x, y);
     glutPostRedisplay();
 }
 
@@ -109,6 +115,8 @@ void mouseClick(int button, int estadoBtn, int x, int y) {
             estado = Partida::get_instance().click(x, y);
         else if (estado == Modos_juego::Arena_Combate)
             estado = arena->click(x, y);
+        else if (estado == Modos_juego::Pantalla_Final)
+            estado = pantalla_final->click(x, y);
 
         if (estado == Modos_juego::Partida && estado_anterior != Modos_juego::Partida)
             Partida::get_instance().reset();
@@ -152,7 +160,8 @@ void reposo() {
         if (arena->combateTerminado()) {
             Partida::get_instance().tablero().resolverCombate(arena->getResultado());
             arena->finalizarCombate();
-            estado = Modos_juego::Partida;
+            // Tras el combate puede haber acabado la partida (mago/piezas).
+            estado = Partida::get_instance().comprobarFinPartida();
         }
     }
     else if (estado == Modos_juego::Partida) {
@@ -185,6 +194,7 @@ int main(int argc, char** argv) {
     ranking = new Ranking();
     pantalla_carga = new Pantalla_carga();
     arena = new ArenaCombate();
+    pantalla_final = new PantallaFinal();
     // Partida y MotorGrafico se inicializan solos la primera vez que se llaman
     Partida::get_instance();
     MotorGrafico::get_instance();

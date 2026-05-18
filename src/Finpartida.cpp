@@ -1,88 +1,99 @@
-#include "FinPartida.h"
+#include "Finpartida.h"
+#include "Casilla.h"
 
-
-
+// Los 5 puntos de poder: centro + centro de cada borde (tablero 9x9).
 const int FinPartida::PUNTOS_PODER[5][2] = {
     {4, 4}, // centro
-    {0, 4}, // borde superior, centro
-    {8, 4}, // borde inferior, centro
-    {4, 0}, // borde izquierdo, centro
-    {4, 8}, // borde derecho, centro
+    {0, 4}, // borde superior
+    {8, 4}, // borde inferior
+    {4, 0}, // borde izquierdo
+    {4, 8}, // borde derecho
 };
 
+bool FinPartida::enJuego(const Personaje* p) {
+    // Viva (vida > 0) y colocada en una casilla del tablero.
+    // Una pieza muerta o retirada del tablero NO cuenta.
+    return p != nullptr && p->estaVivo() && p->getCasillaActual() != nullptr;
+}
 
-
-int FinPartida::contarVivas(
-    const std::vector<Personaje*>& personajes,
-    Turno bando)
-{
+int FinPartida::contarEnJuego(const std::vector<Personaje*>& personajes, Turno bando) {
     int count = 0;
-    for (auto* p : personajes) {
-        if (p == nullptr) continue;
-        if (!p->estaVivo()) continue;
-        if (p->getTurno() != bando) continue;
-        count++;
-    }
+    for (auto* p : personajes)
+        if (enJuego(p) && p->getTurno() == bando)
+            count++;
     return count;
 }
 
-int FinPartida::puntosDePoderControlados(
-    const std::vector<Personaje*>& personajes,
-    Turno bando)
-{
+bool FinPartida::liderEnJuego(const std::vector<Personaje*>& personajes, Turno bando) {
+    for (auto* p : personajes)
+        if (p != nullptr && p->getTurno() == bando && p->esLider() && enJuego(p))
+            return true;
+    return false;
+}
+
+int FinPartida::contarNoEncarceladas(const std::vector<Personaje*>& personajes, Turno bando) {
     int count = 0;
-    // Para cada punto de poder, miramos si hay alguna pieza viva del bando encima
+    for (auto* p : personajes)
+        if (enJuego(p) && p->getTurno() == bando && !p->estaEncarcelado())
+            count++;
+    return count;
+}
+
+int FinPartida::puntosDePoderControlados(Turno bando, const Tablero& tablero) {
+    int count = 0;
     for (int i = 0; i < NUM_PUNTOS_PODER; i++) {
-        int fila = PUNTOS_PODER[i][0];
-        int col = PUNTOS_PODER[i][1];
-
-        for (auto* p : personajes) {
-            if (p == nullptr) continue;
-            if (!p->estaVivo()) continue;
-            if (p->getTurno() != bando) continue;
-
-            // getPosY = fila, getPosX = columna  (segun personaje.cpp)
-            if (p->getPosY() == fila && p->getPosX() == col) {
-                count++;
-                break; // ya hay una pieza nuestra aqui, pasamos al siguiente punto
-            }
-        }
+        const Casilla& c = tablero.getCasilla(PUNTOS_PODER[i][0], PUNTOS_PODER[i][1]);
+        Personaje* p = c.getPersonaje();
+        if (p != nullptr && p->estaVivo() && p->getTurno() == bando)
+            count++;
     }
     return count;
 }
-
 
 CondicionVictoria FinPartida::comprobar(
     const std::vector<Personaje*>& personajes,
-    const Tablero& /*tablero*/)
+    const Tablero& tablero)
 {
-    // ── Condicion 1: piezas eliminadas ──────────────────────────────────────
-    int vivas_manana = contarVivas(personajes, Turno::TURNO_DE_MANANA);
-    int vivas_tarde = contarVivas(personajes, Turno::TURNO_DE_TARDE);
+    // ── 1. El mago/lider ha caido (propuesta: "si muere el mago pierdes").
+    //       Es la condicion mas decisiva y la que de verdad termina partidas.
+    bool liderM = liderEnJuego(personajes, Turno::TURNO_DE_MANANA);
+    bool liderT = liderEnJuego(personajes, Turno::TURNO_DE_TARDE);
+    if (liderM && !liderT) return CondicionVictoria::GANA_MANANA_POR_LIDER;
+    if (liderT && !liderM) return CondicionVictoria::GANA_TARDE_POR_LIDER;
 
-    if (vivas_manana == 0) return CondicionVictoria::GANA_TARDE_POR_PIEZAS;
-    if (vivas_tarde == 0)  return CondicionVictoria::GANA_MANANA_POR_PIEZAS;
+    int vivasM = contarEnJuego(personajes, Turno::TURNO_DE_MANANA);
+    int vivasT = contarEnJuego(personajes, Turno::TURNO_DE_TARDE);
 
-    // ── Condicion 2: puntos de poder ────────────────────────────────────────
-    int pp_manana = puntosDePoderControlados(personajes, Turno::TURNO_DE_MANANA);
-    int pp_tarde = puntosDePoderControlados(personajes, Turno::TURNO_DE_TARDE);
+    // ── 2. Un bando se ha quedado sin piezas.
+    if (vivasM == 0 && vivasT > 0) return CondicionVictoria::GANA_TARDE_POR_PIEZAS;
+    if (vivasT == 0 && vivasM > 0) return CondicionVictoria::GANA_MANANA_POR_PIEZAS;
 
-    if (pp_manana >= NUM_PUNTOS_PODER) return CondicionVictoria::GANA_MANANA_POR_PUNTOS;
-    if (pp_tarde >= NUM_PUNTOS_PODER)  return CondicionVictoria::GANA_TARDE_POR_PUNTOS;
+    // ── 3. Rival reducido a una sola pieza y ademas encarcelada.
+    if (vivasT == 1 && contarNoEncarceladas(personajes, Turno::TURNO_DE_TARDE) == 0)
+        return CondicionVictoria::GANA_MANANA_POR_ENCARCELADO;
+    if (vivasM == 1 && contarNoEncarceladas(personajes, Turno::TURNO_DE_MANANA) == 0)
+        return CondicionVictoria::GANA_TARDE_POR_ENCARCELADO;
 
-    // Si no se cumple nada, la partida sigue
+    // ── 4. Control de los 5 puntos de poder.
+    if (puntosDePoderControlados(Turno::TURNO_DE_MANANA, tablero) >= NUM_PUNTOS_PODER)
+        return CondicionVictoria::GANA_MANANA_POR_PUNTOS;
+    if (puntosDePoderControlados(Turno::TURNO_DE_TARDE, tablero) >= NUM_PUNTOS_PODER)
+        return CondicionVictoria::GANA_TARDE_POR_PUNTOS;
+
     return CondicionVictoria::NINGUNA;
 }
 
-// consulta del resultado
-
 bool FinPartida::ganaManana(CondicionVictoria c) {
-    return c == CondicionVictoria::GANA_MANANA_POR_PIEZAS
+    return c == CondicionVictoria::GANA_MANANA_POR_LIDER
+        || c == CondicionVictoria::GANA_MANANA_POR_PIEZAS
+        || c == CondicionVictoria::GANA_MANANA_POR_ENCARCELADO
         || c == CondicionVictoria::GANA_MANANA_POR_PUNTOS;
 }
 
 bool FinPartida::ganaTarde(CondicionVictoria c) {
-    return c == CondicionVictoria::GANA_TARDE_POR_PIEZAS
+    return c == CondicionVictoria::GANA_TARDE_POR_LIDER
+        || c == CondicionVictoria::GANA_TARDE_POR_PIEZAS
+        || c == CondicionVictoria::GANA_TARDE_POR_ENCARCELADO
         || c == CondicionVictoria::GANA_TARDE_POR_PUNTOS;
 }
 

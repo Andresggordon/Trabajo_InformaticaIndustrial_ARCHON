@@ -29,6 +29,7 @@ public:
     void update(int x, int y);
     Modos_juego click(int x, int y);
     Modos_juego turnoMaquina();          // juega la maquina si le toca (modo 1 jug.)
+    Modos_juego comprobarFinPartida();   // ¿fin? -> prepara PantallaFinal
     void teclado(unsigned char key);
     void reset();
     void dibujaextra();
@@ -47,8 +48,6 @@ private:
     Partida();
     Partida(const Partida&) = delete;
     Partida& operator=(const Partida&) = delete;
-
-    Modos_juego comprobarFinPartida();
 
     Tablero tab_;
     IAJugador ia_;   // cerebro de la maquina (modo 1 jugador)
