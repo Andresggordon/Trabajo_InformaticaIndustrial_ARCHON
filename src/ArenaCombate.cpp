@@ -4,6 +4,7 @@
 #include "tipo_personaje.h"
 #include <GL/freeglut.h>
 #include "Proyectil.h"
+#include "Tablero.h"   // FaseCiclo + EstadoCasilla (no hay ciclo: .cpp incluye .h, no al revés)
 
 // Convierte posición en cuadrícula a coordenadas OpenGL
 static float arenaToX(int columna) {
@@ -13,7 +14,7 @@ static float arenaToY(int fila) {
 	return -270.0f + fila * 55.0f;
 }
 
-void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo)
+void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo, FaseCiclo fase)
 {
 	local_ = local;
 	invasor_ = invasor;
@@ -33,6 +34,36 @@ void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo
 
 	tiempoUltimoMovimiento_ = glutGet(GLUT_ELAPSED_TIME);
 	tiempoUltimoMovimientoIA_ = ahora;
+
+	//Ventaja de terreno: bonus de daño
+	static const int BONUS_TERRENO_PCT = 25; // % de daño extra
+
+	bonusDanioLocal_ = 0;
+	bonusDanioInvasor_ = 0;
+
+	auto calcularBonus = [&](Personaje* p) -> int {
+		if (p == nullptr || p->getCasillaActual() == nullptr) return 0;
+		EstadoCasilla ec = p->getCasillaActual()->getEstado();
+		Turno t = p->getTurno();
+		bool ventaja = false;
+		if (ec == EstadoCasilla::BLANCA_FIJA) {
+			ventaja = (t == Turno::TURNO_DE_MANANA);
+		}
+		else if (ec == EstadoCasilla::AZUL_FIJA) {
+			ventaja = (t == Turno::TURNO_DE_TARDE);
+		}
+		else { // DINAMICA
+			bool faseClara = (fase == FaseCiclo::MEDIODIA ||
+				fase == FaseCiclo::AMANECER ||
+				fase == FaseCiclo::MADRUGADA);
+			ventaja = (faseClara && t == Turno::TURNO_DE_MANANA) ||
+				(!faseClara && t == Turno::TURNO_DE_TARDE);
+		}
+		return ventaja ? (p->getArma().getDanio() * BONUS_TERRENO_PCT / 100) : 0;
+		};
+
+	bonusDanioLocal_ = calcularBonus(local_);
+	bonusDanioInvasor_ = calcularBonus(invasor_);
 }
 
 bool ArenaCombate::moverEnArena(PosArena& pos, int df, int dc)
@@ -63,16 +94,16 @@ void ArenaCombate::teclado(unsigned char key)
 	switch (key)
 	{
 	case 'w':
-		teclaW=true;
+		teclaW = true;
 		break;
 	case 's':
-		teclaS=true;
+		teclaS = true;
 		break;
 	case 'a':
-		teclaA=true;
+		teclaA = true;
 		break;
 	case 'd':
-		teclaD=true;
+		teclaD = true;
 		break;
 
 		// Ataque jugador 1 (espacio) — funciona en modo 1 y 2
@@ -211,7 +242,7 @@ Modos_juego ArenaCombate::click(int x, int y) {
 		return Modos_juego::Arena_Combate;
 	}
 	return Modos_juego::Arena_Combate;
-} 
+}
 
 void ArenaCombate::aplicarAtaque(Personaje* atacante, Personaje* defensor) {
 	if (atacante == nullptr || defensor == nullptr) return;
@@ -231,8 +262,11 @@ void ArenaCombate::aplicarAtaque(Personaje* atacante, Personaje* defensor) {
 	float dy = arenaToY(esLocal ? posInvasor_.fila : posLocal_.fila);
 	float velocidad = atacante->getVelocidadProyectil();
 
+	// Daño base + bonus de terreno según quién ataca
+	int dano = atacante->getArma().getDanio() + (esLocal ? bonusDanioLocal_ : bonusDanioInvasor_);
+
 	proyectiles_.push_back(new Proyectil(ox, oy, dx, dy,
-		atacante->getArma().getDanio(),
+		dano,
 		velocidad,
 		atacante->getNombreProyectil(),
 		esLocal));
@@ -296,7 +330,7 @@ void ArenaCombate::moverMaquina() {
 	int ahora = glutGet(GLUT_ELAPSED_TIME);
 
 	int distFila = abs(posLocal_.fila - posInvasor_.fila);
-	int distCol  = abs(posLocal_.columna - posInvasor_.columna);
+	int distCol = abs(posLocal_.columna - posInvasor_.columna);
 	int distancia = max(distFila, distCol);
 	int alcance = invasor_->getArma().getAlcance();
 

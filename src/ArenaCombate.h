@@ -4,6 +4,9 @@
 #include "ETSIDI.h"
 #include <vector>
 
+// Forward declaration para evitar include circular con Tablero.h
+enum class FaseCiclo;
+
 
 class Proyectil;
 
@@ -18,7 +21,7 @@ class ArenaCombate
 {
 public:
 	ArenaCombate();
-	void iniciarCombate(Personaje* local, Personaje* invasor, int modo); //Iniciar y finalizar el combate
+	void iniciarCombate(Personaje* local, Personaje* invasor, int modo, FaseCiclo fase); //Iniciar y finalizar el combate
 	void finalizarCombate();
 	bool combateTerminado() const; //Confirmar que el combate acabo y pasar el resultado del combate
 	ResultadoCombate getResultado() const;
@@ -66,8 +69,8 @@ private:
 	ETSIDI::Sprite* fondo_arena = nullptr;
 	ETSIDI::Sprite* abandonar_partida;
 	ETSIDI::Sprite* popup_salir;
-	bool mostrar_popup=false;
-	int boton_activo=0;
+	bool mostrar_popup = false;
+	int boton_activo = 0;
 
 	//Lógica de Ataque
 	//Temporizadores de ataque (ms)
@@ -79,7 +82,7 @@ private:
 
 	//IA de la maquina en modo 1 jugador: el invasor persigue y ataca al jugador.
 	void moverMaquina();
-	
+
 	//Teclas pulsadas
 	bool teclaW = false;
 	bool teclaS = false;
@@ -93,5 +96,9 @@ private:
 	int tiempoUltimoMovimientoIA_ = 0;
 	static const int INTERVALO_MOVIMIENTO_IA = 150;
 	static const int INTERVALO_ATAQUE_IA = 600;
-};
 
+	// Bonus de daño por ventaja de terreno (0 = sin ventaja)
+	// Se calcula en iniciarCombate y se aplica en aplicarAtaque.
+	int bonusDanioLocal_ = 0;
+	int bonusDanioInvasor_ = 0;
+};

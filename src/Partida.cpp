@@ -179,7 +179,7 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
                 personaje_seleccionado = nullptr; casillas_iluminadas.clear();
                 return Modos_juego::Partida;
             }
-            arena->iniciarCombate(tab_.getPendienteLocal(), tab_.getPendienteInvasor(), modo_actual);
+            arena->iniciarCombate(tab_.getPendienteLocal(), tab_.getPendienteInvasor(), modo_actual, tab_.getFase());
             personaje_seleccionado = nullptr; casillas_iluminadas.clear();
             return Modos_juego::Arena_Combate;
         }
@@ -217,7 +217,7 @@ Modos_juego Partida::turnoMaquina() {
             personaje_seleccionado = nullptr; casillas_iluminadas.clear();
             return Modos_juego::Partida;
         }
-        arena->iniciarCombate(tab_.getPendienteLocal(), tab_.getPendienteInvasor(), modo_actual);
+        arena->iniciarCombate(tab_.getPendienteLocal(), tab_.getPendienteInvasor(), modo_actual, tab_.getFase());
         personaje_seleccionado = nullptr; casillas_iluminadas.clear();
         return Modos_juego::Arena_Combate;
     }
