@@ -177,6 +177,12 @@ void tecladoUp(unsigned char key, int x, int y) {
         arena->teclaLevantada(key);
 }
 
+void tecladoEspecialUp(int key, int x, int y) {
+    if (estado == Modos_juego::Arena_Combate)
+        arena->teclaEspecialLevantada(key);
+    glutPostRedisplay();
+}
+
 int main(int argc, char** argv) {
     SetProcessDPIAware();
     glutInit(&argc, argv);
@@ -206,6 +212,7 @@ int main(int argc, char** argv) {
     glutReshapeFunc(reshape);
     glutSpecialFunc(tecladoEspecial);
     glutKeyboardUpFunc(tecladoUp);
+    glutSpecialUpFunc(tecladoEspecialUp);
     glutMainLoop();
     return 0;
 }

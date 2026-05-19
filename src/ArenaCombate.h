@@ -29,6 +29,7 @@ public:
 	void teclado(unsigned char key);
 	void tecladoEspecial(int key);
 	void teclaLevantada(unsigned char key);
+	void teclaEspecialLevantada(int key);
 	Personaje* getLocal()   const { return local_; }
 	Personaje* getInvasor() const { return invasor_; }
 
@@ -88,6 +89,11 @@ private:
 	bool teclaS = false;
 	bool teclaA = false;
 	bool teclaD = false;
+
+	bool teclaArriba = false;
+	bool teclaAbajo = false;
+	bool teclaIzquierda = false;
+	bool teclaDerecha = false;
 
 	int tiempoUltimoMovimiento_ = 0;
 	static const int INTERVALO_MOVIMIENTO = 150;

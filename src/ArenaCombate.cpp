@@ -129,23 +129,31 @@ void ArenaCombate::tecladoEspecial(int key)
 
 	switch (key)
 	{
-	case GLUT_KEY_UP:
-		moverEnArena(posInvasor_, 1, 0);
-		break;
-	case GLUT_KEY_DOWN:
-		moverEnArena(posInvasor_, -1, 0);
-		break;
-	case GLUT_KEY_LEFT:
-		moverEnArena(posInvasor_, 0, -1);
-		break;
-	case GLUT_KEY_RIGHT:
-		moverEnArena(posInvasor_, 0, 1);
-		break;
+	case GLUT_KEY_UP:    teclaArriba = true; break;
+	case GLUT_KEY_DOWN:  teclaAbajo = true; break;
+	case GLUT_KEY_LEFT:  teclaIzquierda = true; break;
+	case GLUT_KEY_RIGHT: teclaDerecha = true; break;
 	}
 }
 
 void ArenaCombate::finalizarCombate()
 {
+	// Limpiar proyectiles pendientes
+	for (auto p : proyectiles_) {
+		delete p;
+	}
+	proyectiles_.clear();
+
+	// Resetear teclas
+	teclaW = false;
+	teclaS = false;
+	teclaA = false;
+	teclaD = false;
+	teclaArriba = false;
+	teclaAbajo = false;
+	teclaIzquierda = false;
+	teclaDerecha = false;
+
 	local_ = nullptr;
 	invasor_ = nullptr;
 }
@@ -156,13 +164,11 @@ void ArenaCombate::resolverResultado()
 	if (local_->estaVivo())
 	{
 		resultado_ = ResultadoCombate::Gana_Local;
-		local_->curar(local_->getVidaMax());
 		Partida::get_instance().registrarMuerto(invasor_);
 	}
 	else
 	{
 		resultado_ = ResultadoCombate::Gana_Invasor;
-		invasor_->curar(invasor_->getVidaMax());
 		Partida::get_instance().registrarMuerto(local_);
 	}
 }
@@ -258,6 +264,8 @@ void ArenaCombate::aplicarAtaque(Personaje* atacante, Personaje* defensor) {
 	int alcance = atacante->getArma().getAlcance();
 	if (distancia > alcance) return;
 
+
+
 	bool esLocal = (atacante == local_);
 	float ox = arenaToX(esLocal ? posLocal_.columna : posInvasor_.columna);
 	float oy = arenaToY(esLocal ? posLocal_.fila : posInvasor_.fila);
@@ -285,44 +293,56 @@ void ArenaCombate::actualizar() {
 		if (teclaS) moverEnArena(posLocal_, -1, 0);
 		if (teclaA) moverEnArena(posLocal_, 0, -1);
 		if (teclaD) moverEnArena(posLocal_, 0, 1);
-		tiempoUltimoMovimiento_ = ahora;
-	}
-	// Actualizar proyectiles
-	for (auto p : proyectiles_)
-		p->actualizar();
 
-	// Detectar impactos y aplicar daño
-	for (auto p : proyectiles_) {
-		if (p->haLlegado()) {
-			// Determinar quién recibe el daño
-			Personaje* defensor = p->esDeLocal() ? invasor_ : local_;
-			if (defensor != nullptr && defensor->estaVivo()) {
-				if (defensor->getEscudo()) {
-					defensor->decrementarEscudo();
-				}
-				else {
-					defensor->recibirDano(p->getDano());
-					if (!defensor->estaVivo())
-						resolverResultado();
+		if (modo_ == 2) {
+			if (teclaArriba)    moverEnArena(posInvasor_, 1, 0);
+			if (teclaAbajo)     moverEnArena(posInvasor_, -1, 0);
+			if (teclaIzquierda) moverEnArena(posInvasor_, 0, -1);
+			if (teclaDerecha)   moverEnArena(posInvasor_, 0, 1);
+
+			tiempoUltimoMovimiento_ = ahora;
+		}
+		// Actualizar proyectiles
+		for (auto p : proyectiles_)
+			p->actualizar();
+
+		// Detectar impactos y aplicar daño
+		for (auto p : proyectiles_) {
+			if (p->haLlegado()) {
+				// Determinar quién recibe el daño
+				Personaje* defensor = p->esDeLocal() ? invasor_ : local_;
+				if (defensor != nullptr && defensor->estaVivo()) {
+					if (defensor->getEscudo()) {
+						defensor->decrementarEscudo();
+					}
+					else {
+						defensor->recibirDano(p->getDano());
+						if (!defensor->estaVivo())
+							resolverResultado();
+					}
 				}
 			}
 		}
-	}
 
-	// Eliminar proyectiles que han llegado
-	for (auto it = proyectiles_.begin(); it != proyectiles_.end();) {
-		if ((*it)->haLlegado()) {
-			delete* it;
-			it = proyectiles_.erase(it);
+		// Eliminar proyectiles que han llegado
+		for (auto it = proyectiles_.begin(); it != proyectiles_.end();) {
+			if ((*it)->haLlegado()) {
+				delete* it;
+				it = proyectiles_.erase(it);
+			}
+			else {
+				++it;
+			}
 		}
-		else {
-			++it;
-		}
-	}
 
-	// En modo 1 jugador la maquina controla al invasor_.
-	if (modo_ == 1) moverMaquina();
+		// En modo 1 jugador la maquina controla al invasor_.
+		if (modo_ == 1) moverMaquina();
+	}
 }
+
+	
+
+
 
 void ArenaCombate::moverMaquina() {
 	// La maquina (invasor_) persigue al jugador (local_) y le ataca cuando
@@ -369,6 +389,24 @@ void ArenaCombate::teclaLevantada(unsigned char key) {
 	case 's': teclaS = false; break;
 	case 'a': teclaA = false; break;
 	case 'd': teclaD = false; break;
+	}
+}
+
+void ArenaCombate::teclaEspecialLevantada(int key) {
+	switch (key)
+	{
+	case GLUT_KEY_UP:
+		teclaArriba = false;
+		break;
+	case GLUT_KEY_DOWN:
+		teclaAbajo = false;
+		break;
+	case GLUT_KEY_LEFT:
+		teclaIzquierda = false;
+		break;
+	case GLUT_KEY_RIGHT:
+		teclaDerecha = false;
+		break;
 	}
 }
 

@@ -28,6 +28,10 @@ public:
     Menu_habilidades* getMenu() override { return &menu; }
     bool esLider() const override { return true; }
 
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/Risa.png";
+    }
+    float getVelocidadProyectil() const override { return 6.0f; }
 };
 
 class Microprocesador_M : public Volador {
@@ -50,7 +54,7 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartamicrom
     int getTiempoAnimacion() const override { return 200; }
 
     std::string getNombreProyectil() const override {
-        return "assets/menu_imagenes/cero.png";
+        return "assets/menu_imagenes/Microprocesadorcero.png";
     }
     float getVelocidadProyectil() const override { return 6.0f; }
 };
@@ -75,7 +79,10 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartamulti.
     float getTamanoSprite() const override { return 70.0f; }
     int getTiempoAnimacion() const override { return 500; }
 
-
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/rayo.png";
+    }
+    float getVelocidadProyectil() const override { return 6.0f; }
 
 };
 
@@ -100,7 +107,10 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartaPLC.pn
     float getOffsetY() const override { return 65.0f; }
     int getTiempoAnimacion() const override { return 1000; }
 
-
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/Tuerca.png";
+    }
+    float getVelocidadProyectil() const override { return 6.0f; }
 
 
 };
@@ -121,6 +131,10 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartafuente
 
     float getTamanoSprite() const override { return 60.0f; }
 
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/Descarga.png";
+    }
+    float getVelocidadProyectil() const override { return 6.0f; }
 
 };
 
@@ -172,7 +186,12 @@ public:
 
     int getTiempoAnimacion() const override { return 150; }
 
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/Ataqueletra.png";
 
+        
+    }
+    float getVelocidadProyectil() const override { return 6.0f; }
 
 };
 
@@ -197,6 +216,10 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartacim.pn
     float getOffsetX() const override { return 20.0f; }
     float getOffsetY() const override { return -20.0f; }
 
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/Pata.png";
+    }
+    float getVelocidadProyectil() const override { return 6.0f; }
 };
 
 //TURNO DE TARDE 
@@ -224,7 +247,10 @@ public:
     Menu_habilidades* getMenu() override { return &menu; }
     bool esLider() const override { return true; }
 
-
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/TizaVoladora.png";
+    }
+    float getVelocidadProyectil() const override { return 6.0f; }
 };
 
 class Microprocesador_T : public Volador {
@@ -274,7 +300,10 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartaosci.p
 
     float getTamanoSprite() const override { return 60.0f; }
 
-
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/Seno.png";
+    }
+    float getVelocidadProyectil() const override { return 6.0f; }
 
 };
 
@@ -298,7 +327,10 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartarobot.
 
     float getTamanoSprite() const override { return 90.0f; }
 
-
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/Tornillo.png";
+    }
+    float getVelocidadProyectil() const override { return 6.0f; }
 
 };
 
@@ -323,7 +355,10 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartafuente
 
     int getTiempoAnimacion() const override { return 350; }
 
-
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/Descarga.png";
+    }
+    float getVelocidadProyectil() const override { return 6.0f; }
 
 };
 
@@ -378,7 +413,10 @@ public:
     float getOffsetX() const override { return 5.0f; }
     float getOffsetY() const override { return -22.0f; }
 
-
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/C++.png";
+    }
+    float getVelocidadProyectil() const override { return 6.0f; }
 
 
 
@@ -402,4 +440,9 @@ public:
     int getTiempoAnimacion() const override { return 1200; }
     float getOffsetX() const override { return 20.0f; }
     float getOffsetY() const override { return -20.0f; }
+
+    std::string getNombreProyectil() const override {
+        return "assets/menu_imagenes/Pata.png";
+    }
+    float getVelocidadProyectil() const override { return 6.0f; }
 };
