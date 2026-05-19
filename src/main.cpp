@@ -63,6 +63,7 @@ void display() {
         Partida::get_instance().dibujaBarrasVida(); // 7. Barras de vida 
         Partida::get_instance().dibujaEscudos(); // 8. Escudo casilla
         Partida::get_instance().dibujaInmunidad();// 9. Inmunidad casilla
+        Partida::get_instance().dibujaAviso(); // 10. Avisos por pantalla
 
     }
     else if (estado == Modos_juego::Arena_Combate)
@@ -142,6 +143,12 @@ void tecladoEspecial(int key, int x, int y) {
 }
 
 void reposo() {
+
+    static int tiempoAnterior = glutGet(GLUT_ELAPSED_TIME);
+    int tiempoActual = glutGet(GLUT_ELAPSED_TIME);
+    float deltaTime = (tiempoActual - tiempoAnterior) / 1000.0f; 
+    tiempoAnterior = tiempoActual;
+
     if (estado == Modos_juego::Pantalla_carga) {
         pantalla_carga->update();
         if (pantalla_carga->carga_completa)
@@ -158,6 +165,7 @@ void reposo() {
         }
     }
     else if (estado == Modos_juego::Partida) {
+        if (MotorGrafico::tiempoAviso > 0.0f) MotorGrafico::tiempoAviso -= deltaTime;  // ~60fps, resta ~1 seg cada 60 llamadas
         // En modo 1 jugador, deja que la maquina mueva si es su turno.
         estado = Partida::get_instance().turnoMaquina();
     }

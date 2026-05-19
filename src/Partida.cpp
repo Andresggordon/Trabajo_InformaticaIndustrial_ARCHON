@@ -159,6 +159,14 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
                 es_lider_seleccionado = (p->getMenu() != nullptr);
                 casillas_iluminadas = Geometria::getCasillasAccesibles(*p, tab_);
             }
+            else {
+                MotorGrafico::mensajeAviso = "No es tu turno!";  
+                MotorGrafico::tiempoAviso = 2.0f;             
+            }
+        }
+        else {
+            MotorGrafico::mensajeAviso = "Eso no se puede hacer!"; 
+            MotorGrafico::tiempoAviso = 2.0f;                     
         }
     }
     else {
@@ -182,6 +190,11 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
             arena->iniciarCombate(tab_.getPendienteLocal(), tab_.getPendienteInvasor(), modo_actual, tab_.getFase());
             personaje_seleccionado = nullptr; casillas_iluminadas.clear();
             return Modos_juego::Arena_Combate;
+          
+        }
+        else {
+            MotorGrafico::mensajeAviso = "Movimiento no valido!"; 
+            MotorGrafico::tiempoAviso = 2.0f;                    
         }
         personaje_seleccionado = nullptr; casillas_iluminadas.clear();
     }
@@ -254,6 +267,7 @@ void Partida::dibujaInmovilizados() { MotorGrafico::get_instance().dibujaInmovil
 void Partida::dibujaBarrasVida() { MotorGrafico::get_instance().dibujaBarrasVida(tab_, personaje_seleccionado); }
 void Partida::dibujaEscudos() { MotorGrafico::get_instance().dibujaEscudos(tab_); }
 void Partida::dibujaInmunidad() { MotorGrafico::get_instance().dibujaInmunidad(tab_); }
+void Partida::dibujaAviso() { MotorGrafico::get_instance().dibujaAviso(); }
 
 void Partida::teclado(unsigned char key) {
     if (key == 27) mostrar_popup = false;

@@ -41,6 +41,7 @@ public:
     void dibujaInmovilizados();
     void dibujaEscudos();
     void dibujaInmunidad();
+    void dibujaAviso();
 
     Personaje* getPersonajeSeleccionado() const { return personaje_seleccionado; }
     void dibujaBarrasVida();

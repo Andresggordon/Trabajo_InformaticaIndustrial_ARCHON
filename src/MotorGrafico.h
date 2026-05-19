@@ -17,6 +17,10 @@ public:
         return instance;
     }
 
+    static void dibujaAviso();
+    static float tiempoAviso;       
+    static std::string mensajeAviso;
+
     void dibujar();
     void dibujarArena();
     void dibujarBarrasHP(Personaje* local, Personaje* invasor);

@@ -4,6 +4,9 @@
 #include "personaje.h"
 #include "habilidades_profes.h"
 
+float MotorGrafico::tiempoAviso = 0.0f;
+std::string MotorGrafico::mensajeAviso = "";
+
 void MotorGrafico::dibujar() {
     // Interpolación nearest neighbor para pixel art nítido
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -574,4 +577,90 @@ void MotorGrafico::dibujarBarrasHP(Personaje* local, Personaje* invasor) {
     glPopAttrib();
 }
 
+void MotorGrafico::dibujaAviso() {
+    if (tiempoAviso <= 0.0f) return;
 
+    int w = glutGet(GLUT_WINDOW_WIDTH);
+    int h = glutGet(GLUT_WINDOW_HEIGHT);
+
+    // Fade: empieza a desvanecerse en el último 30% del tiempo
+    float alpha = 1.0f;
+    if (tiempoAviso < 0.6f)
+        alpha = tiempoAviso / 0.6f;  // de 1 a 0 en los últimos 0.6 segundos
+
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, w, h, 0);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    float cx = w * 0.55f, cy = h * 0.38f; 
+    float bw = w * 0.32f, bh = h * 0.07f;
+
+    // Sombra negra desplazada (da profundidad)
+    glColor4f(0.0f, 0.0f, 0.0f, 0.4f * alpha);
+    glBegin(GL_QUADS);
+    glVertex2f(cx - bw / 2 + 4, cy - bh / 2 + 4);
+    glVertex2f(cx + bw / 2 + 4, cy - bh / 2 + 4);
+    glVertex2f(cx + bw / 2 + 4, cy + bh / 2 + 4);
+    glVertex2f(cx - bw / 2 + 4, cy + bh / 2 + 4);
+    glEnd();
+
+    // Fondo rojo oscuro
+    glColor4f(0.55f, 0.05f, 0.05f, 0.88f * alpha);
+    glBegin(GL_QUADS);
+    glVertex2f(cx - bw / 2, cy - bh / 2);
+    glVertex2f(cx + bw / 2, cy - bh / 2);
+    glVertex2f(cx + bw / 2, cy + bh / 2);
+    glVertex2f(cx - bw / 2, cy + bh / 2);
+    glEnd();
+
+    // Borde blanco
+    glColor4f(1.0f, 1.0f, 1.0f, 0.9f * alpha);
+    glLineWidth(2.0f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(cx - bw / 2, cy - bh / 2);
+    glVertex2f(cx + bw / 2, cy - bh / 2);
+    glVertex2f(cx + bw / 2, cy + bh / 2);
+    glVertex2f(cx - bw / 2, cy + bh / 2);
+    glEnd();
+
+    // Línea decorativa superior dentro del cuadro
+    glColor4f(1.0f, 0.4f, 0.4f, 0.6f * alpha);
+    glLineWidth(1.0f);
+    glBegin(GL_LINES);
+    glVertex2f(cx - bw / 2 + 8, cy - bh / 2 + 6);
+    glVertex2f(cx + bw / 2 - 8, cy - bh / 2 + 6);
+    glEnd();
+
+    // Texto centrado (calcula el ancho aproximado: ~10px por carácter con Helvetica 18)
+    float textoAncho = mensajeAviso.size() * 10.0f;
+    float textoX = cx - textoAncho / 2.0f;
+    float textoY = cy + 6.0f;
+
+    // Sombra del texto
+    glColor4f(0.0f, 0.0f, 0.0f, 0.5f * alpha);
+    glRasterPos2f(textoX + 1.5f, textoY + 1.5f);
+    for (char c : mensajeAviso)
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c);
+
+    // Texto principal blanco
+    glColor4f(1.0f, 1.0f, 1.0f, alpha);
+    glRasterPos2f(textoX, textoY);
+    for (char c : mensajeAviso)
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c);
+
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopAttrib();
+}
