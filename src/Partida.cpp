@@ -110,20 +110,50 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
     }
 
     if (modo_revivir) {
-        Personaje* obj = casilla.getPersonaje();
-        if (menu && obj) {
-            bool ejecutado = menu->activarHabilidad(1, personaje_seleccionado, obj, nullptr);
-            if (ejecutado) turno_actual = 1 - turno_actual;
+        auto& listaMuertos = (personaje_seleccionado->getTurno() == Turno::TURNO_DE_MANANA)
+            ? muertosAliados_manana : muertosAliados_tarde;
+
+        if (modo_revivir) {
+            if (menu) {
+                auto& listaMuertos = (personaje_seleccionado->getTurno() == Turno::TURNO_DE_MANANA)
+                    ? muertosAliados_manana : muertosAliados_tarde;
+
+                if (!listaMuertos.empty()) {
+                    Personaje* ultimo = listaMuertos.back();
+                    listaMuertos.pop_back();
+                    ultimo->setVida(ultimo->getVidaMax() / 2);
+                    casilla.setPersonaje(ultimo);
+                    ultimo->setCasillaActual(&casilla);
+                    turno_actual = 1 - turno_actual;
+                    menu->activarHabilidad(1, personaje_seleccionado, nullptr, nullptr);
+                }
+                else {
+                    MotorGrafico::mensajeAviso = "No hay aliados muertos!";
+                    MotorGrafico::tiempoAviso = 2.0f;
+                }
+            }
+            modo_revivir = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
+            return Modos_juego::Partida;
         }
-        modo_revivir = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
-        return Modos_juego::Partida;
     }
 
     if (modo_curar) {
         Personaje* obj = casilla.getPersonaje();
         if (menu && obj) {
             bool ejecutado = menu->activarHabilidad(3, personaje_seleccionado, obj, nullptr);
-            if (ejecutado) turno_actual = 1 - turno_actual;
+            if (ejecutado) {
+                turno_actual = 1 - turno_actual;
+                MotorGrafico::mensajeAviso = "Curado!";
+                MotorGrafico::tiempoAviso = 2.0f;
+            }
+            else {
+                MotorGrafico::mensajeAviso = "Curar fallo!";
+                MotorGrafico::tiempoAviso = 2.0f;
+            }
+        }
+        else {
+            MotorGrafico::mensajeAviso = "No hay objetivo!";
+            MotorGrafico::tiempoAviso = 2.0f;
         }
         modo_curar = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
         return Modos_juego::Partida;
@@ -199,6 +229,14 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
         personaje_seleccionado = nullptr; casillas_iluminadas.clear();
     }
     return Modos_juego::Partida;
+}
+
+void Partida::registrarMuerto(Personaje* p) {
+    if (!p || p->estaVivo()) return;
+    if (p->getTurno() == Turno::TURNO_DE_MANANA)
+        muertosAliados_manana.push_back(p);
+    else
+        muertosAliados_tarde.push_back(p);
 }
 
 Modos_juego Partida::turnoMaquina() {
@@ -278,6 +316,8 @@ void Partida::reset() {
     for (int f = 0; f < 9; f++) for (int c = 0; c < 9; c++) tab_.getCasilla(f, c).setPersonaje(nullptr);
     ETSIDI::stopMusica(); ETSIDI::playMusica("assets/sonidos/partida.mp3", true);
     mostrar_popup = false; modo_actual = modo_juego; turno_actual = turno_inicio;
+    muertosAliados_manana.clear();
+    muertosAliados_tarde.clear();
 
     // Limpiar estado transitorio que pueda apuntar a objetos que vamos a
     // borrar, para no dejar punteros colgando al reiniciar la partida.

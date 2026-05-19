@@ -36,15 +36,10 @@ bool HabilidadTeleport::usar(Personaje* usuario, Personaje* /*objetivo*/, Casill
 
 
 bool HabilidadRevivir::usar(Personaje* usuario, Personaje* objetivo, Casilla* /*destino*/) {
-    if (usada || !usuario || !objetivo) return false;
-    if (objetivo->getTurno() != usuario->getTurno()) return false;
-    if (objetivo->estaVivo()) return false;
-
-    objetivo->setVida(objetivo->getVidaMax());
+    if (usada) return false;
     usada = true;
     return true;
 }
-
 
 bool HabilidadInmovilizar::usar(Personaje* usuario, Personaje* objetivo, Casilla* /*destino*/) {
     if (usada || !usuario || !objetivo) return false;

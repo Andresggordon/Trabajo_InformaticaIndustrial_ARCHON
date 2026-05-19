@@ -5,6 +5,7 @@
 #include <GL/freeglut.h>
 #include "Proyectil.h"
 #include "Tablero.h"   // FaseCiclo + EstadoCasilla (no hay ciclo: .cpp incluye .h, no al revés)
+#include "Partida.h"
 
 // Convierte posición en cuadrícula a coordenadas OpenGL
 static float arenaToX(int columna) {
@@ -156,11 +157,13 @@ void ArenaCombate::resolverResultado()
 	{
 		resultado_ = ResultadoCombate::Gana_Local;
 		local_->curar(local_->getVidaMax());
+		Partida::get_instance().registrarMuerto(invasor_);
 	}
 	else
 	{
 		resultado_ = ResultadoCombate::Gana_Invasor;
 		invasor_->curar(invasor_->getVidaMax());
+		Partida::get_instance().registrarMuerto(local_);
 	}
 }
 

@@ -42,6 +42,7 @@ public:
     void dibujaEscudos();
     void dibujaInmunidad();
     void dibujaAviso();
+    void registrarMuerto(Personaje* p);
 
     Personaje* getPersonajeSeleccionado() const { return personaje_seleccionado; }
     void dibujaBarrasVida();
@@ -60,6 +61,8 @@ private:
 
     std::vector<Personaje*>       personajes;
     std::vector<DibujoPersonaje*> dibujos;
+    std::vector<Personaje*> muertosAliados_manana;
+    std::vector<Personaje*> muertosAliados_tarde;
 
     // NUESTRO: Saber las casillas en las que se moverá el personaje
     std::vector<Casilla*> casillas_iluminadas;
