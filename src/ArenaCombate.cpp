@@ -306,20 +306,29 @@ void ArenaCombate::actualizar() {
 		for (auto p : proyectiles_)
 			p->actualizar();
 
+		float xLocal = arenaToX(posLocal_.columna);
+		float yLocal = arenaToY(posLocal_.fila);
+		float xInvasor = arenaToX(posInvasor_.columna);
+		float yInvasor = arenaToY(posInvasor_.fila);
+
 		// Detectar impactos y aplicar daño
 		for (auto p : proyectiles_) {
-			if (p->haLlegado()) {
-				// Determinar quién recibe el daño
-				Personaje* defensor = p->esDeLocal() ? invasor_ : local_;
-				if (defensor != nullptr && defensor->estaVivo()) {
-					if (defensor->getEscudo()) {
-						defensor->decrementarEscudo();
-					}
-					else {
-						defensor->recibirDano(p->getDano());
-						if (!defensor->estaVivo())
-							resolverResultado();
-					}
+			if (p->haLlegado()) continue;
+
+			// Proyectil del local → colisiona con invasor
+			if (p->esDeLocal() && p->ColisionaCon(xInvasor, yInvasor)) {
+				p->marcarLlegado();
+				if (invasor_ != nullptr && invasor_->estaVivo()) {
+					invasor_->recibirDano(p->getDano());
+					if (!invasor_->estaVivo()) resolverResultado();
+				}
+			}
+			// Proyectil del invasor → colisiona con local
+			else if (!p->esDeLocal() && p->ColisionaCon(xLocal, yLocal)) {
+				p->marcarLlegado();
+				if (local_ != nullptr && local_->estaVivo()) {
+					local_->recibirDano(p->getDano());
+					if (!local_->estaVivo()) resolverResultado();
 				}
 			}
 		}

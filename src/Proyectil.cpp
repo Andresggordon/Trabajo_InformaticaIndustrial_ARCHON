@@ -48,3 +48,9 @@ void Proyectil::dibujar() const {
     }
 
 }
+
+bool Proyectil::ColisionaCon(float x, float y, float radio) const {
+    float dx = x_ - x;
+    float dy = y_ - y;
+    return sqrt(dx * dx + dy * dy) <= radio;
+}

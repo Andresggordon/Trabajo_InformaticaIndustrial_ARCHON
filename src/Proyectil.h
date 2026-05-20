@@ -17,6 +17,9 @@ public:
     int  getDano()   const { return dano_; }
 
     bool esDeLocal() const { return disparadoPorLocal_; }
+
+    bool ColisionaCon(float x, float y, float radio = 20.0f) const;
+    void marcarLlegado() { llegado_ = true; }
 private:
     float x_, y_;
     float destinoX_, destinoY_;
