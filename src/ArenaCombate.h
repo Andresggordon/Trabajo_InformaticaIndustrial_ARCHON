@@ -46,6 +46,8 @@ public:
 	PosArena getPosInvasor() const { return posInvasor_; }
 
 	void actualizar();
+	bool mostrandoCartel() const { return mostrandoCartel_; }
+	void dibujaCartel();
 
 private:
 	Personaje* local_ = nullptr; //Declaración de los personajes
@@ -107,4 +109,10 @@ private:
 	// Se calcula en iniciarCombate y se aplica en aplicarAtaque.
 	int bonusDanioLocal_ = 0;
 	int bonusDanioInvasor_ = 0;
+
+	ETSIDI::Sprite* cartel_gana_manana_ = nullptr;  
+	ETSIDI::Sprite* cartel_gana_tarde_ = nullptr;
+	bool mostrandoCartel_ = false;
+	int  tiempoCartel_ = 0;          // ms en que empezó a mostrarse
+	static const int DURACION_CARTEL = 3000; // 3 segundos
 };

@@ -158,19 +158,18 @@ void ArenaCombate::finalizarCombate()
 	invasor_ = nullptr;
 }
 
-void ArenaCombate::resolverResultado()
-{
-	combateTerminado_ = true;
-	if (local_->estaVivo())
-	{
-		resultado_ = ResultadoCombate::Gana_Local;
-		Partida::get_instance().registrarMuerto(invasor_);
-	}
-	else
-	{
-		resultado_ = ResultadoCombate::Gana_Invasor;
-		Partida::get_instance().registrarMuerto(local_);
-	}
+void ArenaCombate::resolverResultado() {
+    combateTerminado_ = true;
+    if (local_->estaVivo()) {
+        resultado_ = ResultadoCombate::Gana_Local;
+        Partida::get_instance().registrarMuerto(invasor_);
+    } else {
+        resultado_ = ResultadoCombate::Gana_Invasor;
+        Partida::get_instance().registrarMuerto(local_);
+    }
+    //activa cartel
+    mostrandoCartel_ = true;
+    tiempoCartel_    = glutGet(GLUT_ELAPSED_TIME);
 }
 
 bool ArenaCombate::combateTerminado() const
@@ -189,6 +188,9 @@ ArenaCombate::ArenaCombate() {
 	popup_salir = new ETSIDI::Sprite("assets/menu_imagenes/popup_salir.png", 0, 0, 800, 800);
 	posLocal_ = { 5, 2 };
 	posInvasor_ = { 5, 8 };
+
+	cartel_gana_manana_ = new ETSIDI::Sprite("assets/menu_imagenes/cartel_gana_manana_.png", 0, 0, 400, 400);
+	cartel_gana_tarde_ = new ETSIDI::Sprite("assets/menu_imagenes/cartel_gana_tarde_.png", 0, 0, 400, 400);
 }
 
 void ArenaCombate::dibuja() {
@@ -284,6 +286,13 @@ void ArenaCombate::aplicarAtaque(Personaje* atacante, Personaje* defensor) {
 }
 
 void ArenaCombate::actualizar() {
+
+	if (mostrandoCartel_) {
+		if (glutGet(GLUT_ELAPSED_TIME) - tiempoCartel_ >= DURACION_CARTEL)
+			mostrandoCartel_ = false;
+		return;  // mientras se muestra el cartel, no actualizar el combate
+	}
+
 	if (combateTerminado_) return;
 
 	int ahora = glutGet(GLUT_ELAPSED_TIME);
@@ -422,4 +431,17 @@ void ArenaCombate::teclaEspecialLevantada(int key) {
 void ArenaCombate::dibujarProyectiles() {
 	for (auto p : proyectiles_)
 		p->dibujar();
+}
+
+
+void ArenaCombate::dibujaCartel() {
+	if (!mostrandoCartel_) return;
+
+	// Determinamos quién ganó y miramos su turno
+	Personaje* ganador = (resultado_ == ResultadoCombate::Gana_Local) ? local_ : invasor_;
+
+	if (ganador != nullptr && ganador->getTurno() == Turno::TURNO_DE_TARDE)
+		cartel_gana_tarde_->draw();
+	else
+		cartel_gana_manana_->draw();
 }

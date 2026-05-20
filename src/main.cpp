@@ -71,6 +71,7 @@ void display() {
         MotorGrafico::get_instance().dibujarArena();
         arena->dibujarProyectiles();
         arena->dibujaPopup();
+        arena->dibujaCartel();
     }
        
     glutSwapBuffers();
@@ -158,7 +159,7 @@ void reposo() {
     {
         arena->actualizar();
 
-        if (arena->combateTerminado()) {
+        if (arena->combateTerminado() && !arena->mostrandoCartel()) {
             Partida::get_instance().tablero().resolverCombate(arena->getResultado());
             arena->finalizarCombate();
             estado = Modos_juego::Partida;
