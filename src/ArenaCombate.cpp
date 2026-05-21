@@ -9,10 +9,10 @@
 
 // Convierte posición en cuadrícula a coordenadas OpenGL
 static float arenaToX(int columna) {
-	return -270.0f + columna * 55.0f;
+	return -245.0f + columna * 45.0f+22.5f;
 }
 static float arenaToY(int fila) {
-	return -270.0f + fila * 55.0f;
+	return -245.0f + fila * 45.0f+22.5f;
 }
 
 void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo, FaseCiclo fase)

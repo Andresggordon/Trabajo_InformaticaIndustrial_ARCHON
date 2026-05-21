@@ -21,7 +21,6 @@ void Partida::dibuja() { fondo->draw(); }
 
 void Partida::dibujaextra() {
     abandonar_partida->draw();
-    if (mostrar_popup) popup_salir->draw();
     if (personaje_seleccionado != nullptr) {
         std::string ruta = personaje_seleccionado->getNombreCarta();
         if (ruta != nombre_carta_cargada) {
@@ -33,6 +32,8 @@ void Partida::dibujaextra() {
         MotorGrafico::get_instance().dibujarVidaPanel(personaje_seleccionado);
     }
     else { nombre_carta_cargada = ""; }
+
+    if (mostrar_popup) popup_salir->draw();
 }
 
 void Partida::update(int x, int y) {
