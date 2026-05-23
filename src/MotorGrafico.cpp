@@ -97,33 +97,7 @@ void MotorGrafico::dibujaHabilidades(Personaje* p, bool modo_t, bool modo_i, boo
 }
 
 void MotorGrafico::dibujaInmovilizados(const Tablero& t) {
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_DEPTH_TEST);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(-400, 400, -400, 400);
-
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glLineWidth(4.0f);
-
-    for (int f = 0; f < 9; f++) {
-        for (int c = 0; c < 9; c++) {
-            Personaje* p = t.getCasilla(f, c).getPersonaje();
-            if (p != nullptr && p->getInmovilizado()) {
-                float x = INICIO_X + c * TAM;
-                float y = INICIO_Y + f * TAM;
-                glBegin(GL_LINE_LOOP);
-                glVertex2f(x, y); glVertex2f(x + TAM, y);
-                glVertex2f(x + TAM, y + TAM); glVertex2f(x, y + TAM);
-                glEnd();
-            }
-        }
-    }
-    glPopMatrix();
-    glPopAttrib();
+    dibujarRecuadroEstado(t, 1.0f, 0.0f, 0.0f, [](Personaje* p) { return p->getInmovilizado(); });
 }
 
 void MotorGrafico::dibujaSeleccion(Personaje* seleccionado, const std::vector<Casilla*>& iluminadas) {
@@ -181,62 +155,11 @@ void MotorGrafico::dibujaSeleccion(Personaje* seleccionado, const std::vector<Ca
 }
 
 void MotorGrafico::dibujaEscudos(const Tablero& t) {
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_LIGHTING);    
-    glDisable(GL_DEPTH_TEST);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(-400, 400, -400, 400);
-
-    glColor3f(0.0f, 0.4f, 1.0f); 
-    glLineWidth(4.0f);
-
-    for (int f = 0; f < 9; f++) {
-        for (int c = 0; c < 9; c++) {
-            Personaje* p = t.getCasilla(f, c).getPersonaje();
-            if (p != nullptr && p->getEscudo()) { 
-                float x = INICIO_X + c * TAM;
-                float y = INICIO_Y + f * TAM;
-                glBegin(GL_LINE_LOOP);
-                glVertex2f(x, y);         glVertex2f(x + TAM, y);
-                glVertex2f(x + TAM, y + TAM); glVertex2f(x, y + TAM);
-                glEnd();
-            }
-        }
-    }
-    glPopMatrix();
-    glPopAttrib();
+    dibujarRecuadroEstado(t, 0.0f, 0.4f, 1.0f, [](Personaje* p) { return (bool)p->getEscudo(); });
 }
 
 void MotorGrafico::dibujaInmunidad(const Tablero& t) {
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_DEPTH_TEST);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(-400, 400, -400, 400);
-    glColor3f(1.0f, 0.85f, 0.0f); 
-    glLineWidth(4.0f);
-
-    for (int f = 0; f < 9; f++) {
-        for (int c = 0; c < 9; c++) {
-            Personaje* p = t.getCasilla(f, c).getPersonaje();
-            if (p != nullptr && p->getInmune()) {
-                float x = INICIO_X + c * TAM;
-                float y = INICIO_Y + f * TAM;
-                glBegin(GL_LINE_LOOP);
-                glVertex2f(x, y);             glVertex2f(x + TAM, y);
-                glVertex2f(x + TAM, y + TAM); glVertex2f(x, y + TAM);
-                glEnd();
-            }
-        }
-    }
-    glPopMatrix();
-    glPopAttrib();
+    dibujarRecuadroEstado(t, 1.0f, 0.85f, 0.0f, [](Personaje* p) { return p->getInmune(); });
 }
 
 
@@ -377,9 +300,7 @@ void MotorGrafico::dibujarBarraVida(float x, float y, Personaje* p) {
     glEnd();
 
     // Color según porcentaje
-    if (porcentaje > 0.6f) glColor4f(0.2f, 0.85f, 0.2f, 0.9f); // verde
-    else if (porcentaje > 0.3f) glColor4f(1.0f, 0.65f, 0.0f, 0.9f); // naranja
-    else                        glColor4f(0.9f, 0.1f, 0.1f, 0.9f); // rojo
+    setColorVida(porcentaje);
 
     glBegin(GL_QUADS);
     glVertex2f(barraX, barraY);
@@ -484,9 +405,7 @@ void MotorGrafico::dibujarVidaPanel(Personaje* p) {
     glEnd();
 
     // Barra de vida coloreada
-    if (porcentaje > 0.6f) glColor4f(0.2f, 0.85f, 0.2f, 0.95f);
-    else if (porcentaje > 0.3f) glColor4f(1.0f, 0.65f, 0.0f, 0.95f);
-    else                        glColor4f(0.9f, 0.1f, 0.1f, 0.95f);
+    setColorVida(porcentaje);
 
     glBegin(GL_QUADS);
     glVertex2f(panelX, barraY);
@@ -663,4 +582,41 @@ void MotorGrafico::dibujaAviso() {
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
     glPopAttrib();
+}
+
+void MotorGrafico::dibujarRecuadroEstado(const Tablero& t, float r, float g, float b,
+    std::function<bool(Personaje*)> condicion) {
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(-400, 400, -400, 400);
+
+    glColor3f(r, g, b);
+    glLineWidth(4.0f);
+
+    for (int f = 0; f < 9; f++) {
+        for (int c = 0; c < 9; c++) {
+            Personaje* p = t.getCasilla(f, c).getPersonaje();
+            if (p && condicion(p)) {
+                float x = INICIO_X + c * TAM;
+                float y = INICIO_Y + f * TAM;
+                glBegin(GL_LINE_LOOP);
+                glVertex2f(x, y);         glVertex2f(x + TAM, y);
+                glVertex2f(x + TAM, y + TAM); glVertex2f(x, y + TAM);
+                glEnd();
+            }
+        }
+    }
+    glPopMatrix();
+    glPopAttrib();
+}
+
+void MotorGrafico::setColorVida(float porcentaje) {
+    if (porcentaje > 0.6f)      glColor4f(0.2f, 0.85f, 0.2f, 0.9f);
+    else if (porcentaje > 0.3f) glColor4f(1.0f, 0.65f, 0.0f, 0.9f);
+    else                        glColor4f(0.9f, 0.1f, 0.1f, 0.9f);
 }

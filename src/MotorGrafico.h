@@ -3,6 +3,7 @@
 #include "ETSIDI.h"
 #include <GL/freeglut.h>
 #include <vector>
+#include <functional>
 
 class Personaje;
 
@@ -44,4 +45,6 @@ private:
     void dibujarFondoArena();
     void dibujarBarraVida(float x, float y, Personaje* p);
     void dibujarVidaTexto(float x, float y, Personaje* p);
+    void dibujarRecuadroEstado(const Tablero& t, float r, float g, float b, std::function<bool(Personaje*)> condicion);
+    void setColorVida(float porcentaje);
 };
