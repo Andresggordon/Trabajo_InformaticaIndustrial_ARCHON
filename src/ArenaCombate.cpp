@@ -108,15 +108,26 @@ void ArenaCombate::teclado(unsigned char key)
 		break;
 
 		// Ataque jugador 1 (espacio) — funciona en modo 1 y 2
-	case 32:
-		aplicarAtaque(local_, invasor_);
+	case 32: {
+		int ahora = glutGet(GLUT_ELAPSED_TIME);
+		if (ahora - tiempoUltimoAtaqueLocal_ >= COOLDOWN_ATAQUE) {
+			aplicarAtaque(local_, invasor_);
+			tiempoUltimoAtaqueLocal_ = ahora;
+		}
 		break;
+	}
 
 		// Ataque jugador 2 (Enter) — solo modo 2 jugadores
-	case 13:
-		if (modo_ == 2)
-			aplicarAtaque(invasor_, local_);
+	case 13: {
+		if (modo_ == 2) {
+			int ahora = glutGet(GLUT_ELAPSED_TIME);
+			if (ahora - tiempoUltimoAtaqueInvasor_ >= COOLDOWN_ATAQUE) {
+				aplicarAtaque(invasor_, local_);
+				tiempoUltimoAtaqueInvasor_ = ahora;
+			}
+		}
 		break;
+	} 
 	}
 }
 //Movimiento del jugador 2 en el modo 1vs1
@@ -266,8 +277,6 @@ void ArenaCombate::aplicarAtaque(Personaje* atacante, Personaje* defensor) {
 	int alcance = atacante->getArma().getAlcance();
 	if (distancia > alcance) return;
 
-
-
 	bool esLocal = (atacante == local_);
 	float ox = arenaToX(esLocal ? posLocal_.columna : posInvasor_.columna);
 	float oy = arenaToY(esLocal ? posLocal_.fila : posInvasor_.fila);
@@ -320,12 +329,12 @@ void ArenaCombate::actualizar() {
 		float xInvasor = arenaToX(posInvasor_.columna);
 		float yInvasor = arenaToY(posInvasor_.fila);
 
+
 		// Detectar impactos y aplicar daño
 		for (auto p : proyectiles_) {
-			if (p->haLlegado()) continue;
 
 			// Proyectil del local → colisiona con invasor
-			if (p->esDeLocal() && p->ColisionaCon(xInvasor, yInvasor)) {
+			if (p->esDeLocal() && p->ColisionaCon(xInvasor, yInvasor,60.0f)) {
 				p->marcarLlegado();
 				if (invasor_ != nullptr && invasor_->estaVivo()) {
 					invasor_->recibirDano(p->getDano());
@@ -333,7 +342,7 @@ void ArenaCombate::actualizar() {
 				}
 			}
 			// Proyectil del invasor → colisiona con local
-			else if (!p->esDeLocal() && p->ColisionaCon(xLocal, yLocal)) {
+			else if (!p->esDeLocal() && p->ColisionaCon(xLocal, yLocal,60.0f)) {
 				p->marcarLlegado();
 				if (local_ != nullptr && local_->estaVivo()) {
 					local_->recibirDano(p->getDano());
@@ -356,6 +365,7 @@ void ArenaCombate::actualizar() {
 		// En modo 1 jugador la maquina controla al invasor_.
 		if (modo_ == 1) moverMaquina();
 	}
+
 }
 
 	

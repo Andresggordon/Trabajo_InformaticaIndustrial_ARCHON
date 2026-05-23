@@ -79,6 +79,7 @@ private:
 	//Temporizadores de ataque (ms)
 	int tiempoUltimoAtaqueLocal_ = 0;
 	int tiempoUltimoAtaqueInvasor_ = 0;
+	static const int COOLDOWN_ATAQUE = 750;
 
 	//Métodos de ataque
 	void aplicarAtaque(Personaje* atacante, Personaje* defensor);
@@ -98,7 +99,7 @@ private:
 	bool teclaDerecha = false;
 
 	int tiempoUltimoMovimiento_ = 0;
-	static const int INTERVALO_MOVIMIENTO = 150;
+	static const int INTERVALO_MOVIMIENTO = 250;
 
 	//Cadencias propias de la IA de la arena (solo modo 1 jugador)
 	int tiempoUltimoMovimientoIA_ = 0;
