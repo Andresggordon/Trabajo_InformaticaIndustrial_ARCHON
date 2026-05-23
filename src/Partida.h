@@ -85,4 +85,9 @@ private:
 
     ETSIDI::Sprite* carta_actual = nullptr;
     std::string nombre_carta_cargada = "";
+
+    //OPTIMIZACIÓN
+    void decrementarEstados();
+    void screenToGame(int x, int y, float& cx, float& cy);
+    ~Partida();
 };

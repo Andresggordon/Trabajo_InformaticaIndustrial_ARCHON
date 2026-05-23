@@ -37,13 +37,8 @@ void Partida::dibujaextra() {
 }
 
 void Partida::update(int x, int y) {
-    int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
-    int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
-    int tam = min(ventana_w, ventana_h);
-    int offsetX = (ventana_w - tam) / 2;
-    int offsetY = (ventana_h - tam) / 2;
-    float cx = ((x - offsetX) / (float)tam) * 800 - 400;
-    float cy = 400 - ((y - offsetY) / (float)tam) * 800;
+    float cx, cy;
+    screenToGame(x, y, cx, cy);
 
     if (!mostrar_popup) {
         if (cx >= 304 && cx <= 342 && cy >= -354 && cy <= -274) boton_activo = 1;
@@ -57,13 +52,8 @@ void Partida::update(int x, int y) {
 }
 
 Modos_juego Partida::click(int x, int y) {
-    int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
-    int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
-    int tam = min(ventana_w, ventana_h);
-    int offsetX = (ventana_w - tam) / 2;
-    int offsetY = (ventana_h - tam) / 2;
-    float cx = ((x - offsetX) / (float)tam) * 800 - 400;
-    float cy = 400 - ((y - offsetY) / (float)tam) * 800;
+    float cx, cy;
+    screenToGame(x, y, cx, cy);
 
     ETSIDI::play("assets/sonidos/click.mp3");
 
@@ -110,10 +100,6 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
         return Modos_juego::Partida;
     }
 
-    if (modo_revivir) {
-        auto& listaMuertos = (personaje_seleccionado->getTurno() == Turno::TURNO_DE_MANANA)
-            ? muertosAliados_manana : muertosAliados_tarde;
-
         if (modo_revivir) {
             if (menu) {
                 auto& listaMuertos = (personaje_seleccionado->getTurno() == Turno::TURNO_DE_MANANA)
@@ -136,7 +122,6 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
             modo_revivir = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
             return Modos_juego::Partida;
         }
-    }
 
     if (modo_curar) {
         Personaje* obj = casilla.getPersonaje();
@@ -204,8 +189,7 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
         ResultadoMover res = tab_.moverPersonaje(personaje_seleccionado, casilla);
         if (res == ResultadoMover::OK) {
             turno_actual = 1 - turno_actual;
-            for (auto p : personajes) p->decrementarInmovilizacion();
-            for (auto p : personajes) p->decrementarInmunidad();
+            decrementarEstados();
         }
         else if (res == ResultadoMover::CHOQUE) {
             Personaje* defensor = tab_.getPendienteLocal();
@@ -213,8 +197,7 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
                 defensor->decrementarInmunidad();
                 tab_.limpiarPendiente();
                 turno_actual = 1 - turno_actual;
-                for (auto p : personajes) p->decrementarInmovilizacion();
-                for (auto p : personajes) p->decrementarInmunidad();
+                decrementarEstados();
                 personaje_seleccionado = nullptr; casillas_iluminadas.clear();
                 return Modos_juego::Partida;
             }
@@ -264,8 +247,7 @@ Modos_juego Partida::turnoMaquina() {
             defensor->decrementarInmunidad();
             tab_.limpiarPendiente();
             turno_actual = 1 - turno_actual;
-            for (auto p : personajes) p->decrementarInmovilizacion();
-            for (auto p : personajes) p->decrementarInmunidad();
+            decrementarEstados();
             personaje_seleccionado = nullptr; casillas_iluminadas.clear();
             return Modos_juego::Partida;
         }
@@ -276,8 +258,7 @@ Modos_juego Partida::turnoMaquina() {
 
     if (res == ResultadoMover::OK) {
         turno_actual = 1 - turno_actual;
-        for (auto p : personajes) p->decrementarInmovilizacion();
-        for (auto p : personajes) p->decrementarInmunidad();
+        decrementarEstados();
     }
     else {
         // ILEGAL: la maquina no encontro jugada. Cede el turno para que la
@@ -354,4 +335,35 @@ void Partida::reset() {
     for (int i = 1; i <= 7; i++) personajes.push_back(new Circuito_integrado_T(tab_.getCasilla(i, 7)));
 
     for (auto p : personajes) dibujos.push_back(new DibujoPersonaje(p));
+}
+
+void Partida::decrementarEstados() {
+    for (auto p : personajes) p->decrementarInmovilizacion();
+    for (auto p : personajes) p->decrementarInmunidad();
+}
+
+void Partida::screenToGame(int x, int y, float& cx, float& cy) {
+    int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
+    int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
+    int tam = min(ventana_w, ventana_h);
+    int offsetX = (ventana_w - tam) / 2;
+    int offsetY = (ventana_h - tam) / 2;
+    cx = ((x - offsetX) / (float)tam) * 800 - 400;
+    cy = 400 - ((y - offsetY) / (float)tam) * 800;
+}
+
+Partida::~Partida() {
+    delete fondo;
+    delete abandonar_partida;
+    delete popup_salir;
+    delete carta_actual;
+    for (auto p : personajes) delete p;
+    for (auto d : dibujos) delete d;
+}
+
+ArenaCombate::~ArenaCombate() {
+    delete fondo_arena;
+    delete abandonar_partida;
+    delete popup_salir;
+    for (auto p : proyectiles_) delete p;
 }

@@ -116,4 +116,6 @@ private:
 	bool mostrandoCartel_ = false;
 	int  tiempoCartel_ = 0;          // ms en que empezó a mostrarse
 	static const int DURACION_CARTEL = 3000; // 3 segundos
+
+	~ArenaCombate();
 };
