@@ -240,7 +240,25 @@ Modos_juego Partida::turnoMaquina() {
     // equipo_j2 = bando de la IA (1 = mañana, 2 = tarde).
     // turno_actual usa otra codificacion (0 = mañana, 1 = tarde).
     int idxTurnoIA = equipo_j2 - 1;
-    if (turno_actual != idxTurnoIA) return Modos_juego::Partida;
+    if (turno_actual != idxTurnoIA) {
+        ia_pensando_ = false;   // ha vuelto el turno al humano: reset
+        return Modos_juego::Partida;
+    }
+
+    // Retardo de "pensamiento": el jugador necesita ver el tablero antes
+    // de que la maquina mueva. Sin esto la IA mueve al instante y resulta confuso.
+    int ahora = glutGet(GLUT_ELAPSED_TIME);
+    const int INTERVALO_PENSAMIENTO_IA = 1200; // ms
+    if (!ia_pensando_) {
+        ia_pensando_ = true;
+        ia_tiempoInicioTurno_ = ahora;
+        return Modos_juego::Partida;            // primer tick: empieza a "pensar"
+    }
+    if (ahora - ia_tiempoInicioTurno_ < INTERVALO_PENSAMIENTO_IA)
+        return Modos_juego::Partida;            // todavia pensando
+
+    // Ya paso el tiempo de espera: la maquina juega.
+    ia_pensando_ = false;
 
     Turno turnoIA = (equipo_j2 == 1) ? Turno::TURNO_DE_MANANA
         : Turno::TURNO_DE_TARDE;
@@ -318,6 +336,7 @@ void Partida::reset() {
     es_lider_seleccionado = false;
     modo_teleport = modo_inmovilizar = modo_revivir = false;
     modo_curar = modo_escudo = modo_inmunidad = false;
+    ia_pensando_ = false; ia_tiempoInicioTurno_ = 0;
     casillas_iluminadas.clear();
     delete carta_actual; carta_actual = nullptr;
     nombre_carta_cargada = "";

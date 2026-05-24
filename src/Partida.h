@@ -55,6 +55,9 @@ private:
 
     Tablero tab_;
     IAJugador ia_;   // cerebro de la maquina (modo 1 jugador)
+    // Retardo de "pensamiento" de la IA en el tablero (deja ver la jugada antes de mover)
+    bool ia_pensando_ = false;
+    int  ia_tiempoInicioTurno_ = 0;
 
     ETSIDI::Sprite* fondo;
     ETSIDI::Sprite* abandonar_partida;

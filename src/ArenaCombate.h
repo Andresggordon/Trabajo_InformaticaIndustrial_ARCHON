@@ -53,7 +53,9 @@ private:
 	Personaje* local_ = nullptr; //Declaración de los personajes
 	Personaje* invasor_ = nullptr;
 	int modo_ = 1;
-
+	// En modo 1: indica si el humano controla local_ (true) o invasor_ (false).
+	// El humano siempre lleva su propio bando, sea defensor o atacante del choque.
+	bool humanoControlaLocal_ = false;
 
 	std::vector<Proyectil*> proyectiles_;
 
