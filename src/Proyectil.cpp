@@ -28,15 +28,15 @@ void Proyectil::actualizar() {
     float dy = destinoY_ - y_;
     float distancia = sqrt(dx * dx + dy * dy);
 
-    if (distancia <= velocidad_) {
-        llegado_ = true;
-        return;
+    if (distancia > velocidad_) {
+        x_ += (dx / distancia) * velocidad_;
+        y_ += (dy / distancia) * velocidad_;
+        if (tieneSprite_)
+            sprite_->setPos(x_, y_);
     }
-
-    x_ += (dx / distancia) * velocidad_;
-    y_ += (dy / distancia) * velocidad_;
-    if (tieneSprite_)
-        sprite_->setPos(x_, y_);
+    else {
+        llegado_ = true;
+    } 
 }
 
 void Proyectil::dibujar() const {
@@ -47,4 +47,10 @@ void Proyectil::dibujar() const {
         return;
     }
 
+}
+
+bool Proyectil::ColisionaCon(float x, float y, float radio) const {
+    float dx = x_ - x;
+    float dy = y_ - y;
+    return sqrt(dx * dx + dy * dy) <= radio;
 }

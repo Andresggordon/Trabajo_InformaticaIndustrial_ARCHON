@@ -68,6 +68,12 @@ public:
     void setVida(int v) { vida_actual = v; }
     void setInmovilizado(bool b) { turnos_inmovilizado = b ? 1 : 0; }
     void decrementarInmovilizacion() { if (turnos_inmovilizado > 0) turnos_inmovilizado--; }
+    bool getEscudo() const { return escudo_activo; }
+    void setEscudo(bool b) { escudo_activo = b; }
+    void decrementarEscudo() { escudo_activo = false; }
+    bool getInmune()          const { return inmune_activo; }
+    void setInmune(bool b) { inmune_activo = b; }
+    void decrementarInmunidad() { inmune_activo = false; }
 
 protected:
     std::string nombre;
@@ -78,4 +84,6 @@ protected:
     bool        encarcelado = false;
     int         turnos_inmovilizado = 0;
     Casilla* casilla_actual;
+    bool escudo_activo = false;
+    bool inmune_activo = false;
 };

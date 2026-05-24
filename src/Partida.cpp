@@ -25,7 +25,6 @@ void Partida::dibuja() { fondo->draw(); }
 
 void Partida::dibujaextra() {
     abandonar_partida->draw();
-    if (mostrar_popup) popup_salir->draw();
     if (personaje_seleccionado != nullptr) {
         std::string ruta = personaje_seleccionado->getNombreCarta();
         if (ruta != nombre_carta_cargada) {
@@ -37,16 +36,13 @@ void Partida::dibujaextra() {
         MotorGrafico::get_instance().dibujarVidaPanel(personaje_seleccionado);
     }
     else { nombre_carta_cargada = ""; }
+
+    if (mostrar_popup) popup_salir->draw();
 }
 
 void Partida::update(int x, int y) {
-    int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
-    int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
-    int tam = min(ventana_w, ventana_h);
-    int offsetX = (ventana_w - tam) / 2;
-    int offsetY = (ventana_h - tam) / 2;
-    float cx = ((x - offsetX) / (float)tam) * 800 - 400;
-    float cy = 400 - ((y - offsetY) / (float)tam) * 800;
+    float cx, cy;
+    screenToGame(x, y, cx, cy);
 
     if (!mostrar_popup) {
         if (cx >= 304 && cx <= 342 && cy >= -354 && cy <= -274) boton_activo = 1;
@@ -60,13 +56,8 @@ void Partida::update(int x, int y) {
 }
 
 Modos_juego Partida::click(int x, int y) {
-    int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
-    int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
-    int tam = min(ventana_w, ventana_h);
-    int offsetX = (ventana_w - tam) / 2;
-    int offsetY = (ventana_h - tam) / 2;
-    float cx = ((x - offsetX) / (float)tam) * 800 - 400;
-    float cy = 400 - ((y - offsetY) / (float)tam) * 800;
+    float cx, cy;
+    screenToGame(x, y, cx, cy);
 
     ETSIDI::play("assets/sonidos/click.mp3");
 
@@ -97,8 +88,8 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
     Menu_habilidades* menu = personaje_seleccionado ? personaje_seleccionado->getMenu() : nullptr;
 
     if (modo_teleport) {
-        if (menu) menu->usarTeleport(personaje_seleccionado, &casilla);
-        if (menu && menu->puedeUsarTeleport() == false) turno_actual = 1 - turno_actual;
+        if (menu) menu->activarHabilidad(0, personaje_seleccionado, nullptr, &casilla);
+        if (menu && !menu->puedeUsar(0)) turno_actual = 1 - turno_actual;
         modo_teleport = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
         return comprobarFinPartida();
     }
@@ -106,7 +97,7 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
     if (modo_inmovilizar) {
         Personaje* obj = casilla.getPersonaje();
         if (menu && obj) {
-            bool ejecutado = menu->usarInmovilizar(personaje_seleccionado, obj);
+            bool ejecutado = menu->activarHabilidad(2, personaje_seleccionado, obj, nullptr);
             if (ejecutado) turno_actual = 1 - turno_actual;
         }
         modo_inmovilizar = false; personaje_seleccionado = nullptr;
@@ -114,15 +105,69 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
         return comprobarFinPartida();
     }
 
-    if (modo_revivir) {
+        if (modo_revivir) {
+            if (menu) {
+                auto& listaMuertos = (personaje_seleccionado->getTurno() == Turno::TURNO_DE_MANANA)
+                    ? muertosAliados_manana : muertosAliados_tarde;
+
+                if (!listaMuertos.empty()) {
+                    Personaje* ultimo = listaMuertos.back();
+                    listaMuertos.pop_back();
+                    ultimo->setVida(ultimo->getVidaMax() / 2);
+                    casilla.setPersonaje(ultimo);
+                    ultimo->setCasillaActual(&casilla);
+                    turno_actual = 1 - turno_actual;
+                    menu->activarHabilidad(1, personaje_seleccionado, nullptr, nullptr);
+                }
+                else {
+                    MotorGrafico::mensajeAviso = "No hay aliados muertos!";
+                    MotorGrafico::tiempoAviso = 2.0f;
+                }
+            }
+            modo_revivir = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
+            return Modos_juego::Partida;
+        }
+
+    if (modo_curar) {
         Personaje* obj = casilla.getPersonaje();
         if (menu && obj) {
-            bool ejecutado = menu->usarRevivir(personaje_seleccionado, obj);
+            bool ejecutado = menu->activarHabilidad(3, personaje_seleccionado, obj, nullptr);
+            if (ejecutado) {
+                turno_actual = 1 - turno_actual;
+                MotorGrafico::mensajeAviso = "Curado!";
+                MotorGrafico::tiempoAviso = 2.0f;
+            }
+            else {
+                MotorGrafico::mensajeAviso = "Curar fallo!";
+                MotorGrafico::tiempoAviso = 2.0f;
+            }
+        }
+        else {
+            MotorGrafico::mensajeAviso = "No hay objetivo!";
+            MotorGrafico::tiempoAviso = 2.0f;
+        }
+        modo_curar = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
+        return Modos_juego::Partida;
+    }
+
+    if (modo_escudo) {
+        Personaje* obj = casilla.getPersonaje();
+        if (menu && obj) {
+            bool ejecutado = menu->activarHabilidad(4, personaje_seleccionado, obj, nullptr);
             if (ejecutado) turno_actual = 1 - turno_actual;
         }
-        modo_revivir = false; personaje_seleccionado = nullptr;
-        es_lider_seleccionado = false; casillas_iluminadas.clear();
-        return comprobarFinPartida();
+        modo_escudo = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
+        return Modos_juego::Partida;
+    }
+
+    if (modo_inmunidad) {
+        Personaje* obj = casilla.getPersonaje();
+        if (menu && obj) {
+            bool ejecutado = menu->activarHabilidad(5, personaje_seleccionado, obj, nullptr);
+            if (ejecutado) turno_actual = 1 - turno_actual;
+        }
+        modo_inmunidad = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
+        return Modos_juego::Partida;
     }
 
     if (personaje_seleccionado == nullptr) {
@@ -135,27 +180,55 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
                 es_lider_seleccionado = (p->getMenu() != nullptr);
                 casillas_iluminadas = Geometria::getCasillasAccesibles(*p, tab_);
             }
+            else {
+                MotorGrafico::mensajeAviso = "No es tu turno!";  
+                MotorGrafico::tiempoAviso = 2.0f;             
+            }
+        }
+        else {
+            MotorGrafico::mensajeAviso = "Eso no se puede hacer!"; 
+            MotorGrafico::tiempoAviso = 2.0f;                     
         }
     }
     else {
         ResultadoMover res = tab_.moverPersonaje(personaje_seleccionado, casilla);
         if (res == ResultadoMover::OK) {
             turno_actual = 1 - turno_actual;
-            for (auto p : personajes) p->decrementarInmovilizacion();
+            decrementarEstados();
 
             Modos_juego fin = comprobarFinPartida();
             if (fin != Modos_juego::Partida) return fin;
         }
         else if (res == ResultadoMover::CHOQUE) {
-            // NO limpiar pendientes aqui: Tablero::resolverCombate() los necesita
-            // al terminar el combate y ya hace limpiarPendiente() al final.
-            arena->iniciarCombate(tab_.getPendienteLocal(), tab_.getPendienteInvasor(), modo_actual);
+            Personaje* defensor = tab_.getPendienteLocal();
+            if (defensor != nullptr && defensor->getInmune()) {
+                defensor->decrementarInmunidad();
+                tab_.limpiarPendiente();
+                turno_actual = 1 - turno_actual;
+                decrementarEstados();
+                personaje_seleccionado = nullptr; casillas_iluminadas.clear();
+                return Modos_juego::Partida;
+            }
+            arena->iniciarCombate(tab_.getPendienteLocal(), tab_.getPendienteInvasor(), modo_actual, tab_.getFase());
             personaje_seleccionado = nullptr; casillas_iluminadas.clear();
             return Modos_juego::Arena_Combate;
+          
+        }
+        else {
+            MotorGrafico::mensajeAviso = "Movimiento no valido!"; 
+            MotorGrafico::tiempoAviso = 2.0f;                    
         }
         personaje_seleccionado = nullptr; casillas_iluminadas.clear();
     }
     return Modos_juego::Partida;
+}
+
+void Partida::registrarMuerto(Personaje* p) {
+    if (!p || p->estaVivo()) return;
+    if (p->getTurno() == Turno::TURNO_DE_MANANA)
+        muertosAliados_manana.push_back(p);
+    else
+        muertosAliados_tarde.push_back(p);
 }
 
 Modos_juego Partida::turnoMaquina() {
@@ -170,23 +243,30 @@ Modos_juego Partida::turnoMaquina() {
     if (turno_actual != idxTurnoIA) return Modos_juego::Partida;
 
     Turno turnoIA = (equipo_j2 == 1) ? Turno::TURNO_DE_MANANA
-                                     : Turno::TURNO_DE_TARDE;
+        : Turno::TURNO_DE_TARDE;
 
     ResultadoMover res = ia_.jugarTurno(tab_, turnoIA);
 
     if (res == ResultadoMover::CHOQUE) {
+        Personaje* defensor = tab_.getPendienteLocal();
         // Mismo flujo que el humano: abrir la arena de combate. NO limpiar
-        // pendientes aqui; resolverCombate() los consume y limpia al final.
-        arena->iniciarCombate(tab_.getPendienteLocal(),
-                               tab_.getPendienteInvasor(), modo_actual);
-        personaje_seleccionado = nullptr;
-        casillas_iluminadas.clear();
+      // pendientes aqui; resolverCombate() los consume y limpia al final.
+        if (defensor != nullptr && defensor->getInmune()) {
+            defensor->decrementarInmunidad();
+            tab_.limpiarPendiente();
+            turno_actual = 1 - turno_actual;
+            decrementarEstados();
+            personaje_seleccionado = nullptr; casillas_iluminadas.clear();
+            return Modos_juego::Partida;
+        }
+        arena->iniciarCombate(tab_.getPendienteLocal(), tab_.getPendienteInvasor(), modo_actual, tab_.getFase());
+        personaje_seleccionado = nullptr; casillas_iluminadas.clear();
         return Modos_juego::Arena_Combate;
     }
 
     if (res == ResultadoMover::OK) {
         turno_actual = 1 - turno_actual;
-        for (auto p : personajes) p->decrementarInmovilizacion();
+        decrementarEstados();
 
         Modos_juego fin = comprobarFinPartida();
         if (fin != Modos_juego::Partida) return fin;
@@ -203,20 +283,24 @@ void Partida::tecladoHabilidades(unsigned char key) {
     if (!es_lider_seleccionado || !personaje_seleccionado) return;
     Menu_habilidades* menu = personaje_seleccionado->getMenu();
     if (!menu) return;
-    modo_revivir = false; modo_inmovilizar = false; modo_teleport = false;
-    if (key == '1' && menu->puedeUsarRevivir()) modo_revivir = true;
-    if (key == '2' && menu->puedeUsarInmovilizar()) modo_inmovilizar = true;
-    if (key == '3' && menu->puedeUsarTeleport()) modo_teleport = true;
+    if (key == '1' && menu->puedeUsar(1)) modo_revivir = true;
+    if (key == '2' && menu->puedeUsar(2)) modo_inmovilizar = true;
+    if (key == '3' && menu->puedeUsar(0)) modo_teleport = true;
+    if (key == '4' && menu->puedeUsar(3)) modo_curar = true;
+    if (key == '5' && menu->puedeUsar(4)) modo_escudo = true;
+    if (key == '6' && menu->puedeUsar(5)) modo_inmunidad = true;
     glutPostRedisplay();
 }
 
 void Partida::dibujaSeleccion() { MotorGrafico::get_instance().dibujaSeleccion(personaje_seleccionado, casillas_iluminadas); }
 void Partida::dibujaHabilidades() { MotorGrafico::get_instance().dibujaHabilidades(personaje_seleccionado, modo_teleport, modo_inmovilizar, modo_revivir); }
 void Partida::dibujaInmovilizados() { MotorGrafico::get_instance().dibujaInmovilizados(tab_); }
-void Partida::dibujaBarrasVida() { MotorGrafico::get_instance().dibujaBarrasVida(tab_, personaje_seleccionado);}
+void Partida::dibujaBarrasVida() { MotorGrafico::get_instance().dibujaBarrasVida(tab_, personaje_seleccionado); }
+void Partida::dibujaEscudos() { MotorGrafico::get_instance().dibujaEscudos(tab_); }
+void Partida::dibujaInmunidad() { MotorGrafico::get_instance().dibujaInmunidad(tab_); }
+void Partida::dibujaAviso() { MotorGrafico::get_instance().dibujaAviso(); }
 
 void Partida::teclado(unsigned char key) {
-    if (key == 32) tab_.avanzarCiclo();
     if (key == 27) mostrar_popup = false;
     tecladoHabilidades(key);
 }
@@ -225,12 +309,15 @@ void Partida::reset() {
     for (int f = 0; f < 9; f++) for (int c = 0; c < 9; c++) tab_.getCasilla(f, c).setPersonaje(nullptr);
     ETSIDI::stopMusica(); ETSIDI::playMusica("assets/sonidos/partida.mp3", true);
     mostrar_popup = false; modo_actual = modo_juego; turno_actual = turno_inicio;
+    muertosAliados_manana.clear();
+    muertosAliados_tarde.clear();
 
     // Limpiar estado transitorio que pueda apuntar a objetos que vamos a
     // borrar, para no dejar punteros colgando al reiniciar la partida.
     personaje_seleccionado = nullptr;
     es_lider_seleccionado = false;
     modo_teleport = modo_inmovilizar = modo_revivir = false;
+    modo_curar = modo_escudo = modo_inmunidad = false;
     casillas_iluminadas.clear();
     delete carta_actual; carta_actual = nullptr;
     nombre_carta_cargada = "";
@@ -300,4 +387,35 @@ Modos_juego Partida::comprobarFinPartida() {
     ETSIDI::stopMusica();
     ETSIDI::playMusica("assets/sonidos/menu.mp3", true);
     return Modos_juego::Pantalla_Final;
+}
+
+void Partida::decrementarEstados() {
+    for (auto p : personajes) p->decrementarInmovilizacion();
+    for (auto p : personajes) p->decrementarInmunidad();
+}
+
+void Partida::screenToGame(int x, int y, float& cx, float& cy) {
+    int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
+    int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
+    int tam = min(ventana_w, ventana_h);
+    int offsetX = (ventana_w - tam) / 2;
+    int offsetY = (ventana_h - tam) / 2;
+    cx = ((x - offsetX) / (float)tam) * 800 - 400;
+    cy = 400 - ((y - offsetY) / (float)tam) * 800;
+}
+
+Partida::~Partida() {
+    delete fondo;
+    delete abandonar_partida;
+    delete popup_salir;
+    delete carta_actual;
+    for (auto p : personajes) delete p;
+    for (auto d : dibujos) delete d;
+}
+
+ArenaCombate::~ArenaCombate() {
+    delete fondo_arena;
+    delete abandonar_partida;
+    delete popup_salir;
+    for (auto p : proyectiles_) delete p;
 }

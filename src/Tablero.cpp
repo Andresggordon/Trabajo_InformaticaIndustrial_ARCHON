@@ -66,7 +66,7 @@ FaseCiclo Tablero::getFase() const {
 }
 
 ResultadoMover Tablero::moverPersonaje(Personaje* p, Casilla& destino) {
-    ResultadoMover resultado= p->mover(destino);
+    ResultadoMover resultado = p->mover(destino);
     if (resultado == ResultadoMover::CHOQUE)
     {
         pendienteLocal_ = destino.getPersonaje();
@@ -106,4 +106,7 @@ void Tablero::resolverCombate(ResultadoCombate resultado) {
     }
 
     limpiarPendiente();
+
+    // Las casillas DINÁMICAS evolucionan automáticamente tras cada combate
+    avanzarCiclo();
 }

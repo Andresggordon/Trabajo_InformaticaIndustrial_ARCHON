@@ -1,20 +1,74 @@
 #pragma once
+#include <string>
+#include <vector>
+#include <memory>
 
 class Personaje;
 class Casilla;
 
+class Habilidad {
+public:
+    explicit Habilidad(const std::string& nombre)
+        : nombre(nombre), usada(false) {
+    }
+
+    virtual ~Habilidad() = default;
+
+    virtual bool usar(Personaje* usuario, Personaje* objetivo, Casilla* destino) = 0;
+
+    bool        puedeUsar()   const { return !usada; }
+    std::string getNombre()   const { return nombre; }
+
+protected:
+    std::string nombre;
+    bool        usada;
+};
+
+class HabilidadTeleport : public Habilidad {
+public:
+    HabilidadTeleport() : Habilidad("Teleport") {}
+    bool usar(Personaje* usuario, Personaje* objetivo, Casilla* destino) override;
+};
+
+class HabilidadRevivir : public Habilidad {
+public:
+    HabilidadRevivir() : Habilidad("Revivir") {}
+    bool usar(Personaje* usuario, Personaje* objetivo, Casilla* destino) override;
+};
+
+class HabilidadInmovilizar : public Habilidad {
+public:
+    HabilidadInmovilizar() : Habilidad("Inmovilizar") {}
+    bool usar(Personaje* usuario, Personaje* objetivo, Casilla* destino) override;
+};
+
+class HabilidadCurar : public Habilidad {
+public:
+    HabilidadCurar() : Habilidad("Curar") {}
+    bool usar(Personaje* usuario, Personaje* objetivo, Casilla* destino) override;
+};
+
+class HabilidadEscudo : public Habilidad {
+public:
+    HabilidadEscudo() : Habilidad("Escudo") {}
+    bool usar(Personaje* usuario, Personaje* objetivo, Casilla* destino) override;
+};
+
+class HabilidadInmunidad : public Habilidad {
+public:
+    HabilidadInmunidad() : Habilidad("Inmunidad") {}
+    bool usar(Personaje* usuario, Personaje* objetivo, Casilla* destino) override;
+};
+
 class Menu_habilidades {
 public:
-    bool usarTeleport(Personaje* usuario, Casilla* destino);
-    bool usarRevivir(Personaje* usuario, Personaje* objetivo);
-    bool usarInmovilizar(Personaje* usuario, Personaje* objetivo);
+    Menu_habilidades();
 
-    bool puedeUsarTeleport() const { return !teleport_usado; }
-    bool puedeUsarRevivir() const { return !revivir_usado; }
-    bool puedeUsarInmovilizar() const { return !inmovilizar_usado; }
+    bool        activarHabilidad(int indice, Personaje* usuario, Personaje* objetivo, Casilla* destino);
+    bool        puedeUsar(int indice)      const;
+    std::string getNombre(int indice)      const;
+    int         numHabilidades()           const;
 
 private:
-    bool teleport_usado = false;
-    bool revivir_usado = false;
-    bool inmovilizar_usado = false;
+    std::vector<std::unique_ptr<Habilidad>> habilidades;
 };

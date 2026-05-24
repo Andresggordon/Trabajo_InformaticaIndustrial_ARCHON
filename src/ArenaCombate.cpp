@@ -4,16 +4,18 @@
 #include "tipo_personaje.h"
 #include <GL/freeglut.h>
 #include "Proyectil.h"
+#include "Tablero.h"   // FaseCiclo + EstadoCasilla (no hay ciclo: .cpp incluye .h, no al revés)
+#include "Partida.h"
 
 // Convierte posición en cuadrícula a coordenadas OpenGL
 static float arenaToX(int columna) {
-	return -270.0f + columna * 55.0f;
+	return -245.0f + columna * 45.0f+22.5f;
 }
 static float arenaToY(int fila) {
-	return -270.0f + fila * 55.0f;
+	return -245.0f + fila * 45.0f+22.5f;
 }
 
-void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo)
+void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo, FaseCiclo fase)
 {
 	local_ = local;
 	invasor_ = invasor;
@@ -33,6 +35,36 @@ void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo
 
 	tiempoUltimoMovimiento_ = glutGet(GLUT_ELAPSED_TIME);
 	tiempoUltimoMovimientoIA_ = ahora;
+
+	//Ventaja de terreno: bonus de daño
+	static const int BONUS_TERRENO_PCT = 25; // % de daño extra
+
+	bonusDanioLocal_ = 0;
+	bonusDanioInvasor_ = 0;
+
+	auto calcularBonus = [&](Personaje* p) -> int {
+		if (p == nullptr || p->getCasillaActual() == nullptr) return 0;
+		EstadoCasilla ec = p->getCasillaActual()->getEstado();
+		Turno t = p->getTurno();
+		bool ventaja = false;
+		if (ec == EstadoCasilla::BLANCA_FIJA) {
+			ventaja = (t == Turno::TURNO_DE_MANANA);
+		}
+		else if (ec == EstadoCasilla::AZUL_FIJA) {
+			ventaja = (t == Turno::TURNO_DE_TARDE);
+		}
+		else { // DINAMICA
+			bool faseClara = (fase == FaseCiclo::MEDIODIA ||
+				fase == FaseCiclo::AMANECER ||
+				fase == FaseCiclo::MADRUGADA);
+			ventaja = (faseClara && t == Turno::TURNO_DE_MANANA) ||
+				(!faseClara && t == Turno::TURNO_DE_TARDE);
+		}
+		return ventaja ? (p->getArma().getDanio() * BONUS_TERRENO_PCT / 100) : 0;
+		};
+
+	bonusDanioLocal_ = calcularBonus(local_);
+	bonusDanioInvasor_ = calcularBonus(invasor_);
 }
 
 bool ArenaCombate::moverEnArena(PosArena& pos, int df, int dc)
@@ -63,28 +95,39 @@ void ArenaCombate::teclado(unsigned char key)
 	switch (key)
 	{
 	case 'w':
-		teclaW=true;
+		teclaW = true;
 		break;
 	case 's':
-		teclaS=true;
+		teclaS = true;
 		break;
 	case 'a':
-		teclaA=true;
+		teclaA = true;
 		break;
 	case 'd':
-		teclaD=true;
+		teclaD = true;
 		break;
 
 		// Ataque jugador 1 (espacio) — funciona en modo 1 y 2
-	case 32:
-		aplicarAtaque(local_, invasor_);
+	case 32: {
+		int ahora = glutGet(GLUT_ELAPSED_TIME);
+		if (ahora - tiempoUltimoAtaqueLocal_ >= COOLDOWN_ATAQUE) {
+			aplicarAtaque(local_, invasor_);
+			tiempoUltimoAtaqueLocal_ = ahora;
+		}
 		break;
+	}
 
 		// Ataque jugador 2 (Enter) — solo modo 2 jugadores
-	case 13:
-		if (modo_ == 2)
-			aplicarAtaque(invasor_, local_);
+	case 13: {
+		if (modo_ == 2) {
+			int ahora = glutGet(GLUT_ELAPSED_TIME);
+			if (ahora - tiempoUltimoAtaqueInvasor_ >= COOLDOWN_ATAQUE) {
+				aplicarAtaque(invasor_, local_);
+				tiempoUltimoAtaqueInvasor_ = ahora;
+			}
+		}
 		break;
+	} 
 	}
 }
 //Movimiento del jugador 2 en el modo 1vs1
@@ -97,40 +140,47 @@ void ArenaCombate::tecladoEspecial(int key)
 
 	switch (key)
 	{
-	case GLUT_KEY_UP:
-		moverEnArena(posInvasor_, 1, 0);
-		break;
-	case GLUT_KEY_DOWN:
-		moverEnArena(posInvasor_, -1, 0);
-		break;
-	case GLUT_KEY_LEFT:
-		moverEnArena(posInvasor_, 0, -1);
-		break;
-	case GLUT_KEY_RIGHT:
-		moverEnArena(posInvasor_, 0, 1);
-		break;
+	case GLUT_KEY_UP:    teclaArriba = true; break;
+	case GLUT_KEY_DOWN:  teclaAbajo = true; break;
+	case GLUT_KEY_LEFT:  teclaIzquierda = true; break;
+	case GLUT_KEY_RIGHT: teclaDerecha = true; break;
 	}
 }
 
 void ArenaCombate::finalizarCombate()
 {
+	// Limpiar proyectiles pendientes
+	for (auto p : proyectiles_) {
+		delete p;
+	}
+	proyectiles_.clear();
+
+	// Resetear teclas
+	teclaW = false;
+	teclaS = false;
+	teclaA = false;
+	teclaD = false;
+	teclaArriba = false;
+	teclaAbajo = false;
+	teclaIzquierda = false;
+	teclaDerecha = false;
+
 	local_ = nullptr;
 	invasor_ = nullptr;
 }
 
-void ArenaCombate::resolverResultado()
-{
-	combateTerminado_ = true;
-	if (local_->estaVivo())
-	{
-		resultado_ = ResultadoCombate::Gana_Local;
-		local_->curar(local_->getVidaMax());
-	}
-	else
-	{
-		resultado_ = ResultadoCombate::Gana_Invasor;
-		invasor_->curar(invasor_->getVidaMax());
-	}
+void ArenaCombate::resolverResultado() {
+    combateTerminado_ = true;
+    if (local_->estaVivo()) {
+        resultado_ = ResultadoCombate::Gana_Local;
+        Partida::get_instance().registrarMuerto(invasor_);
+    } else {
+        resultado_ = ResultadoCombate::Gana_Invasor;
+        Partida::get_instance().registrarMuerto(local_);
+    }
+    //activa cartel
+    mostrandoCartel_ = true;
+    tiempoCartel_    = glutGet(GLUT_ELAPSED_TIME);
 }
 
 bool ArenaCombate::combateTerminado() const
@@ -149,6 +199,9 @@ ArenaCombate::ArenaCombate() {
 	popup_salir = new ETSIDI::Sprite("assets/menu_imagenes/popup_salir.png", 0, 0, 800, 800);
 	posLocal_ = { 5, 2 };
 	posInvasor_ = { 5, 8 };
+
+	cartel_gana_manana_ = new ETSIDI::Sprite("assets/menu_imagenes/cartel_gana_manana_.png", 0, 0, 400, 400);
+	cartel_gana_tarde_ = new ETSIDI::Sprite("assets/menu_imagenes/cartel_gana_tarde_.png", 0, 0, 400, 400);
 }
 
 void ArenaCombate::dibuja() {
@@ -211,7 +264,7 @@ Modos_juego ArenaCombate::click(int x, int y) {
 		return Modos_juego::Arena_Combate;
 	}
 	return Modos_juego::Arena_Combate;
-} 
+}
 
 void ArenaCombate::aplicarAtaque(Personaje* atacante, Personaje* defensor) {
 	if (atacante == nullptr || defensor == nullptr) return;
@@ -231,14 +284,24 @@ void ArenaCombate::aplicarAtaque(Personaje* atacante, Personaje* defensor) {
 	float dy = arenaToY(esLocal ? posInvasor_.fila : posLocal_.fila);
 	float velocidad = atacante->getVelocidadProyectil();
 
+	// Daño base + bonus de terreno según quién ataca
+	int dano = atacante->getArma().getDanio() + (esLocal ? bonusDanioLocal_ : bonusDanioInvasor_);
+
 	proyectiles_.push_back(new Proyectil(ox, oy, dx, dy,
-		atacante->getArma().getDanio(),
+		dano,
 		velocidad,
 		atacante->getNombreProyectil(),
 		esLocal));
 }
 
 void ArenaCombate::actualizar() {
+
+	if (mostrandoCartel_) {
+		if (glutGet(GLUT_ELAPSED_TIME) - tiempoCartel_ >= DURACION_CARTEL)
+			mostrandoCartel_ = false;
+		return;  // mientras se muestra el cartel, no actualizar el combate
+	}
+
 	if (combateTerminado_) return;
 
 	int ahora = glutGet(GLUT_ELAPSED_TIME);
@@ -248,39 +311,66 @@ void ArenaCombate::actualizar() {
 		if (teclaS) moverEnArena(posLocal_, -1, 0);
 		if (teclaA) moverEnArena(posLocal_, 0, -1);
 		if (teclaD) moverEnArena(posLocal_, 0, 1);
-		tiempoUltimoMovimiento_ = ahora;
-	}
-	// Actualizar proyectiles
-	for (auto p : proyectiles_)
-		p->actualizar();
 
-	// Detectar impactos y aplicar daño
-	for (auto p : proyectiles_) {
-		if (p->haLlegado()) {
-			// Determinar quién recibe el daño
-			Personaje* defensor = p->esDeLocal() ? invasor_ : local_;
-			if (defensor != nullptr && defensor->estaVivo()) {
-				defensor->recibirDano(p->getDano());
-				if (!defensor->estaVivo())
-					resolverResultado();
+		if (modo_ == 2) {
+			if (teclaArriba)    moverEnArena(posInvasor_, 1, 0);
+			if (teclaAbajo)     moverEnArena(posInvasor_, -1, 0);
+			if (teclaIzquierda) moverEnArena(posInvasor_, 0, -1);
+			if (teclaDerecha)   moverEnArena(posInvasor_, 0, 1);
+
+			tiempoUltimoMovimiento_ = ahora;
+		}
+		// Actualizar proyectiles
+		for (auto p : proyectiles_)
+			p->actualizar();
+
+		float xLocal = arenaToX(posLocal_.columna);
+		float yLocal = arenaToY(posLocal_.fila);
+		float xInvasor = arenaToX(posInvasor_.columna);
+		float yInvasor = arenaToY(posInvasor_.fila);
+
+
+		// Detectar impactos y aplicar daño
+		for (auto p : proyectiles_) {
+
+			// Proyectil del local → colisiona con invasor
+			if (p->esDeLocal() && p->ColisionaCon(xInvasor, yInvasor,60.0f)) {
+				p->marcarLlegado();
+				if (invasor_ != nullptr && invasor_->estaVivo()) {
+					invasor_->recibirDano(p->getDano());
+					if (!invasor_->estaVivo()) resolverResultado();
+				}
+			}
+			// Proyectil del invasor → colisiona con local
+			else if (!p->esDeLocal() && p->ColisionaCon(xLocal, yLocal,60.0f)) {
+				p->marcarLlegado();
+				if (local_ != nullptr && local_->estaVivo()) {
+					local_->recibirDano(p->getDano());
+					if (!local_->estaVivo()) resolverResultado();
+				}
 			}
 		}
+
+		// Eliminar proyectiles que han llegado
+		for (auto it = proyectiles_.begin(); it != proyectiles_.end();) {
+			if ((*it)->haLlegado()) {
+				delete* it;
+				it = proyectiles_.erase(it);
+			}
+			else {
+				++it;
+			}
+		}
+
+		// En modo 1 jugador la maquina controla al invasor_.
+		if (modo_ == 1) moverMaquina();
 	}
 
-	// Eliminar proyectiles que han llegado
-	for (auto it = proyectiles_.begin(); it != proyectiles_.end();) {
-		if ((*it)->haLlegado()) {
-			delete* it;
-			it = proyectiles_.erase(it);
-		}
-		else {
-			++it;
-		}
-	}
-
-	// En modo 1 jugador la maquina controla al invasor_.
-	if (modo_ == 1) moverMaquina();
 }
+
+	
+
+
 
 void ArenaCombate::moverMaquina() {
 	// La maquina (invasor_) persigue al jugador (local_) y le ataca cuando
@@ -291,7 +381,7 @@ void ArenaCombate::moverMaquina() {
 	int ahora = glutGet(GLUT_ELAPSED_TIME);
 
 	int distFila = abs(posLocal_.fila - posInvasor_.fila);
-	int distCol  = abs(posLocal_.columna - posInvasor_.columna);
+	int distCol = abs(posLocal_.columna - posInvasor_.columna);
 	int distancia = max(distFila, distCol);
 	int alcance = invasor_->getArma().getAlcance();
 
@@ -330,7 +420,38 @@ void ArenaCombate::teclaLevantada(unsigned char key) {
 	}
 }
 
+void ArenaCombate::teclaEspecialLevantada(int key) {
+	switch (key)
+	{
+	case GLUT_KEY_UP:
+		teclaArriba = false;
+		break;
+	case GLUT_KEY_DOWN:
+		teclaAbajo = false;
+		break;
+	case GLUT_KEY_LEFT:
+		teclaIzquierda = false;
+		break;
+	case GLUT_KEY_RIGHT:
+		teclaDerecha = false;
+		break;
+	}
+}
+
 void ArenaCombate::dibujarProyectiles() {
 	for (auto p : proyectiles_)
 		p->dibujar();
+}
+
+
+void ArenaCombate::dibujaCartel() {
+	if (!mostrandoCartel_) return;
+
+	// Determinamos quién ganó y miramos su turno
+	Personaje* ganador = (resultado_ == ResultadoCombate::Gana_Local) ? local_ : invasor_;
+
+	if (ganador != nullptr && ganador->getTurno() == Turno::TURNO_DE_TARDE)
+		cartel_gana_tarde_->draw();
+	else
+		cartel_gana_manana_->draw();
 }

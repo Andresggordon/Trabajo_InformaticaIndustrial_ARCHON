@@ -59,17 +59,20 @@ void display() {
         Partida::get_instance().dibuja();           // 1. fondo
         MotorGrafico::get_instance().dibujar();     // 2. tablero
         Partida::get_instance().dibujaSeleccion(); // 3. Selección de casilla
-        Partida::get_instance().dibujaHabilidades(); // 4. Dibujar habilidades
-        Partida::get_instance().dibujaextra();        // 5. exit y popup encima de todo
+        Partida::get_instance().dibujaHabilidades(); // 4. Dibujar habilidades      
         Partida::get_instance().dibujaInmovilizados(); //6. Personaje inmovilizado
-        Partida::get_instance().dibujaBarrasVida(); // 7. Barras de vida  
-
+        Partida::get_instance().dibujaBarrasVida(); // 7. Barras de vida 
+        Partida::get_instance().dibujaEscudos(); // 8. Escudo casilla
+        Partida::get_instance().dibujaInmunidad();// 9. Inmunidad casilla
+        Partida::get_instance().dibujaAviso(); // 10. Avisos por pantalla
+        Partida::get_instance().dibujaextra(); // 5. exit y popup encima de todo
     }
     else if (estado == Modos_juego::Arena_Combate)
     {
         MotorGrafico::get_instance().dibujarArena();
         arena->dibujarProyectiles();
         arena->dibujaPopup();
+        arena->dibujaCartel();
     }
     else if (estado == Modos_juego::Pantalla_Final)
         pantalla_final->dibuja();
@@ -148,6 +151,12 @@ void tecladoEspecial(int key, int x, int y) {
 }
 
 void reposo() {
+
+    static int tiempoAnterior = glutGet(GLUT_ELAPSED_TIME);
+    int tiempoActual = glutGet(GLUT_ELAPSED_TIME);
+    float deltaTime = (tiempoActual - tiempoAnterior) / 1000.0f; 
+    tiempoAnterior = tiempoActual;
+
     if (estado == Modos_juego::Pantalla_carga) {
         pantalla_carga->update();
         if (pantalla_carga->carga_completa)
@@ -157,7 +166,7 @@ void reposo() {
     {
         arena->actualizar();
 
-        if (arena->combateTerminado()) {
+        if (arena->combateTerminado() && !arena->mostrandoCartel()) {
             Partida::get_instance().tablero().resolverCombate(arena->getResultado());
             arena->finalizarCombate();
             // Tras el combate puede haber acabado la partida (mago/piezas).
@@ -165,6 +174,7 @@ void reposo() {
         }
     }
     else if (estado == Modos_juego::Partida) {
+        if (MotorGrafico::tiempoAviso > 0.0f) MotorGrafico::tiempoAviso -= deltaTime;  // ~60fps, resta ~1 seg cada 60 llamadas
         // En modo 1 jugador, deja que la maquina mueva si es su turno.
         estado = Partida::get_instance().turnoMaquina();
     }
@@ -174,6 +184,12 @@ void reposo() {
 void tecladoUp(unsigned char key, int x, int y) {
     if (estado == Modos_juego::Arena_Combate)
         arena->teclaLevantada(key);
+}
+
+void tecladoEspecialUp(int key, int x, int y) {
+    if (estado == Modos_juego::Arena_Combate)
+        arena->teclaEspecialLevantada(key);
+    glutPostRedisplay();
 }
 
 int main(int argc, char** argv) {
@@ -206,6 +222,7 @@ int main(int argc, char** argv) {
     glutReshapeFunc(reshape);
     glutSpecialFunc(tecladoEspecial);
     glutKeyboardUpFunc(tecladoUp);
+    glutSpecialUpFunc(tecladoEspecialUp);
     glutMainLoop();
     return 0;
 }

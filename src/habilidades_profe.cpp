@@ -2,37 +2,82 @@
 #include "personaje.h"
 #include "Casilla.h"
 
-bool Menu_habilidades::usarTeleport(Personaje* usuario, Casilla* destino) {
-    if (teleport_usado || usuario == nullptr || destino == nullptr) return false;
+Menu_habilidades::Menu_habilidades() {
+    habilidades.push_back(std::make_unique<HabilidadTeleport>());
+    habilidades.push_back(std::make_unique<HabilidadRevivir>());
+    habilidades.push_back(std::make_unique<HabilidadInmovilizar>());
+    habilidades.push_back(std::make_unique<HabilidadCurar>());       
+    habilidades.push_back(std::make_unique<HabilidadEscudo>()); 
+    habilidades.push_back(std::make_unique<HabilidadInmunidad>());
+}
+
+bool Menu_habilidades::activarHabilidad(int i, Personaje* u, Personaje* o, Casilla* d) {
+    if (i < 0 || i >= (int)habilidades.size()) return false;
+    return habilidades[i]->usar(u, o, d);
+}
+
+bool        Menu_habilidades::puedeUsar(int i)    const { return habilidades[i]->puedeUsar(); }
+std::string Menu_habilidades::getNombre(int i)    const { return habilidades[i]->getNombre(); }
+int         Menu_habilidades::numHabilidades()    const { return (int)habilidades.size(); }
+
+bool HabilidadTeleport::usar(Personaje* usuario, Personaje* /*objetivo*/, Casilla* destino) {
+    if (usada || !usuario || !destino) return false;
     if (destino->getPersonaje() != nullptr) return false;
 
     Casilla* origen = usuario->getCasillaActual();
-    if (origen == nullptr) return false;
+    if (!origen) return false;
 
     origen->setPersonaje(nullptr);
     destino->setPersonaje(usuario);
     usuario->setCasillaActual(destino);
-
-    teleport_usado = true;
+    usada = true;
     return true;
 }
 
-bool Menu_habilidades::usarRevivir(Personaje* usuario, Personaje* objetivo) {
-    if (revivir_usado || usuario == nullptr || objetivo == nullptr) return false;
-    if (objetivo->getTurno() != usuario->getTurno()) return false;
-    if (objetivo->estaVivo()) return false;
 
-    objetivo->setVida(objetivo->getVidaMax());
-    revivir_usado = true;
+bool HabilidadRevivir::usar(Personaje* usuario, Personaje* objetivo, Casilla* /*destino*/) {
+    if (usada) return false;
+    usada = true;
     return true;
 }
 
-bool Menu_habilidades::usarInmovilizar(Personaje* usuario, Personaje* objetivo) {
-    if (inmovilizar_usado || usuario == nullptr || objetivo == nullptr) return false;
+bool HabilidadInmovilizar::usar(Personaje* usuario, Personaje* objetivo, Casilla* /*destino*/) {
+    if (usada || !usuario || !objetivo) return false;
     if (objetivo->getTurno() == usuario->getTurno()) return false;
     if (!objetivo->estaVivo()) return false;
 
     objetivo->setInmovilizado(true);
-    inmovilizar_usado = true;
+    usada = true;
+    return true;
+}
+
+bool HabilidadCurar::usar(Personaje* usuario, Personaje* objetivo, Casilla* /*destino*/) {
+    if (usada || !usuario || !objetivo) return false;
+    if (objetivo->getTurno() != usuario->getTurno()) return false;  // solo aliados
+    if (!objetivo->estaVivo()) return false;                         // debe estar vivo
+    if (objetivo->getVidaActual() == objetivo->getVidaMax()) return false; // ya tiene vida llena
+
+    objetivo->curar(objetivo->getVidaMax() / 2);  // cura la mitad de la vida máxima
+    usada = true;
+    return true;
+}
+
+bool HabilidadEscudo::usar(Personaje* usuario, Personaje* objetivo, Casilla* /*destino*/) {
+    if (usada || !usuario || !objetivo) return false;
+    if (objetivo->getTurno() != usuario->getTurno()) return false;  // solo aliados
+    if (!objetivo->estaVivo()) return false;
+
+    objetivo->setEscudo(true);
+    usada = true;
+    return true;
+}
+
+bool HabilidadInmunidad::usar(Personaje* usuario, Personaje* objetivo, Casilla*) {
+    if (usada || !usuario || !objetivo) return false;
+    if (objetivo->getTurno() != usuario->getTurno()) return false;
+    if (!objetivo->estaVivo()) return false;
+
+    objetivo->setInmune(true); 
+    usada = true;
     return true;
 }

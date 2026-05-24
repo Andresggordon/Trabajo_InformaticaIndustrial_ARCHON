@@ -40,6 +40,10 @@ public:
     void tecladoHabilidades(unsigned char key);
     void dibujarTextoBitmap(float x, float y, const char* texto);
     void dibujaInmovilizados();
+    void dibujaEscudos();
+    void dibujaInmunidad();
+    void dibujaAviso();
+    void registrarMuerto(Personaje* p);
 
     Personaje* getPersonajeSeleccionado() const { return personaje_seleccionado; }
     void dibujaBarrasVida();
@@ -58,6 +62,8 @@ private:
 
     std::vector<Personaje*>       personajes;
     std::vector<DibujoPersonaje*> dibujos;
+    std::vector<Personaje*> muertosAliados_manana;
+    std::vector<Personaje*> muertosAliados_tarde;
 
     // NUESTRO: Saber las casillas en las que se moverá el personaje
     std::vector<Casilla*> casillas_iluminadas;
@@ -74,7 +80,15 @@ private:
     bool modo_teleport = false;
     bool modo_inmovilizar = false;
     bool modo_revivir = false;
+    bool modo_curar = false;
+    bool modo_escudo = false;
+    bool modo_inmunidad = false;
 
     ETSIDI::Sprite* carta_actual = nullptr;
     std::string nombre_carta_cargada = "";
+
+    //OPTIMIZACIÓN
+    void decrementarEstados();
+    void screenToGame(int x, int y, float& cx, float& cy);
+    ~Partida();
 };
