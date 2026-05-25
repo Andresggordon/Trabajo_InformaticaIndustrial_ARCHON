@@ -236,7 +236,21 @@ void MotorGrafico::dibujarArena() {
 
     dibujarFondoArena();
     dibujarPersonajesArena(local, invasor);
-    dibujarBarrasHP(local, invasor);
+
+    // Las barras de vida se mapean por POSICION VISUAL (izq = mañana, dcha = tarde),
+    // no por rol semantico (local/invasor), porque local_/invasor_ depende de quien
+    // inicio el choque mientras que las piezas se colocan SIEMPRE: mañana izq, tarde dcha.
+    Personaje* piezaIzq  = nullptr;  // ira al lado izq (mañana)
+    Personaje* piezaDcha = nullptr;  // ira al lado dcho (tarde)
+    if (local != nullptr) {
+        if (local->getTurno() == Turno::TURNO_DE_MANANA) piezaIzq = local;
+        else                                             piezaDcha = local;
+    }
+    if (invasor != nullptr) {
+        if (invasor->getTurno() == Turno::TURNO_DE_MANANA) piezaIzq = invasor;
+        else                                               piezaDcha = invasor;
+    }
+    dibujarBarrasHP(piezaIzq, piezaDcha);
 
     arena->dibujarProyectiles();
 }

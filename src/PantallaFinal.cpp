@@ -19,11 +19,10 @@ void PantallaFinal::setResultado(ResultadoPartida r, int puntuacion,
     resultado = r;
     puntuacion_final = puntuacion;
     nombre_ganador = nombre;
-    tiempoInicio_ = glutGet(GLUT_ELAPSED_TIME);  // arranca el temporizador
+    tiempoInicio_ = glutGet(GLUT_ELAPSED_TIME);  
 }
 
-// ── Dibuja texto centrado horizontalmente en x=0 a la altura y ───────────────
-// Calcula el ancho real del texto con el font dado para que quede centrado.
+
 void PantallaFinal::dibujarTextoCentrado(const std::string& texto, void* font,
     float y, float r, float g, float b) {
     int ancho = 0;
@@ -40,8 +39,7 @@ void PantallaFinal::dibujarTextoCentrado(const std::string& texto, void* font,
 }
 
 void PantallaFinal::dibuja() {
-    // ── Fase "creditos": tras 10s sustituye la pantalla por la imagen.
-    //    El boton BACK sigue encima para poder salir al menu cuando se quiera.
+    
     int ahora = glutGet(GLUT_ELAPSED_TIME);
     bool enCreditos = (tiempoInicio_ > 0)
         && (ahora - tiempoInicio_ >= TIEMPO_PARA_CREDITOS);
@@ -51,11 +49,10 @@ void PantallaFinal::dibuja() {
         return;
     }
 
-    // ── Fase normal: ganador + puntuacion dentro del marco ───────────────────
     fondo->draw();
     boton_menu->draw();
 
-    // Linea decorativa superior (encajada dentro del marco interno)
+    
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
@@ -66,7 +63,7 @@ void PantallaFinal::dibuja() {
     glEnd();
     glPopAttrib();
 
-    // Titulo: quien ha ganado (Helvetica 18, mas compacto que antes)
+    
     if (resultado == ResultadoPartida::VICTORIA_MANANA) {
         dibujarTextoCentrado("TURNO DE MANANA GANA!", GLUT_BITMAP_HELVETICA_18,
             50, 1.0f, 0.85f, 0.0f);  // amarillo
@@ -76,19 +73,19 @@ void PantallaFinal::dibuja() {
             50, 0.3f, 0.6f, 1.0f);   // azul claro
     }
 
-    // Nombre del ganador y puntuacion (Helvetica 12, fino y centrado)
+    
     dibujarTextoCentrado("Ganador:  " + nombre_ganador,
         GLUT_BITMAP_HELVETICA_12, 15, 1.0f, 1.0f, 1.0f);
     dibujarTextoCentrado("Puntuacion:  " + std::to_string(puntuacion_final),
         GLUT_BITMAP_HELVETICA_12, -10, 1.0f, 1.0f, 0.2f);
 
-    // Explicacion e instruccion del boton (Helvetica 10, mas pequeno)
+   
     dibujarTextoCentrado("La puntuacion depende de piezas vivas y velocidad",
         GLUT_BITMAP_HELVETICA_10, -45, 0.6f, 0.6f, 0.6f);
     dibujarTextoCentrado("Pulsa BACK para volver al menu",
         GLUT_BITMAP_HELVETICA_10, -80, 0.5f, 0.5f, 0.5f);
 
-    // Linea decorativa inferior (tambien dentro del marco)
+    
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
