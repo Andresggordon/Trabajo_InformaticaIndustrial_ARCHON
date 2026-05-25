@@ -105,8 +105,7 @@ private:
 
 	//Cadencias propias de la IA de la arena (solo modo 1 jugador)
 	int tiempoUltimoMovimientoIA_ = 0;
-	static const int INTERVALO_MOVIMIENTO_IA = 150;
-	static const int INTERVALO_ATAQUE_IA = 600;
+	static const int INTERVALO_MOVIMIENTO_IA = INTERVALO_MOVIMIENTO;
 
 	// Bonus de daño por ventaja de terreno (0 = sin ventaja)
 	// Se calcula en iniciarCombate y se aplica en aplicarAtaque.

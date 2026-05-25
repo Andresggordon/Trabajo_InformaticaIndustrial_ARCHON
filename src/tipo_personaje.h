@@ -60,7 +60,7 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartamicrom
     std::string getNombreProyectil() const override {
         return "assets/menu_imagenes/Microprocesadorcero.png";
     }
-    float getVelocidadProyectil() const override { return 50.0f; }
+    float getVelocidadProyectil() const override { return 0.5f; }
 };
 
 class Multimetro : public Terrestre {
@@ -86,7 +86,7 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartamulti.
     std::string getNombreProyectil() const override {
         return "assets/menu_imagenes/rayo.png";
     }
-    float getVelocidadProyectil() const override { return 50.0f; }
+    float getVelocidadProyectil() const override { return 0.5f; }
 
 };
 
@@ -114,7 +114,7 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartaPLC.pn
     std::string getNombreProyectil() const override {
         return "assets/menu_imagenes/Tuerca.png";
     }
-    float getVelocidadProyectil() const override { return 50.0f; }
+    float getVelocidadProyectil() const override { return 0.5f; }
 
 
 };
@@ -138,7 +138,7 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartafuente
     std::string getNombreProyectil() const override {
         return "assets/menu_imagenes/Descarga.png";
     }
-    float getVelocidadProyectil() const override { return 50.0f; }
+    float getVelocidadProyectil() const override { return 0.5f; }
 
 };
 
@@ -166,7 +166,7 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartamotoe.
     std::string getNombreProyectil() const override {
         return "assets/menu_imagenes/rayo.png";
     }
-    float getVelocidadProyectil() const override { return 50.0f; }
+    float getVelocidadProyectil() const override { return 0.5f; }
 };
 
 class Copilot : public Volador {
@@ -195,7 +195,7 @@ public:
 
         
     }
-    float getVelocidadProyectil() const override { return 50.0f; }
+    float getVelocidadProyectil() const override { return 0.5f; }
 
 };
 
@@ -223,7 +223,7 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartacim.pn
     std::string getNombreProyectil() const override {
         return "assets/menu_imagenes/Pata.png";
     }
-    float getVelocidadProyectil() const override { return 50.0f; }
+    float getVelocidadProyectil() const override { return 0.5f; }
 };
 
 //TURNO DE TARDE 
@@ -282,7 +282,7 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartamicrot
     std::string getNombreProyectil() const override {
         return "assets/menu_imagenes/uno.png";
     }
-    float getVelocidadProyectil() const override { return 50.0f; }
+    float getVelocidadProyectil() const override { return 0.5f; }
 
 };
 
@@ -309,7 +309,7 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartaosci.p
     std::string getNombreProyectil() const override {
         return "assets/menu_imagenes/Seno.png";
     }
-    float getVelocidadProyectil() const override { return 50.0f; }
+    float getVelocidadProyectil() const override { return 0.5f; }
 
 };
 
@@ -336,7 +336,7 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartarobot.
     std::string getNombreProyectil() const override {
         return "assets/menu_imagenes/Tornillo.png";
     }
-    float getVelocidadProyectil() const override { return 50.0f; }
+    float getVelocidadProyectil() const override { return 0.5f; }
 
 };
 
@@ -364,7 +364,7 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartafuente
     std::string getNombreProyectil() const override {
         return "assets/menu_imagenes/Descarga.png";
     }
-    float getVelocidadProyectil() const override { return 50.0f; }
+    float getVelocidadProyectil() const override { return 0.5f; }
 
 };
 
@@ -395,7 +395,7 @@ std::string getNombreCarta()  const override { return "assets/cartas/cartamotop.
         return "assets/menu_imagenes/gasolina.png";
     }
 
-    float getVelocidadProyectil() const override { return 50.0f; }
+    float getVelocidadProyectil() const override { return 0.5f; }
 };
 
 class Gemini : public Volador {
@@ -422,7 +422,7 @@ public:
     std::string getNombreProyectil() const override {
         return "assets/menu_imagenes/C++.png";
     }
-    float getVelocidadProyectil() const override { return 50.0f; }
+    float getVelocidadProyectil() const override { return 0.5f; }
 
 
 
@@ -450,5 +450,5 @@ public:
     std::string getNombreProyectil() const override {
         return "assets/menu_imagenes/Pata.png";
     }
-    float getVelocidadProyectil() const override { return 50.0f; }
+    float getVelocidadProyectil() const override { return 0.5f; }
 };

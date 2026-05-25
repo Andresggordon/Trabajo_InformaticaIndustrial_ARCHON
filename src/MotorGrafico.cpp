@@ -441,6 +441,10 @@ void MotorGrafico::dibujarVidaPanel(Personaje* p) {
 }
 
 void MotorGrafico::dibujarBarrasHP(Personaje* local, Personaje* invasor) {
+    Personaje* manana = (local != nullptr && local->getTurno() == Turno::TURNO_DE_MANANA)
+        ? local : invasor;
+    Personaje* tarde = (local != nullptr && local->getTurno() == Turno::TURNO_DE_TARDE)
+        ? local : invasor;
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -456,8 +460,8 @@ void MotorGrafico::dibujarBarrasHP(Personaje* local, Personaje* invasor) {
     float xIniL = -228.f, xFinL = -76.f;
     float ySupL = -265.f, yInfL = -274.f;
 
-    if (local != nullptr) {
-        float pct = local->getPorcentajeVida();
+    if (manana != nullptr) {
+        float pct = manana->getPorcentajeVida();
         float xVidaL = xIniL + (xFinL - xIniL) * pct;
 
         // Fondo rojo (vida perdida)
@@ -483,8 +487,8 @@ void MotorGrafico::dibujarBarrasHP(Personaje* local, Personaje* invasor) {
     float xIniR = 104.f, xFinR = 255.f;
     float ySupR = -265.f, yInfR = -274.f;
 
-    if (invasor != nullptr) {
-        float pct = invasor->getPorcentajeVida();
+    if (tarde != nullptr) {
+        float pct = tarde->getPorcentajeVida();
         float xVidaR = xIniR + (xFinR - xIniR) * pct;
 
         // Fondo rojo (vida perdida)

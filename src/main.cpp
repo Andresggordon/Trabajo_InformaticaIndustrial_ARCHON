@@ -76,7 +76,6 @@ void display() {
     else if (estado == Modos_juego::Arena_Combate)
     {
         MotorGrafico::get_instance().dibujarArena();
-        arena->dibujarProyectiles();
         arena->dibujaPopup();
         arena->dibujaCartel();
     }

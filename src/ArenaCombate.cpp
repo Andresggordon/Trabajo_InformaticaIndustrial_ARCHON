@@ -126,6 +126,23 @@ void ArenaCombate::teclado(unsigned char key)
 	if (combateTerminado_)
 		return;
 
+	Personaje* pManana = (local_->getTurno() == Turno::TURNO_DE_MANANA) ? local_ : invasor_;
+	Personaje* pTarde = (local_->getTurno() == Turno::TURNO_DE_TARDE) ? local_ : invasor_;
+
+	Personaje* pHumano = nullptr;
+	if (modo_ == 1) {
+		Turno bandoHumano = (equipo_j1 == 1) ? Turno::TURNO_DE_MANANA : Turno::TURNO_DE_TARDE;
+		pHumano = (bandoHumano == Turno::TURNO_DE_MANANA) ? pManana : pTarde;
+	}
+	else {
+		pHumano = pManana;  // modo 2: WASD siempre es mañana
+	}
+	Personaje* pRival = (pHumano == pManana) ? pTarde : pManana;
+	int& cooldownHumano = (pHumano == local_) ? tiempoUltimoAtaqueLocal_
+		: tiempoUltimoAtaqueInvasor_;
+	int& cooldownTarde = (pTarde == local_) ? tiempoUltimoAtaqueLocal_
+		: tiempoUltimoAtaqueInvasor_;
+
 	switch (key)
 	{
 	case 'w':
@@ -139,20 +156,20 @@ void ArenaCombate::teclado(unsigned char key)
 		{
 			// La orientacion afecta a la pieza del humano (que en modo 1
 			// puede ser local_ o invasor_ segun quien inicio el choque).
-			Personaje* piezaHumano = (modo_ == 1 && !humanoControlaLocal_) ? invasor_ : local_;
-			if (piezaHumano) {
-				piezaHumano->setMirandoDerecha(false);
-				piezaHumano->setMirandoIzquierda(true);
+			
+			if (pHumano) {
+				pHumano->setMirandoDerecha(false);
+				pHumano->setMirandoIzquierda(true);
 			}
 		}
 		break;
 	case 'd':
 		teclaD = true;
 		{
-			Personaje* piezaHumano = (modo_ == 1 && !humanoControlaLocal_) ? invasor_ : local_;
-			if (piezaHumano) {
-				piezaHumano->setMirandoDerecha(true);
-				piezaHumano->setMirandoIzquierda(false);
+			
+			if (pHumano) {
+				pHumano->setMirandoDerecha(true);
+				pHumano->setMirandoIzquierda(false);
 			}
 		}
 		break;
@@ -163,15 +180,9 @@ void ArenaCombate::teclado(unsigned char key)
 		// correspondiente para que la cadencia sea coherente.
 	case 32: {
 		int ahora = glutGet(GLUT_ELAPSED_TIME);
-		bool humanoEsInvasor = (modo_ == 1 && !humanoControlaLocal_);
-		int& timerHumano = humanoEsInvasor ? tiempoUltimoAtaqueInvasor_
-		                                   : tiempoUltimoAtaqueLocal_;
-		if (ahora - timerHumano >= COOLDOWN_ATAQUE) {
-			if (humanoEsInvasor)
-				aplicarAtaque(invasor_, local_);
-			else
-				aplicarAtaque(local_, invasor_);
-			timerHumano = ahora;
+		if (ahora - cooldownHumano >= COOLDOWN_ATAQUE) {
+			aplicarAtaque(pHumano, pRival);
+			cooldownHumano = ahora;
 		}
 		break;
 	}
@@ -180,9 +191,9 @@ void ArenaCombate::teclado(unsigned char key)
 	case 13: {
 		if (modo_ == 2) {
 			int ahora = glutGet(GLUT_ELAPSED_TIME);
-			if (ahora - tiempoUltimoAtaqueInvasor_ >= COOLDOWN_ATAQUE) {
-				aplicarAtaque(invasor_, local_);
-				tiempoUltimoAtaqueInvasor_ = ahora;
+			if (ahora - cooldownTarde >= COOLDOWN_ATAQUE) {
+				aplicarAtaque(pTarde, pManana);
+				cooldownTarde = ahora;
 			}
 		}
 		break;
@@ -197,6 +208,8 @@ void ArenaCombate::tecladoEspecial(int key)
 	if (modo_ != 2)
 		return;
 
+	Personaje* pTarde = (local_->getTurno() == Turno::TURNO_DE_TARDE) ? local_ : invasor_;
+
 	switch (key)
 	{
 	case GLUT_KEY_UP:    teclaArriba = true;
@@ -207,17 +220,17 @@ void ArenaCombate::tecladoEspecial(int key)
 
 	case GLUT_KEY_LEFT:  
 		teclaIzquierda = true;
-		if (invasor_) {
-			invasor_->setMirandoDerecha(false);
-			invasor_->setMirandoIzquierda(true);
+		if (pTarde) {
+			pTarde->setMirandoDerecha(false);
+			pTarde->setMirandoIzquierda(true);
 		}
 		break;
 
 	case GLUT_KEY_RIGHT:
 		teclaDerecha = true; 
-		if (invasor_) {
-			invasor_->setMirandoDerecha(true);
-			invasor_->setMirandoIzquierda(false);
+		if (pTarde) {
+			pTarde->setMirandoDerecha(true);
+			pTarde->setMirandoIzquierda(false);
 		}
 		break;
 	}
@@ -346,12 +359,12 @@ void ArenaCombate::aplicarAtaque(Personaje* atacante, Personaje* defensor) {
 	if (atacante == nullptr || defensor == nullptr) return;
 	if (combateTerminado_) return;
 
-	/*int distFila = abs(posLocal_.fila - posInvasor_.fila);
+	int distFila = abs(posLocal_.fila - posInvasor_.fila);
 	int distCol = abs(posLocal_.columna - posInvasor_.columna);
 	int distancia = max(distFila, distCol);
 
 	int alcance = atacante->getArma().getAlcance();
-	if (distancia > alcance) return;*/
+	if (distancia > alcance) return;
 
 	bool esLocal = (atacante == local_);
 	float ox = arenaToX(esLocal ? posLocal_.columna : posInvasor_.columna);
@@ -440,26 +453,37 @@ void ArenaCombate::actualizar() {
 
 	// 6. Movimiento de personajes (con cooldown)
 	if (ahora - tiempoUltimoMovimiento_ >= INTERVALO_MOVIMIENTO) {
-		// En modo 1, las WASD mueven la pieza del humano (sea local_ o invasor_).
-		// En modo 2, las WASD mueven siempre a local_ (jugador 1).
-		PosArena&  posJugadorWASD   = (modo_ == 1 && !humanoControlaLocal_) ? posInvasor_ : posLocal_;
-		Personaje* piezaJugadorWASD = (modo_ == 1 && !humanoControlaLocal_) ? invasor_    : local_;
 
-		if (teclaW && moverEnArena(posJugadorWASD, 1, 0))  piezaJugadorWASD->incrementarPasos();
-		if (teclaS && moverEnArena(posJugadorWASD, -1, 0)) piezaJugadorWASD->incrementarPasos();
-		if (teclaA && moverEnArena(posJugadorWASD, 0, -1)) piezaJugadorWASD->incrementarPasos();
-		if (teclaD && moverEnArena(posJugadorWASD, 0, 1))  piezaJugadorWASD->incrementarPasos();
-
+		Personaje* pManana = (local_->getTurno() == Turno::TURNO_DE_MANANA) ? local_ : invasor_;
+		Personaje* pTarde = (local_->getTurno() == Turno::TURNO_DE_TARDE) ? local_ : invasor_;
+		PosArena& posManana = (pManana == local_) ? posLocal_ : posInvasor_;
+		PosArena& posTarde = (pTarde == local_) ? posLocal_ : posInvasor_;
 		if (modo_ == 2) {
-			if (teclaArriba && moverEnArena(posInvasor_, 1, 0))    invasor_->incrementarPasos();
-			if (teclaAbajo && moverEnArena(posInvasor_, -1, 0))    invasor_->incrementarPasos();
-			if (teclaIzquierda && moverEnArena(posInvasor_, 0, -1)) invasor_->incrementarPasos();
-			if (teclaDerecha && moverEnArena(posInvasor_, 0, 1))   invasor_->incrementarPasos();
+			// WASD mueve mañana
+			if (teclaW && moverEnArena(posManana, 1, 0)) pManana->incrementarPasos();
+			if (teclaS && moverEnArena(posManana, -1, 0)) pManana->incrementarPasos();
+			if (teclaA && moverEnArena(posManana, 0, -1)) pManana->incrementarPasos();
+			if (teclaD && moverEnArena(posManana, 0, 1)) pManana->incrementarPasos();
+
+			// Flechas mueven tarde
+			if (teclaArriba && moverEnArena(posTarde, 1, 0)) pTarde->incrementarPasos();
+			if (teclaAbajo && moverEnArena(posTarde, -1, 0)) pTarde->incrementarPasos();
+			if (teclaIzquierda && moverEnArena(posTarde, 0, -1)) pTarde->incrementarPasos();
+			if (teclaDerecha && moverEnArena(posTarde, 0, 1)) pTarde->incrementarPasos();
+		}
+		else {
+			// Modo 1: WASD mueve al bando del humano
+			Turno bandoHumano = (equipo_j1 == 1) ? Turno::TURNO_DE_MANANA : Turno::TURNO_DE_TARDE;
+			Personaje* pHumano = (bandoHumano == Turno::TURNO_DE_MANANA) ? pManana : pTarde;
+			PosArena& posHumano = (pHumano == local_) ? posLocal_ : posInvasor_;
+
+			if (teclaW && moverEnArena(posHumano, 1, 0)) pHumano->incrementarPasos();
+			if (teclaS && moverEnArena(posHumano, -1, 0)) pHumano->incrementarPasos();
+			if (teclaA && moverEnArena(posHumano, 0, -1)) pHumano->incrementarPasos();
+			if (teclaD && moverEnArena(posHumano, 0, 1)) pHumano->incrementarPasos();
 		}
 		tiempoUltimoMovimiento_ = ahora;
 	}
-
-	// En modo 1 jugador, la maquina controla su pieza (persigue + dispara).
 	if (modo_ == 1) moverMaquina();
 }
 
@@ -474,13 +498,13 @@ void ArenaCombate::moverMaquina() {
 	if (combateTerminado_) return;
 	if (invasor_ == nullptr || local_ == nullptr) return;
 
-	// Si el humano es local_, la IA es invasor_. Y al reves.
-	Personaje* piezaIA        = humanoControlaLocal_ ? invasor_ : local_;
-	Personaje* piezaHumano    = humanoControlaLocal_ ? local_   : invasor_;
-	PosArena&  posIA          = humanoControlaLocal_ ? posInvasor_ : posLocal_;
-	PosArena&  posHumano      = humanoControlaLocal_ ? posLocal_   : posInvasor_;
-	int&       tiempoAtaqueIA = humanoControlaLocal_ ? tiempoUltimoAtaqueInvasor_
-	                                                : tiempoUltimoAtaqueLocal_;
+	Turno bandoHumano = (equipo_j1 == 1) ? Turno::TURNO_DE_MANANA : Turno::TURNO_DE_TARDE;
+	Personaje* piezaHumano = (local_->getTurno() == bandoHumano) ? local_ : invasor_;
+	Personaje* piezaIA = (piezaHumano == local_) ? invasor_ : local_;
+	PosArena& posHumano = (piezaHumano == local_) ? posLocal_ : posInvasor_;
+	PosArena& posIA = (piezaIA == local_) ? posLocal_ : posInvasor_;
+	int& tiempoAtaqueIA = (piezaIA == local_) ? tiempoUltimoAtaqueLocal_
+		: tiempoUltimoAtaqueInvasor_;
 
 	int ahora = glutGet(GLUT_ELAPSED_TIME);
 
@@ -496,7 +520,6 @@ void ArenaCombate::moverMaquina() {
 			aplicarAtaque(piezaIA, piezaHumano);
 			tiempoAtaqueIA = ahora;
 		}
-		return; // en rango: mantener posicion (no perseguir mas)
 	}
 
 	// ── MOVIMIENTO: fuera de rango, acercarse un paso (cadencia propia).

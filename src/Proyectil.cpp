@@ -27,6 +27,7 @@ void Proyectil::actualizar() {
     float dx = destinoX_ - x_;
     float dy = destinoY_ - y_;
     float distancia = sqrt(dx * dx + dy * dy);
+  
 
     if (distancia > velocidad_) {
         x_ += (dx / distancia) * velocidad_;
