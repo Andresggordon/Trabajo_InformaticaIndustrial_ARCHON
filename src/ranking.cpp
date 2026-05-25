@@ -1,51 +1,3 @@
-<<<<<<< HEAD
-#include "ranking.h"
-#include <GL/freeglut.h>
-
-Ranking::Ranking() {
-    fondo2 = new ETSIDI::Sprite("assets/menu_imagenes/fondo2.png", 0, 0, 800, 800);
-    back = new ETSIDI::Sprite("assets/menu_imagenes/back.png", 0, 0, 800, 800);
-    boton_activo = 0;
-}
-
-void Ranking::dibuja() {
-    fondo2->draw();
-    back->draw();
-}
-
-void Ranking::update(int x, int y) {
-    int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
-    int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
-    int tam = min(ventana_w, ventana_h);
-    int offsetX = (ventana_w - tam) / 2;
-    int offsetY = (ventana_h - tam) / 2;
-    float cx = ((x - offsetX) / (float)tam) * 800 - 400;
-    float cy = 400 - ((y - offsetY) / (float)tam) * 800;
-
-    if (x >= 297 && cx <= 386 && cy >= -352 && cy <= -328)
-        boton_activo = 1;
-    else
-        boton_activo = 0;
-}
-
-Modos_juego Ranking::click(int x, int y) {
-    int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
-    int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
-    int tam = min(ventana_w, ventana_h);
-    int offsetX = (ventana_w - tam) / 2;
-    int offsetY = (ventana_h - tam) / 2;
-
-
-    float cx = ((x - offsetX) / (float)tam) * 800 - 400;
-    float cy = 400 - ((y - offsetY) / (float)tam) * 800;
-
-    if (cx >= 297 && cx <= 386 && cy >= -352 && cy <= -328) {
-        ETSIDI::play("assets/sonidos/click.mp3");
-        return Modos_juego::MENU;
-    }
-    return Modos_juego::Pantalla_Ranking;
-}
-=======
 #include "ranking.h"
 #include <GL/freeglut.h>
 #include <fstream>
@@ -56,7 +8,7 @@ static const char* RUTA_FICHERO = "ranking.txt";
 
 Ranking::Ranking() {
     fondo2 = new ETSIDI::Sprite("assets/menu_imagenes/fondo2.png", 0, 0, 600, 600);
-    back   = new ETSIDI::Sprite("assets/menu_imagenes/back.png",   0, 0, 600, 600);
+    back = new ETSIDI::Sprite("assets/menu_imagenes/back.png", 0, 0, 600, 600);
     boton_activo = 0;
 
     cargar();   // si no hay fichero, entradas_ queda vacio
@@ -76,7 +28,7 @@ void Ranking::cargar() {
         if (pos == std::string::npos) continue;   // formato invalido, ignorar
         try {
             int         puntuacion = std::stoi(linea.substr(0, pos));
-            std::string nombre     = linea.substr(pos + 1);
+            std::string nombre = linea.substr(pos + 1);
             entradas_.push_back({ nombre, puntuacion });
         }
         catch (...) {
@@ -111,7 +63,7 @@ void Ranking::agregar(const std::string& nombre, int puntuacion) {
 // ── Dibujo ───────────────────────────────────────────────────────────────────
 
 void Ranking::dibujarTextoCentrado(const std::string& texto, void* font,
-                                    float y, float r, float g, float b) {
+    float y, float r, float g, float b) {
     int ancho = 0;
     for (char c : texto) ancho += glutBitmapWidth(font, c);
 
@@ -131,12 +83,12 @@ void Ranking::dibuja() {
 
     // Titulo
     dibujarTextoCentrado("RANKING", GLUT_BITMAP_HELVETICA_18,
-                         115, 1.0f, 0.85f, 0.0f);
+        115, 1.0f, 0.85f, 0.0f);
 
     if (entradas_.empty()) {
         dibujarTextoCentrado("Sin puntuaciones aun",
-                             GLUT_BITMAP_HELVETICA_12, 60,
-                             0.7f, 0.7f, 0.7f);
+            GLUT_BITMAP_HELVETICA_12, 60,
+            0.7f, 0.7f, 0.7f);
         return;
     }
 
@@ -145,20 +97,20 @@ void Ranking::dibuja() {
     if (n > TOP_N) n = TOP_N;
 
     const float yInicio = 85.0f;
-    const float dy      = 17.0f;   // espacio entre lineas
+    const float dy = 17.0f;   // espacio entre lineas
     for (int i = 0; i < n; ++i) {
         const auto& e = entradas_[i];
         std::string linea = std::to_string(i + 1) + ". " + e.nombre
-                          + "   " + std::to_string(e.puntuacion) + " pts";
+            + "   " + std::to_string(e.puntuacion) + " pts";
 
         // Colorines para el podio
         float r = 1.0f, g = 1.0f, b = 1.0f;
-        if      (i == 0) { r = 1.0f; g = 0.85f; b = 0.0f; }   // oro
+        if (i == 0) { r = 1.0f; g = 0.85f; b = 0.0f; }   // oro
         else if (i == 1) { r = 0.8f; g = 0.8f;  b = 0.85f; }  // plata
         else if (i == 2) { r = 0.8f; g = 0.5f;  b = 0.2f; }   // bronce
 
         dibujarTextoCentrado(linea, GLUT_BITMAP_HELVETICA_12,
-                             yInicio - i * dy, r, g, b);
+            yInicio - i * dy, r, g, b);
     }
 }
 
@@ -195,4 +147,3 @@ Modos_juego Ranking::click(int x, int y) {
     }
     return Modos_juego::Pantalla_Ranking;
 }
->>>>>>> f49ce09a57afd51359acc1d1c9f113d8d8d22782

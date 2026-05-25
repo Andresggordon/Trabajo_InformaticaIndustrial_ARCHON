@@ -35,7 +35,7 @@ public:
 
     // Getters para que main.cpp pueda guardar la partida en el ranking
     int         getPuntuacion()    const { return puntuacion_final; }
-    std::string getNombreGanador() const { return nombre_ganador;   }
+    std::string getNombreGanador() const { return nombre_ganador; }
 
 private:
     ETSIDI::Sprite* fondo;
@@ -53,5 +53,5 @@ private:
     // Dibuja un texto centrado en x=0 a la altura y, con el font GLUT dado.
     // Usar GLUT_BITMAP_HELVETICA_10/12/18 o similares.
     void dibujarTextoCentrado(const std::string& texto, void* font, float y,
-                               float r, float g, float b);
+        float r, float g, float b);
 };
