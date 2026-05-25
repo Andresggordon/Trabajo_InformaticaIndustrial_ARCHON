@@ -71,6 +71,23 @@ public:
     void setInmune(bool b) { inmune_activo = b; }
     void decrementarInmunidad() { inmune_activo = false; }
 
+    // Orientación del Sprite ---
+    bool getMirandoDerecha() const { return mirando_derecha; }
+    void setMirandoDerecha(bool b) { mirando_derecha = b; }
+
+    bool getMirandoIzquierda() const { return mirando_izquierda; }
+    void setMirandoIzquierda(bool b) { mirando_izquierda = b; }
+
+    // Determinar el tipo de estado del personaje, estático o en movimiento
+    bool getEnMovimiento() const { return en_movimiento; }
+    void setEnMovimiento(bool b) { en_movimiento = b; }
+
+    virtual int getFilasAnimacion() const { return 1; }
+
+    int getPasosDados() const { return pasos_dados; }
+    void incrementarPasos() { pasos_dados++; }
+
+
 protected:
     std::string nombre;
     int         vida_Max, vida_actual;
@@ -82,4 +99,11 @@ protected:
     Casilla* casilla_actual;
     bool escudo_activo = false;
     bool inmune_activo = false;
+
+    bool mirando_derecha = true;
+    bool mirando_izquierda = true;
+
+    bool en_movimiento = false;
+    int pasos_dados = 0;
+
 };

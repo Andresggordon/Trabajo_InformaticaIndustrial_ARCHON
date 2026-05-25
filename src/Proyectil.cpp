@@ -43,10 +43,13 @@ void Proyectil::dibujar() const {
     if (llegado_) return;
 
     if (tieneSprite_) {
+        // 1. Decirle al sprite dónde debe estar en este instante exacto
+        sprite_->setPos(x_, y_);
+
+        // 2. Ahora sí, pintarlo
         sprite_->draw();
         return;
     }
-
 }
 
 bool Proyectil::ColisionaCon(float x, float y, float radio) const {

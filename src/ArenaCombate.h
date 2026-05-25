@@ -117,5 +117,11 @@ private:
 	int  tiempoCartel_ = 0;          // ms en que empezó a mostrarse
 	static const int DURACION_CARTEL = 3000; // 3 segundos
 
+	// Temporizadores para combinar la animación estática con la dinámica en la arena
+	int tiempo_parada_local_ = 0;
+	int tiempo_parada_invasor_ = 0;
+	static const int RETARDO_IDLE = 350; // ms de espera antes de volver a estar quieto
+
+
 	~ArenaCombate();
 };

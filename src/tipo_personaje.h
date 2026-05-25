@@ -15,15 +15,19 @@ public:
             casillaInicial) {}
     Menu_habilidades menu;
     int getRadioMovimiento()  const override { return 4; }
-    std::string getNombreSprite() const override { return "SanseAnimado"; }
+    std::string getNombreSprite() const override { return "SanseAnimado1"; }
     std::string getNombreCarta()  const override { return "assets/cartas/cartass.png"; }
 
     float getOffsetX() const override { return 35.0f; }
-    float getOffsetY() const override { return 20.0f; }
+    float getOffsetY() const override { return 0.0f; }
 
     float getTamanoSprite() const override { return 65.0f; }
 
     int getFramesIdle() const override { return 8; }
+
+    int getFilasAnimacion() const override { return 2; }
+
+    //virtual int getTiempoAnimacion() const override { return 45; } 
 
     Menu_habilidades* getMenu() override { return &menu; }
     bool esLider() const override { return true; }
@@ -31,7 +35,7 @@ public:
     std::string getNombreProyectil() const override {
         return "assets/menu_imagenes/Risa.png";
     }
-    float getVelocidadProyectil() const override { return 50.0f; }
+    float getVelocidadProyectil() const override { return 0.5f; }
 };
 
 class Microprocesador_M : public Volador {
@@ -244,13 +248,15 @@ public:
 
     int getTiempoAnimacion() const override { return 350; }
 
+    int getFilasAnimacion() const override { return 2; }
+
     Menu_habilidades* getMenu() override { return &menu; }
     bool esLider() const override { return true; }
 
     std::string getNombreProyectil() const override {
         return "assets/menu_imagenes/TizaVoladora.png";
     }
-    float getVelocidadProyectil() const override { return 50.0f; }
+    float getVelocidadProyectil() const override { return 0.5f; }
 };
 
 class Microprocesador_T : public Volador {

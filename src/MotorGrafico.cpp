@@ -237,6 +237,8 @@ void MotorGrafico::dibujarArena() {
     dibujarFondoArena();
     dibujarPersonajesArena(local, invasor);
     dibujarBarrasHP(local, invasor);
+
+    arena->dibujarProyectiles();
 }
 
 void MotorGrafico::dibujarFondoArena() {

@@ -10,6 +10,16 @@ Personaje::Personaje(std::string nombre_, int vida_,
     turno(turno_), movimiento(movimiento_), arma(arma_), casilla_actual(&casillaInicial)
 {
 	casilla_actual->setPersonaje(this);  // El personaje ocupa la casilla inicial
+
+    // Orientación inicial automática por bando 
+    if (turno == Turno::TURNO_DE_MANANA) {
+        mirando_derecha = true;
+        mirando_izquierda = false;
+    }
+    else {
+        mirando_derecha = false;
+        mirando_izquierda = true;
+    }
 }  
 
 void Personaje::setCasillaActual(Casilla* c) {
