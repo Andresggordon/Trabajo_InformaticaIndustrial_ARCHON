@@ -40,7 +40,13 @@ void reshape(int w, int h) {
 }
 
 void display() {
+
     glClear(GL_COLOR_BUFFER_BIT);
+
+    // Forzar pixel art nítido en todas las texturas
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
     if (estado == Modos_juego::Pantalla_carga)
         pantalla_carga->dibuja();
     else if (estado == Modos_juego::MENU)
@@ -189,6 +195,7 @@ int main(int argc, char** argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(1000, 1000);
     glutCreateWindow("ARCHON");
+    //glutFullScreen(); // automaticamente pantalla completa
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(-400, 400, -400, 400);

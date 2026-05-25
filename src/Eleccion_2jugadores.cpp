@@ -4,8 +4,8 @@
 #include "Partida.h"
 
 Eleccion_2jugadores::Eleccion_2jugadores() {
-    fondo = new ETSIDI::Sprite("assets/menu_imagenes/eleccion2jugador.png", 0, 0, 600, 600);
-    back = new ETSIDI::Sprite("assets/menu_imagenes/back.png", 0, 0, 600, 600);
+    fondo = new ETSIDI::Sprite("assets/menu_imagenes/eleccion2jugador.png", 0, 0, 800, 800);
+    back = new ETSIDI::Sprite("assets/menu_imagenes/back.png", 0, 0, 800, 800);
     boton_activo = 0;
 }
 
@@ -43,11 +43,13 @@ Modos_juego Eleccion_2jugadores::click(int x, int y) {
     float cx = ((x - offsetX) / (float)tam) * 800 - 400;
     float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
-    if (cx >= 225 && cx <= 275 && cy >= -265 && cy <= -235) {
+
+
+    if (x >= 297 && cx <= 386 && cy >= -352 && cy <= -328) {
         ETSIDI::play("assets/sonidos/click.mp3");
         return Modos_juego::MENU;  // back
     }
-    else if (cx >= -239 && cx <= -51 && cy >= -73 && cy <= 100) {
+    else if (cx >= -317 && cx <= -62 && cy >= -104 && cy <= 134) {
         ETSIDI::play("assets/sonidos/click.mp3");
         equipo_j1 = 1;  // j1 = mañana
         equipo_j2 = 2;  // j2 = tarde
@@ -55,7 +57,7 @@ Modos_juego Eleccion_2jugadores::click(int x, int y) {
         modo_juego = 2;
         return Modos_juego::Partida;
     }
-    else if (cx >= 54 && cx <= 240 && cy >= -73 && cy <= 100) {
+    else if (cx >= 69 && cx <= 328 && cy >= -104 && cy <= 134) {
         ETSIDI::play("assets/sonidos/click.mp3");
         equipo_j1 = 2;  // j1 = tarde
         equipo_j2 = 1;  // j2 = mañana

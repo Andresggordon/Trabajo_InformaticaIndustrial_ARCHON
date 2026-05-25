@@ -2,7 +2,7 @@
 #include <GL/freeglut.h>
 
 Pantalla_carga::Pantalla_carga() {
-    fondo_carga = new ETSIDI::Sprite("assets/menu_imagenes/fondo_carga.png", 0, 0, 600, 600);
+    fondo_carga = new ETSIDI::Sprite("assets/menu_imagenes/fondo_carga.png", 0, 0, 800, 800);
     logo1 = new ETSIDI::Sprite("assets/menu_imagenes/logo.png", -350, 50, 150, 150);
     logo2 = new ETSIDI::Sprite("assets/menu_imagenes/logo.png", 350, 50, 150, 150);
     esperando_enter = true;

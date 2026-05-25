@@ -4,8 +4,8 @@
 
 PantallaFinal::PantallaFinal() {
     // Reutilizamos el fondo2 del ranking (mismo estilo visual)
-    fondo      = new ETSIDI::Sprite("assets/menu_imagenes/fondo2.png", 0, 0, 600, 600);
-    boton_menu = new ETSIDI::Sprite("assets/menu_imagenes/back.png",   0, 0, 600, 600);
+    fondo      = new ETSIDI::Sprite("assets/menu_imagenes/fondo2.png", 0, 0, 800, 800);
+    boton_menu = new ETSIDI::Sprite("assets/menu_imagenes/back.png",   0, 0, 800, 800);
 
     resultado        = ResultadoPartida::VICTORIA_MANANA;
     puntuacion_final = 0;
