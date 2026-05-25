@@ -5,7 +5,7 @@ project(TRABAJO_ARCHON)
 # 3. Configuración del estándar de C++
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-# 4. Escaneo automático de fuentes
+# 4. Escaneo automático de fuentes (incluye FinPartida, IAJugador, etc.)
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 file(GLOB_RECURSE HEADERS "src/*.h")
 # 5. Rutas de cabeceras (.h)

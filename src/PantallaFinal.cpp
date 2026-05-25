@@ -3,14 +3,15 @@
 #include <string>
 
 PantallaFinal::PantallaFinal() {
-    // Reutilizamos el fondo2 del ranking (mismo estilo visual)
     fondo      = new ETSIDI::Sprite("assets/menu_imagenes/fondo2.png", 0, 0, 600, 600);
     boton_menu = new ETSIDI::Sprite("assets/menu_imagenes/back.png",   0, 0, 600, 600);
+    creditos_  = new ETSIDI::Sprite("assets/menu_imagenes/pantalla_final.png", 0, 0, 600, 600);
 
     resultado        = ResultadoPartida::VICTORIA_MANANA;
     puntuacion_final = 0;
     nombre_ganador   = "Jugador";
     boton_activo     = 0;
+    tiempoInicio_    = 0;
 }
 
 void PantallaFinal::setResultado(ResultadoPartida r, int puntuacion,
@@ -18,83 +19,82 @@ void PantallaFinal::setResultado(ResultadoPartida r, int puntuacion,
     resultado        = r;
     puntuacion_final = puntuacion;
     nombre_ganador   = nombre;
+    tiempoInicio_    = glutGet(GLUT_ELAPSED_TIME);  // arranca el temporizador
 }
 
-// ── Texto normal (Helvetica 18) ─────────────────────────────────────────────
-void PantallaFinal::dibujarTexto(const std::string& texto, float x, float y,
-                                  float r, float g, float b) {
-    // Guardamos el estado de OpenGL igual que en Tablero_vista
+// ── Dibuja texto centrado horizontalmente en x=0 a la altura y ───────────────
+// Calcula el ancho real del texto con el font dado para que quede centrado.
+void PantallaFinal::dibujarTextoCentrado(const std::string& texto, void* font,
+                                          float y, float r, float g, float b) {
+    int ancho = 0;
+    for (char c : texto) ancho += glutBitmapWidth(font, c);
+
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
     glColor3f(r, g, b);
-    glRasterPos2f(x, y);
+    glRasterPos2f(-ancho / 2.0f, y);
     for (char c : texto)
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c);
-    glPopAttrib();
-}
-
-// ── Texto grande para el titulo (Times Roman 24) ─────────────────────────────
-void PantallaFinal::dibujarTextoGrande(const std::string& texto, float x, float y,
-                                        float r, float g, float b) {
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_BLEND);
-    glColor3f(r, g, b);
-    glRasterPos2f(x, y);
-    for (char c : texto)
-        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, c);
+        glutBitmapCharacter(font, c);
     glPopAttrib();
 }
 
 void PantallaFinal::dibuja() {
+    // ── Fase "creditos": tras 10s sustituye la pantalla por la imagen.
+    //    El boton BACK sigue encima para poder salir al menu cuando se quiera.
+    int ahora = glutGet(GLUT_ELAPSED_TIME);
+    bool enCreditos = (tiempoInicio_ > 0)
+                    && (ahora - tiempoInicio_ >= TIEMPO_PARA_CREDITOS);
+    if (enCreditos) {
+        creditos_->draw();
+        boton_menu->draw();
+        return;
+    }
+
+    // ── Fase normal: ganador + puntuacion dentro del marco ───────────────────
     fondo->draw();
     boton_menu->draw();
 
-    // ── Linea decorativa superior ──────────────────────────────────────────
+    // Linea decorativa superior (encajada dentro del marco interno)
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
     glColor3f(1.0f, 0.85f, 0.0f);
     glLineWidth(2.0f);
     glBegin(GL_LINES);
-    glVertex2f(-200, 175); glVertex2f(200, 175);
+    glVertex2f(-150, 75); glVertex2f(150, 75);
     glEnd();
     glPopAttrib();
 
-    // ── Titulo: quien ha ganado ────────────────────────────────────────────
+    // Titulo: quien ha ganado (Helvetica 18, mas compacto que antes)
     if (resultado == ResultadoPartida::VICTORIA_MANANA) {
-        dibujarTextoGrande("TURNO DE MANANA GANA!",
-                           -165, 130, 1.0f, 0.85f, 0.0f); // amarillo
+        dibujarTextoCentrado("TURNO DE MANANA GANA!", GLUT_BITMAP_HELVETICA_18,
+                             50, 1.0f, 0.85f, 0.0f);  // amarillo
     } else {
-        dibujarTextoGrande("TURNO DE TARDE GANA!",
-                           -155, 130, 0.3f, 0.6f, 1.0f);  // azul claro
+        dibujarTextoCentrado("TURNO DE TARDE GANA!",  GLUT_BITMAP_HELVETICA_18,
+                             50, 0.3f, 0.6f, 1.0f);   // azul claro
     }
 
-    // ── Nombre del ganador ─────────────────────────────────────────────────
-    dibujarTexto("Ganador:  " + nombre_ganador,
-                 -100, 70, 1.0f, 1.0f, 1.0f);
+    // Nombre del ganador y puntuacion (Helvetica 12, fino y centrado)
+    dibujarTextoCentrado("Ganador:  " + nombre_ganador,
+                         GLUT_BITMAP_HELVETICA_12, 15, 1.0f, 1.0f, 1.0f);
+    dibujarTextoCentrado("Puntuacion:  " + std::to_string(puntuacion_final),
+                         GLUT_BITMAP_HELVETICA_12, -10, 1.0f, 1.0f, 0.2f);
 
-    // ── Puntuacion ─────────────────────────────────────────────────────────
-    dibujarTexto("Puntuacion:  " + std::to_string(puntuacion_final),
-                 -100, 30, 1.0f, 1.0f, 0.2f);
+    // Explicacion e instruccion del boton (Helvetica 10, mas pequeno)
+    dibujarTextoCentrado("La puntuacion depende de piezas vivas y velocidad",
+                         GLUT_BITMAP_HELVETICA_10, -45, 0.6f, 0.6f, 0.6f);
+    dibujarTextoCentrado("Pulsa BACK para volver al menu",
+                         GLUT_BITMAP_HELVETICA_10, -80, 0.5f, 0.5f, 0.5f);
 
-    // ── Instruccion como ganar puntos para que el jugador entienda ─────────
-    dibujarTexto("La puntuacion depende de piezas vivas y velocidad",
-                 -195, -30, 0.6f, 0.6f, 0.6f);
-
-    // ── Instruccion boton ──────────────────────────────────────────────────
-    dibujarTexto("Pulsa BACK para volver al menu",
-                 -120, -80, 0.5f, 0.5f, 0.5f);
-
-    // ── Linea decorativa inferior ──────────────────────────────────────────
+    // Linea decorativa inferior (tambien dentro del marco)
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
     glColor3f(0.4f, 0.4f, 0.4f);
     glLineWidth(1.0f);
     glBegin(GL_LINES);
-    glVertex2f(-200, -110); glVertex2f(200, -110);
+    glVertex2f(-150, -105); glVertex2f(150, -105);
     glEnd();
     glPopAttrib();
 }

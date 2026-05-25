@@ -59,6 +59,10 @@ public:
     bool        getInmovilizado()    const { return turnos_inmovilizado > 0; }
     Movimiento  getMovimiento()      const;
     Turno       getTurno()           const { return turno; }
+    bool        estaEncarcelado()    const { return encarcelado; }
+
+    // Setters
+    /*void setPosicion(int x_, int y_);*/
 
     void setCasillaActual(Casilla* c);
     void setVida(int v) { vida_actual = v; }

@@ -21,6 +21,16 @@ void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo
 	invasor_ = invasor;
 	modo_ = modo;
 
+	// En modo 1, averiguar cual de los dos personajes lleva el humano para que
+	// WASD y disparo se apliquen siempre a SU pieza (sea ella defensor o atacante).
+	if (modo_ == 1) {
+		Turno bandoHumano = (equipo_j1 == 1) ? Turno::TURNO_DE_MANANA
+		                                     : Turno::TURNO_DE_TARDE;
+		humanoControlaLocal_ = (local_ != nullptr && local_->getTurno() == bandoHumano);
+	} else {
+		humanoControlaLocal_ = false; // no se usa en modo 2 jugadores
+	}
+
 	posLocal_ = { 5,2 };
 	posInvasor_ = { 5,8 };
 
@@ -139,12 +149,21 @@ void ArenaCombate::teclado(unsigned char key)
 		}
 		break;
 
-		// Ataque jugador 1 (espacio) — funciona en modo 1 y 2
+		// Ataque jugador 1 (espacio) — funciona en modo 1 y 2.
+		// En modo 1 ataca con la pieza del humano (que puede ser local_ o
+		// invasor_ segun quien inicio el choque). Se usa el cooldown del bando
+		// correspondiente para que la cadencia sea coherente.
 	case 32: {
 		int ahora = glutGet(GLUT_ELAPSED_TIME);
-		if (ahora - tiempoUltimoAtaqueLocal_ >= COOLDOWN_ATAQUE) {
-			aplicarAtaque(local_, invasor_);
-			tiempoUltimoAtaqueLocal_ = ahora;
+		bool humanoEsInvasor = (modo_ == 1 && !humanoControlaLocal_);
+		int& timerHumano = humanoEsInvasor ? tiempoUltimoAtaqueInvasor_
+		                                   : tiempoUltimoAtaqueLocal_;
+		if (ahora - timerHumano >= COOLDOWN_ATAQUE) {
+			if (humanoEsInvasor)
+				aplicarAtaque(invasor_, local_);
+			else
+				aplicarAtaque(local_, invasor_);
+			timerHumano = ahora;
 		}
 		break;
 	}
