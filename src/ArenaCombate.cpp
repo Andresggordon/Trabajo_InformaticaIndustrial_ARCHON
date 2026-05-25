@@ -34,6 +34,30 @@ void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo
 	posLocal_ = { 5,2 };
 	posInvasor_ = { 5,8 };
 
+	// Inicializar en la arena a cada turno siempre en su respectivo lado
+	if (local_->getTurno() == Turno::TURNO_DE_MANANA) {
+		posLocal_ = { 5, 2 };   
+		posInvasor_ = { 5, 8 }; 
+
+		local_->setMirandoDerecha(true);
+		local_->setMirandoIzquierda(false);
+		if (invasor_) {
+			invasor_->setMirandoDerecha(false);
+			invasor_->setMirandoIzquierda(true);
+		}
+	}
+	else {
+		posLocal_ = { 5, 8 };   
+		posInvasor_ = { 5, 2 }; 
+
+		local_->setMirandoDerecha(false);
+		local_->setMirandoIzquierda(true);
+		if (invasor_) {
+			invasor_->setMirandoDerecha(true);
+			invasor_->setMirandoIzquierda(false);
+		}
+	}
+
 	combateTerminado_ = false;
 	resultado_ = ResultadoCombate::Gana_Local;
 
@@ -112,9 +136,17 @@ void ArenaCombate::teclado(unsigned char key)
 		break;
 	case 'a':
 		teclaA = true;
+		if (local_) {
+			local_->setMirandoDerecha(false);
+			local_->setMirandoIzquierda(true);
+		}
 		break;
 	case 'd':
 		teclaD = true;
+		if (local_) {
+			local_->setMirandoDerecha(true);
+			local_->setMirandoIzquierda(false);
+		}
 		break;
 
 		// Ataque jugador 1 (espacio) — funciona en modo 1 y 2.
@@ -159,10 +191,27 @@ void ArenaCombate::tecladoEspecial(int key)
 
 	switch (key)
 	{
-	case GLUT_KEY_UP:    teclaArriba = true; break;
-	case GLUT_KEY_DOWN:  teclaAbajo = true; break;
-	case GLUT_KEY_LEFT:  teclaIzquierda = true; break;
-	case GLUT_KEY_RIGHT: teclaDerecha = true; break;
+	case GLUT_KEY_UP:    teclaArriba = true;
+		break;
+
+	case GLUT_KEY_DOWN:  teclaAbajo = true;
+		break;
+
+	case GLUT_KEY_LEFT:  
+		teclaIzquierda = true;
+		if (invasor_) {
+			invasor_->setMirandoDerecha(false);
+			invasor_->setMirandoIzquierda(true);
+		}
+		break;
+
+	case GLUT_KEY_RIGHT:
+		teclaDerecha = true; 
+		if (invasor_) {
+			invasor_->setMirandoDerecha(true);
+			invasor_->setMirandoIzquierda(false);
+		}
+		break;
 	}
 }
 
@@ -289,12 +338,12 @@ void ArenaCombate::aplicarAtaque(Personaje* atacante, Personaje* defensor) {
 	if (atacante == nullptr || defensor == nullptr) return;
 	if (combateTerminado_) return;
 
-	int distFila = abs(posLocal_.fila - posInvasor_.fila);
+	/*int distFila = abs(posLocal_.fila - posInvasor_.fila);
 	int distCol = abs(posLocal_.columna - posInvasor_.columna);
 	int distancia = max(distFila, distCol);
 
 	int alcance = atacante->getArma().getAlcance();
-	if (distancia > alcance) return;
+	if (distancia > alcance) return;*/
 
 	bool esLocal = (atacante == local_);
 	float ox = arenaToX(esLocal ? posLocal_.columna : posInvasor_.columna);
@@ -314,139 +363,150 @@ void ArenaCombate::aplicarAtaque(Personaje* atacante, Personaje* defensor) {
 }
 
 void ArenaCombate::actualizar() {
-
+	// 1. Lógica de pausa
 	if (mostrandoCartel_) {
 		if (glutGet(GLUT_ELAPSED_TIME) - tiempoCartel_ >= DURACION_CARTEL)
 			mostrandoCartel_ = false;
-		return;  // mientras se muestra el cartel, no actualizar el combate
+		return;
 	}
-
 	if (combateTerminado_) return;
+
+	// 2. Sincronización de Animaciones (Estados)
+	if (local_ != nullptr) {
+		bool moviendo_local = (teclaW || teclaS || teclaA || teclaD);
+		local_->setEnMovimiento(moviendo_local);
+	}
+	if (invasor_ != nullptr) {
+		if (modo_ == 2) {
+			bool moviendo_invasor = (teclaArriba || teclaAbajo || teclaIzquierda || teclaDerecha);
+			invasor_->setEnMovimiento(moviendo_invasor);
+		}
+	}
 
 	int ahora = glutGet(GLUT_ELAPSED_TIME);
 
-	if (ahora - tiempoUltimoMovimiento_ >= INTERVALO_MOVIMIENTO) {
-		// En modo 1, las WASD mueven la pieza del humano (puede ser
-		// local_ o invasor_ segun quien inicio el choque). En modo 2,
-		// siempre mueven a posLocal_ (jugador 1).
-		PosArena& posJugadorWASD =
-			(modo_ == 1 && !humanoControlaLocal_) ? posInvasor_ : posLocal_;
+	// 3. Movimiento de Proyectiles (Siempre se actualizan)
+	for (auto p : proyectiles_)
+		p->actualizar();
 
-		if (teclaW) moverEnArena(posJugadorWASD, 1, 0);
-		if (teclaS) moverEnArena(posJugadorWASD, -1, 0);
-		if (teclaA) moverEnArena(posJugadorWASD, 0, -1);
-		if (teclaD) moverEnArena(posJugadorWASD, 0, 1);
+	// 4. Colisiones (Aquí está la magia)
+	float xLocal = arenaToX(posLocal_.columna);
+	float yLocal = arenaToY(posLocal_.fila);
+	float xInvasor = arenaToX(posInvasor_.columna);
+	float yInvasor = arenaToY(posInvasor_.fila);
 
-		if (modo_ == 2) {
-			if (teclaArriba)    moverEnArena(posInvasor_, 1, 0);
-			if (teclaAbajo)     moverEnArena(posInvasor_, -1, 0);
-			if (teclaIzquierda) moverEnArena(posInvasor_, 0, -1);
-			if (teclaDerecha)   moverEnArena(posInvasor_, 0, 1);
+	// Calculamos distancia una vez para no repetir código
+	int distFila = abs(posLocal_.fila - posInvasor_.fila);
+	int distCol = abs(posLocal_.columna - posInvasor_.columna);
+	int distancia = max(distFila, distCol);
 
-			tiempoUltimoMovimiento_ = ahora;
-		}
-		// Actualizar proyectiles
-		for (auto p : proyectiles_)
-			p->actualizar();
-
-		float xLocal = arenaToX(posLocal_.columna);
-		float yLocal = arenaToY(posLocal_.fila);
-		float xInvasor = arenaToX(posInvasor_.columna);
-		float yInvasor = arenaToY(posInvasor_.fila);
-
-
-		// Detectar impactos y aplicar daño
-		for (auto p : proyectiles_) {
-
-			// Proyectil del local → colisiona con invasor
-			if (p->esDeLocal() && p->ColisionaCon(xInvasor, yInvasor,60.0f)) {
-				p->marcarLlegado();
+	for (auto p : proyectiles_) {
+		// Impacto LOCAL -> INVASOR
+		if (p->esDeLocal() && p->ColisionaCon(xInvasor, yInvasor, 60.0f)) {
+			p->marcarLlegado();
+			if (distancia <= local_->getArma().getAlcance()) {
 				if (invasor_ != nullptr && invasor_->estaVivo()) {
 					invasor_->recibirDano(p->getDano());
 					if (!invasor_->estaVivo()) resolverResultado();
 				}
 			}
-			// Proyectil del invasor → colisiona con local
-			else if (!p->esDeLocal() && p->ColisionaCon(xLocal, yLocal,60.0f)) {
-				p->marcarLlegado();
+		}
+		// Impacto INVASOR -> LOCAL
+		else if (!p->esDeLocal() && p->ColisionaCon(xLocal, yLocal, 60.0f)) {
+			p->marcarLlegado();
+			if (distancia <= invasor_->getArma().getAlcance()) {
 				if (local_ != nullptr && local_->estaVivo()) {
 					local_->recibirDano(p->getDano());
 					if (!local_->estaVivo()) resolverResultado();
 				}
 			}
 		}
-
-		// Eliminar proyectiles que han llegado
-		for (auto it = proyectiles_.begin(); it != proyectiles_.end();) {
-			if ((*it)->haLlegado()) {
-				delete* it;
-				it = proyectiles_.erase(it);
-			}
-			else {
-				++it;
-			}
-		}
-
-		// En modo 1 jugador la maquina controla al invasor_.
-		if (modo_ == 1) moverMaquina();
 	}
 
+	// 5. Limpieza de proyectiles
+	for (auto it = proyectiles_.begin(); it != proyectiles_.end();) {
+		if ((*it)->haLlegado()) { delete* it; it = proyectiles_.erase(it); }
+		else { ++it; }
+	}
+
+	// 6. Movimiento de personajes (con cooldown)
+	if (ahora - tiempoUltimoMovimiento_ >= INTERVALO_MOVIMIENTO) {
+		if (teclaW && moverEnArena(posLocal_, 1, 0))  local_->incrementarPasos();
+		if (teclaS && moverEnArena(posLocal_, -1, 0)) local_->incrementarPasos();
+		if (teclaA && moverEnArena(posLocal_, 0, -1)) local_->incrementarPasos();
+		if (teclaD && moverEnArena(posLocal_, 0, 1))  local_->incrementarPasos();
+
+		if (modo_ == 2) {
+			if (teclaArriba && moverEnArena(posInvasor_, 1, 0))    invasor_->incrementarPasos();
+			if (teclaAbajo && moverEnArena(posInvasor_, -1, 0))    invasor_->incrementarPasos();
+			if (teclaIzquierda && moverEnArena(posInvasor_, 0, -1)) invasor_->incrementarPasos();
+			if (teclaDerecha && moverEnArena(posInvasor_, 0, 1))   invasor_->incrementarPasos();
+		}
+		tiempoUltimoMovimiento_ = ahora;
+	}
 }
 
-	
-
-
-
 void ArenaCombate::moverMaquina() {
-	// Estrategia: la pieza de la IA es un tirador.
-	//   - Si tiene al humano a tiro -> dispara con el mismo cooldown que
-	//     el jugador (combate justo).
-	//   - Si esta a tiro, NO se acerca mas: mantiene posicion.
-	//   - Si esta fuera de rango -> da un paso hacia el humano.
-	// La IA puede ser local_ O invasor_ segun quien inicio el choque (ver
-	// humanoControlaLocal_), por eso resolvemos los datos con referencias.
+	// La maquina (invasor_) persigue al jugador (local_) y le ataca cuando
+	// lo tiene a tiro. Solo se llama en modo 1 jugador: no afecta al modo 2.
 	if (combateTerminado_) return;
 	if (invasor_ == nullptr || local_ == nullptr) return;
 
-	// Si el humano es local_, la IA es invasor_. Y al reves.
-	Personaje* piezaIA       = humanoControlaLocal_ ? invasor_ : local_;
-	Personaje* piezaHumano   = humanoControlaLocal_ ? local_   : invasor_;
-	PosArena&  posIA         = humanoControlaLocal_ ? posInvasor_ : posLocal_;
-	PosArena&  posHumano     = humanoControlaLocal_ ? posLocal_   : posInvasor_;
-	int&       tiempoAtaqueIA = humanoControlaLocal_ ? tiempoUltimoAtaqueInvasor_
-	                                                : tiempoUltimoAtaqueLocal_;
-
 	int ahora = glutGet(GLUT_ELAPSED_TIME);
 
-	int distFila = abs(posHumano.fila - posIA.fila);
-	int distCol  = abs(posHumano.columna - posIA.columna);
+	int distFila = abs(posLocal_.fila - posInvasor_.fila);
+	int distCol = abs(posLocal_.columna - posInvasor_.columna);
 	int distancia = max(distFila, distCol);
-	int alcance = piezaIA->getArma().getAlcance();
+	int alcance = invasor_->getArma().getAlcance();
 
-	// ── ATAQUE: si esta a tiro, disparar con el mismo cooldown que el jugador.
+	// 1. Si esta a tiro, atacar con su propia cadencia.
 	if (distancia <= alcance) {
-		if (ahora - tiempoAtaqueIA >= COOLDOWN_ATAQUE) {
-			aplicarAtaque(piezaIA, piezaHumano);
-			tiempoAtaqueIA = ahora;
+		if (ahora - tiempoUltimoAtaqueInvasor_ >= INTERVALO_ATAQUE_IA) {
+			aplicarAtaque(invasor_, local_);
+			tiempoUltimoAtaqueInvasor_ = ahora;
 		}
-		return; // en rango: mantener posicion (no perseguir mas)
+		return;
 	}
 
-	// ── MOVIMIENTO: fuera de rango, acercarse un paso (con cadencia propia).
-	if (ahora - tiempoUltimoMovimientoIA_ < INTERVALO_MOVIMIENTO_IA) return;
+	// 2. Si esta lejos, un paso hacia el jugador con su propia cadencia.
+	if (ahora - tiempoUltimoMovimientoIA_ >= INTERVALO_MOVIMIENTO_IA) {
+		int df = 0, dc = 0;
+		if (posInvasor_.fila < posLocal_.fila) df = 1;
+		else if (posInvasor_.fila > posLocal_.fila) df = -1;
 
-	int df = 0, dc = 0;
-	if (posIA.fila < posHumano.fila) df = 1;
-	else if (posIA.fila > posHumano.fila) df = -1;
-	if (posIA.columna < posHumano.columna) dc = 1;
-	else if (posIA.columna > posHumano.columna) dc = -1;
+		
+		if (posInvasor_.columna < posLocal_.columna) {
+			dc = 1;
+			if (invasor_) {
+				invasor_->setMirandoDerecha(true);
+				invasor_->setMirandoIzquierda(false);
+			}
+		}
+		else if (posInvasor_.columna > posLocal_.columna) {
+			dc = -1;
+			if (invasor_) {
+				invasor_->setMirandoDerecha(false);
+				invasor_->setMirandoIzquierda(true);
+			}
+		}
 
-	// Intentar la diagonal; si esa celda esta bloqueada, probar por ejes.
-	if (!moverEnArena(posIA, df, dc)) {
-		if (df != 0) moverEnArena(posIA, df, 0);
-		else if (dc != 0) moverEnArena(posIA, 0, dc);
+		
+		
+			if (!moverEnArena(posInvasor_, df, dc)) {
+				if (df != 0) {
+					if (moverEnArena(posInvasor_, df, 0)) invasor_->incrementarPasos();
+				}
+				else if (dc != 0) {
+					if (moverEnArena(posInvasor_, 0, dc)) invasor_->incrementarPasos();
+				}
+			}
+			else {
+				// Si logró moverse en diagonal o directamente
+				invasor_->incrementarPasos();
+			}
+			tiempoUltimoMovimientoIA_ = ahora;
+		
 	}
-	tiempoUltimoMovimientoIA_ = ahora;
 }
 
 void ArenaCombate::teclaLevantada(unsigned char key) {
