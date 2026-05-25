@@ -6,12 +6,14 @@
 #include "ArenaCombate.h"
 #include "Finpartida.h"
 #include "PantallaFinal.h"
+#include "ranking.h"
 #include "Geometria.h"
 #include <iostream>
 #include <string>
 
 extern ArenaCombate* arena;
 extern PantallaFinal* pantalla_final;
+extern Ranking* ranking;
 
 Partida::Partida() {
     fondo = new ETSIDI::Sprite("assets/menu_imagenes/fondo_partida.png", 0, 0, 800, 800);
@@ -402,6 +404,10 @@ Modos_juego Partida::comprobarFinPartida() {
 
     if (pantalla_final != nullptr)
         pantalla_final->setResultado(res, puntuacion, nombre);
+
+    // Persistir la puntuacion en el ranking (se guarda al fichero solo).
+    if (ranking != nullptr)
+        ranking->agregar(nombre, puntuacion);
 
     ETSIDI::stopMusica();
     ETSIDI::playMusica("assets/sonidos/menu.mp3", true);
