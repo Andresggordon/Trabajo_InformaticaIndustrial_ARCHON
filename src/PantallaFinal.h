@@ -10,14 +10,17 @@ enum class ResultadoPartida {
 };
 
 // ============================================================
-//  Clase PantallaFinal 
-//  Muestra quien ha ganado, la puntuacion obtenida,
-//  y permite volver al menu principal.
+//  Clase PantallaFinal
+//  Muestra quien ha ganado, la puntuacion obtenida, y permite
+//  volver al menu principal.
+//
+//  Tras TIEMPO_PARA_CREDITOS ms, sustituye automaticamente la
+//  pantalla por una imagen de "creditos" (disenada por Esther).
+//  El boton BACK sigue visible y funcional en ambas fases.
 //
 //  USO desde Partida:
 //    1. pantalla_final->setResultado(r, puntuacion, nombre);
 //    2. Cambiar estado a Modos_juego::Pantalla_Final
-//    3. ranking->agregarPuntuacion(nombre, puntuacion);  <- guardar en fichero
 // ============================================================
 class PantallaFinal {
 public:
@@ -26,7 +29,8 @@ public:
     void update(int x, int y);
     Modos_juego click(int x, int y);
 
-    // Llamar desde Partida justo antes de cambiar al estado Pantalla_Final
+    // Llamar desde Partida justo antes de cambiar al estado Pantalla_Final.
+    // Tambien arranca el temporizador de la fase de creditos.
     void setResultado(ResultadoPartida r, int puntuacion, const std::string& nombre_ganador);
 
     // Getters para que main.cpp pueda guardar la partida en el ranking
@@ -36,15 +40,18 @@ public:
 private:
     ETSIDI::Sprite* fondo;
     ETSIDI::Sprite* boton_menu;
+    ETSIDI::Sprite* creditos_;   // Imagen mostrada tras TIEMPO_PARA_CREDITOS
 
     ResultadoPartida resultado;
     int              puntuacion_final;
     std::string      nombre_ganador;
     int              boton_activo;
+    int              tiempoInicio_;   // ms en que se mostro la pantalla
 
-    // Renderiza texto en las coordenadas del sistema OpenGL (-400 a 400)
-    void dibujarTexto(const std::string& texto, float x, float y,
-                      float r, float g, float b);
-    void dibujarTextoGrande(const std::string& texto, float x, float y,
-                             float r, float g, float b);
+    static const int TIEMPO_PARA_CREDITOS = 10000;  // 10 segundos
+
+    // Dibuja un texto centrado en x=0 a la altura y, con el font GLUT dado.
+    // Usar GLUT_BITMAP_HELVETICA_10/12/18 o similares.
+    void dibujarTextoCentrado(const std::string& texto, void* font, float y,
+                               float r, float g, float b);
 };

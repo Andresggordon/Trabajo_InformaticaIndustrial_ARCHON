@@ -4,10 +4,16 @@
 #include "tipo_personaje.h"
 #include "Modos_juego.h"
 #include "ArenaCombate.h"
+#include "Finpartida.h"
+#include "PantallaFinal.h"
+#include "ranking.h"
 #include "Geometria.h"
+#include <iostream>
 #include <string>
 
 extern ArenaCombate* arena;
+extern PantallaFinal* pantalla_final;
+extern Ranking* ranking;
 
 Partida::Partida() {
     fondo = new ETSIDI::Sprite("assets/menu_imagenes/fondo_partida.png", 0, 0, 800, 800);
@@ -87,7 +93,7 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
         if (menu) menu->activarHabilidad(0, personaje_seleccionado, nullptr, &casilla);
         if (menu && !menu->puedeUsar(0)) turno_actual = 1 - turno_actual;
         modo_teleport = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
-        return Modos_juego::Partida;
+        return comprobarFinPartida();
     }
 
     if (modo_inmovilizar) {
@@ -96,8 +102,9 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
             bool ejecutado = menu->activarHabilidad(2, personaje_seleccionado, obj, nullptr);
             if (ejecutado) turno_actual = 1 - turno_actual;
         }
-        modo_inmovilizar = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
-        return Modos_juego::Partida;
+        modo_inmovilizar = false; personaje_seleccionado = nullptr;
+        es_lider_seleccionado = false; casillas_iluminadas.clear();
+        return comprobarFinPartida();
     }
 
         if (modo_revivir) {
@@ -190,6 +197,9 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
         if (res == ResultadoMover::OK) {
             turno_actual = 1 - turno_actual;
             decrementarEstados();
+
+            Modos_juego fin = comprobarFinPartida();
+            if (fin != Modos_juego::Partida) return fin;
         }
         else if (res == ResultadoMover::CHOQUE) {
             Personaje* defensor = tab_.getPendienteLocal();
@@ -232,7 +242,25 @@ Modos_juego Partida::turnoMaquina() {
     // equipo_j2 = bando de la IA (1 = mañana, 2 = tarde).
     // turno_actual usa otra codificacion (0 = mañana, 1 = tarde).
     int idxTurnoIA = equipo_j2 - 1;
-    if (turno_actual != idxTurnoIA) return Modos_juego::Partida;
+    if (turno_actual != idxTurnoIA) {
+        ia_pensando_ = false;   // ha vuelto el turno al humano: reset
+        return Modos_juego::Partida;
+    }
+
+    // Retardo de "pensamiento": el jugador necesita ver el tablero antes
+    // de que la maquina mueva. Sin esto la IA mueve al instante y resulta confuso.
+    int ahora = glutGet(GLUT_ELAPSED_TIME);
+    const int INTERVALO_PENSAMIENTO_IA = 1200; // ms
+    if (!ia_pensando_) {
+        ia_pensando_ = true;
+        ia_tiempoInicioTurno_ = ahora;
+        return Modos_juego::Partida;            // primer tick: empieza a "pensar"
+    }
+    if (ahora - ia_tiempoInicioTurno_ < INTERVALO_PENSAMIENTO_IA)
+        return Modos_juego::Partida;            // todavia pensando
+
+    // Ya paso el tiempo de espera: la maquina juega.
+    ia_pensando_ = false;
 
     Turno turnoIA = (equipo_j2 == 1) ? Turno::TURNO_DE_MANANA
         : Turno::TURNO_DE_TARDE;
@@ -259,6 +287,9 @@ Modos_juego Partida::turnoMaquina() {
     if (res == ResultadoMover::OK) {
         turno_actual = 1 - turno_actual;
         decrementarEstados();
+
+        Modos_juego fin = comprobarFinPartida();
+        if (fin != Modos_juego::Partida) return fin;
     }
     else {
         // ILEGAL: la maquina no encontro jugada. Cede el turno para que la
@@ -307,6 +338,7 @@ void Partida::reset() {
     es_lider_seleccionado = false;
     modo_teleport = modo_inmovilizar = modo_revivir = false;
     modo_curar = modo_escudo = modo_inmunidad = false;
+    ia_pensando_ = false; ia_tiempoInicioTurno_ = 0;
     casillas_iluminadas.clear();
     delete carta_actual; carta_actual = nullptr;
     nombre_carta_cargada = "";
@@ -334,7 +366,52 @@ void Partida::reset() {
     personajes.push_back(new Gemini(tab_.getCasilla(5, 8)));
     for (int i = 1; i <= 7; i++) personajes.push_back(new Circuito_integrado_T(tab_.getCasilla(i, 7)));
 
-    for (auto p : personajes) dibujos.push_back(new DibujoPersonaje(p));
+    // Crear un DibujoPersonaje por cada personaje
+    for (auto p : personajes)
+        dibujos.push_back(new DibujoPersonaje(p));
+}
+
+// ============================================================
+//  Comprueba si la partida ha terminado.
+//  Devuelve el nuevo estado del juego:
+//    - Modos_juego::Partida  -> la partida sigue
+//    - Modos_juego::MENU     -> la partida termino
+// ============================================================
+Modos_juego Partida::comprobarFinPartida() {
+    CondicionVictoria r = FinPartida::comprobar(personajes, tab_);
+
+    if (!FinPartida::partidaTerminada(r))
+        return Modos_juego::Partida;
+
+    // ── DEBUG: imprimir en consola quien ha ganado ──────────────
+    bool ganaMan = FinPartida::ganaManana(r);
+    ResultadoPartida res = ganaMan ? ResultadoPartida::VICTORIA_MANANA
+                                   : ResultadoPartida::VICTORIA_TARDE;
+    Turno bandoGanador = ganaMan ? Turno::TURNO_DE_MANANA : Turno::TURNO_DE_TARDE;
+
+    // Puntuacion sencilla: piezas que le quedan en juego al ganador.
+    int piezas = 0;
+    for (auto* p : personajes)
+        if (p && p->estaVivo() && p->getCasillaActual() != nullptr
+            && p->getTurno() == bandoGanador)
+            piezas++;
+    int puntuacion = piezas * 100;
+    std::string nombre = ganaMan ? "Turno de Manana" : "Turno de Tarde";
+
+    std::cout << "[FIN PARTIDA] gana "
+              << (ganaMan ? "MANANA" : "TARDE")
+              << " (puntuacion " << puntuacion << ")\n";
+
+    if (pantalla_final != nullptr)
+        pantalla_final->setResultado(res, puntuacion, nombre);
+
+    // Persistir la puntuacion en el ranking (se guarda al fichero solo).
+    if (ranking != nullptr)
+        ranking->agregar(nombre, puntuacion);
+
+    ETSIDI::stopMusica();
+    ETSIDI::playMusica("assets/sonidos/menu.mp3", true);
+    return Modos_juego::Pantalla_Final;
 }
 
 void Partida::decrementarEstados() {

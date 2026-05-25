@@ -20,4 +20,6 @@ private:
     ETSIDI::Sprite* sprite;    // usado si frames == 1
     ETSIDI::SpriteSequence* anim;    // usado si frames > 1
 
+    //Para no resetear los frames y hacer la animación fluida de movimiento con las teclas
+    int fila_actual_anim = -1;
 };
