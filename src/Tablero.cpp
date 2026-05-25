@@ -110,3 +110,9 @@ void Tablero::resolverCombate(ResultadoCombate resultado) {
     // Las casillas DINÁMICAS evolucionan automáticamente tras cada combate
     avanzarCiclo();
 }
+
+void Tablero::reset() {
+    fase_actual = FaseCiclo::ATARDECER;
+    inicializarMatriz();
+    limpiarPendiente();
+}

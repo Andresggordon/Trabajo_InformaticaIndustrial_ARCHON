@@ -340,7 +340,7 @@ void Partida::reset() {
     casillas_iluminadas.clear();
     delete carta_actual; carta_actual = nullptr;
     nombre_carta_cargada = "";
-    tab_.limpiarPendiente();
+    tab_.reset();          
 
     for (auto p : personajes) delete p; for (auto d : dibujos) delete d;
     personajes.clear(); dibujos.clear();

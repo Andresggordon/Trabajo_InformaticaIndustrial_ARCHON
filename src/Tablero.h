@@ -23,7 +23,7 @@ public:
     ResultadoMover moverPersonaje(Personaje* p, Casilla& destino);
 
     void resolverCombate(ResultadoCombate resultado);
-
+    void reset();
 
     // Ahora devuelven el objeto Casilla directamente
     Casilla& getCasilla(int fila, int col);
