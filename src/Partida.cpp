@@ -107,28 +107,28 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
         return comprobarFinPartida();
     }
 
-        if (modo_revivir) {
-            if (menu) {
-                auto& listaMuertos = (personaje_seleccionado->getTurno() == Turno::TURNO_DE_MANANA)
-                    ? muertosAliados_manana : muertosAliados_tarde;
+    if (modo_revivir) {
+        if (menu) {
+            auto& listaMuertos = (personaje_seleccionado->getTurno() == Turno::TURNO_DE_MANANA)
+                ? muertosAliados_manana : muertosAliados_tarde;
 
-                if (!listaMuertos.empty()) {
-                    Personaje* ultimo = listaMuertos.back();
-                    listaMuertos.pop_back();
-                    ultimo->setVida(ultimo->getVidaMax() / 2);
-                    casilla.setPersonaje(ultimo);
-                    ultimo->setCasillaActual(&casilla);
-                    turno_actual = 1 - turno_actual;
-                    menu->activarHabilidad(1, personaje_seleccionado, nullptr, nullptr);
-                }
-                else {
-                    MotorGrafico::mensajeAviso = "No hay aliados muertos!";
-                    MotorGrafico::tiempoAviso = 2.0f;
-                }
+            if (!listaMuertos.empty()) {
+                Personaje* ultimo = listaMuertos.back();
+                listaMuertos.pop_back();
+                ultimo->setVida(ultimo->getVidaMax() / 2);
+                casilla.setPersonaje(ultimo);
+                ultimo->setCasillaActual(&casilla);
+                turno_actual = 1 - turno_actual;
+                menu->activarHabilidad(1, personaje_seleccionado, nullptr, nullptr);
             }
-            modo_revivir = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
-            return Modos_juego::Partida;
+            else {
+                MotorGrafico::mensajeAviso = "No hay aliados muertos!";
+                MotorGrafico::tiempoAviso = 2.0f;
+            }
         }
+        modo_revivir = false; personaje_seleccionado = nullptr; casillas_iluminadas.clear();
+        return Modos_juego::Partida;
+    }
 
     if (modo_curar) {
         Personaje* obj = casilla.getPersonaje();
@@ -183,13 +183,13 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
                 casillas_iluminadas = Geometria::getCasillasAccesibles(*p, tab_);
             }
             else {
-                MotorGrafico::mensajeAviso = "No es tu turno!";  
-                MotorGrafico::tiempoAviso = 2.0f;             
+                MotorGrafico::mensajeAviso = "No es tu turno!";
+                MotorGrafico::tiempoAviso = 2.0f;
             }
         }
         else {
-            MotorGrafico::mensajeAviso = "Eso no se puede hacer!"; 
-            MotorGrafico::tiempoAviso = 2.0f;                     
+            MotorGrafico::mensajeAviso = "Eso no se puede hacer!";
+            MotorGrafico::tiempoAviso = 2.0f;
         }
     }
     else {
@@ -214,11 +214,11 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
             arena->iniciarCombate(tab_.getPendienteLocal(), tab_.getPendienteInvasor(), modo_actual, tab_.getFase());
             personaje_seleccionado = nullptr; casillas_iluminadas.clear();
             return Modos_juego::Arena_Combate;
-          
+
         }
         else {
-            MotorGrafico::mensajeAviso = "Movimiento no valido!"; 
-            MotorGrafico::tiempoAviso = 2.0f;                    
+            MotorGrafico::mensajeAviso = "Movimiento no valido!";
+            MotorGrafico::tiempoAviso = 2.0f;
         }
         personaje_seleccionado = nullptr; casillas_iluminadas.clear();
     }
@@ -342,7 +342,7 @@ void Partida::reset() {
     casillas_iluminadas.clear();
     delete carta_actual; carta_actual = nullptr;
     nombre_carta_cargada = "";
-    tab_.reset();          
+    tab_.reset();
 
     for (auto p : personajes) delete p; for (auto d : dibujos) delete d;
     personajes.clear(); dibujos.clear();
@@ -386,7 +386,7 @@ Modos_juego Partida::comprobarFinPartida() {
     // ── DEBUG: imprimir en consola quien ha ganado ──────────────
     bool ganaMan = FinPartida::ganaManana(r);
     ResultadoPartida res = ganaMan ? ResultadoPartida::VICTORIA_MANANA
-                                   : ResultadoPartida::VICTORIA_TARDE;
+        : ResultadoPartida::VICTORIA_TARDE;
     Turno bandoGanador = ganaMan ? Turno::TURNO_DE_MANANA : Turno::TURNO_DE_TARDE;
 
     // Puntuacion sencilla: piezas que le quedan en juego al ganador.
@@ -399,8 +399,8 @@ Modos_juego Partida::comprobarFinPartida() {
     std::string nombre = ganaMan ? "Turno de Manana" : "Turno de Tarde";
 
     std::cout << "[FIN PARTIDA] gana "
-              << (ganaMan ? "MANANA" : "TARDE")
-              << " (puntuacion " << puntuacion << ")\n";
+        << (ganaMan ? "MANANA" : "TARDE")
+        << " (puntuacion " << puntuacion << ")\n";
 
     if (pantalla_final != nullptr)
         pantalla_final->setResultado(res, puntuacion, nombre);
@@ -409,8 +409,6 @@ Modos_juego Partida::comprobarFinPartida() {
     if (ranking != nullptr)
         ranking->agregar(nombre, puntuacion);
 
-    ETSIDI::stopMusica();
-    ETSIDI::playMusica("assets/sonidos/menu.mp3", true);
     return Modos_juego::Pantalla_Final;
 }
 

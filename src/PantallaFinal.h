@@ -28,6 +28,7 @@ public:
     void dibuja();
     void update(int x, int y);
     Modos_juego click(int x, int y);
+    bool volverMenu() const;
 
     // Llamar desde Partida justo antes de cambiar al estado Pantalla_Final.
     // Tambien arranca el temporizador de la fase de creditos.
@@ -39,19 +40,17 @@ public:
 
 private:
     ETSIDI::Sprite* fondo;
-    ETSIDI::Sprite* boton_menu;
     ETSIDI::Sprite* creditos_;   // Imagen mostrada tras TIEMPO_PARA_CREDITOS
 
     ResultadoPartida resultado;
     int              puntuacion_final;
     std::string      nombre_ganador;
-    int              boton_activo;
     int              tiempoInicio_;   // ms en que se mostro la pantalla
 
-    static const int TIEMPO_PARA_CREDITOS = 10000;  // 10 segundos
+    static const int tiempo_creditos = 10000;  // 10 segundos
 
-    // Dibuja un texto centrado en x=0 a la altura y, con el font GLUT dado.
-    // Usar GLUT_BITMAP_HELVETICA_10/12/18 o similares.
+  
+    
     void dibujarTextoCentrado(const std::string& texto, void* font, float y,
-        float r, float g, float b);
+        float r, float g, float b, float offsetX = 45.0f);
 };

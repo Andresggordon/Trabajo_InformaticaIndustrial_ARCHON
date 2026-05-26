@@ -3,14 +3,12 @@
 #include <string>
 
 PantallaFinal::PantallaFinal() {
-    fondo = new ETSIDI::Sprite("assets/menu_imagenes/fondo2.png", 0, 0, 800, 800);
-    boton_menu = new ETSIDI::Sprite("assets/menu_imagenes/back.png", 0, 0, 800, 800);
-    creditos_ = new ETSIDI::Sprite("assets/menu_imagenes/pantalla_final.png", 0, 0, 800, 800);
+    fondo = new ETSIDI::Sprite("assets/menu_imagenes/pantalla_final.png", 0, 0, 800, 800);
+    creditos_ = new ETSIDI::Sprite("assets/menu_imagenes/creditos.png", 0, 0, 800, 800);
 
     resultado = ResultadoPartida::VICTORIA_MANANA;
     puntuacion_final = 0;
     nombre_ganador = "Jugador";
-    boton_activo = 0;
     tiempoInicio_ = 0;
 }
 
@@ -19,12 +17,15 @@ void PantallaFinal::setResultado(ResultadoPartida r, int puntuacion,
     resultado = r;
     puntuacion_final = puntuacion;
     nombre_ganador = nombre;
-    tiempoInicio_ = glutGet(GLUT_ELAPSED_TIME);  
+    tiempoInicio_ = glutGet(GLUT_ELAPSED_TIME);
+
+    // Cancion de victoria
+    ETSIDI::stopMusica();
+    ETSIDI::playMusica("assets/sonidos/victoria.mp3", false);
 }
 
-
 void PantallaFinal::dibujarTextoCentrado(const std::string& texto, void* font,
-    float y, float r, float g, float b) {
+    float y, float r, float g, float b, float offsetX) {
     int ancho = 0;
     for (char c : texto) ancho += glutBitmapWidth(font, c);
 
@@ -32,98 +33,45 @@ void PantallaFinal::dibujarTextoCentrado(const std::string& texto, void* font,
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
     glColor3f(r, g, b);
-    glRasterPos2f(-ancho / 2.0f, y);
+    glRasterPos2f(-ancho / 2.0f + offsetX, y);  // ← offsetX aquí
     for (char c : texto)
         glutBitmapCharacter(font, c);
     glPopAttrib();
 }
 
 void PantallaFinal::dibuja() {
-    
     int ahora = glutGet(GLUT_ELAPSED_TIME);
     bool enCreditos = (tiempoInicio_ > 0)
-        && (ahora - tiempoInicio_ >= TIEMPO_PARA_CREDITOS);
+        && (ahora - tiempoInicio_ >= tiempo_creditos);
+
     if (enCreditos) {
         creditos_->draw();
-        boton_menu->draw();
         return;
     }
 
     fondo->draw();
-    boton_menu->draw();
 
-    
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_BLEND);
-    glColor3f(1.0f, 0.85f, 0.0f);
-    glLineWidth(2.0f);
-    glBegin(GL_LINES);
-    glVertex2f(-150, 75); glVertex2f(150, 75);
-    glEnd();
-    glPopAttrib();
 
-    
+    // Titulo - dentro del rectangulo blanco, parte superior
     if (resultado == ResultadoPartida::VICTORIA_MANANA) {
-        dibujarTextoCentrado("TURNO DE MANANA GANA!", GLUT_BITMAP_HELVETICA_18,
-            50, 1.0f, 0.85f, 0.0f);  // amarillo
+        dibujarTextoCentrado("VICTORIA - TURNO DE MANANA", GLUT_BITMAP_TIMES_ROMAN_24,
+            230, 0.1f, 0.1f, 0.1f);  // negro
     }
     else {
-        dibujarTextoCentrado("TURNO DE TARDE GANA!", GLUT_BITMAP_HELVETICA_18,
-            50, 0.3f, 0.6f, 1.0f);   // azul claro
+        dibujarTextoCentrado("VICTORIA - TURNO DE TARDE", GLUT_BITMAP_TIMES_ROMAN_24,
+            230, 0.1f, 0.1f, 0.1f);  // negro
     }
 
-    
+    // Nombre y puntuacion - centrados en el rectangulo
     dibujarTextoCentrado("Ganador:  " + nombre_ganador,
-        GLUT_BITMAP_HELVETICA_12, 15, 1.0f, 1.0f, 1.0f);
+        GLUT_BITMAP_HELVETICA_18, 175, 0.1f, 0.1f, 0.1f);
     dibujarTextoCentrado("Puntuacion:  " + std::to_string(puntuacion_final),
-        GLUT_BITMAP_HELVETICA_12, -10, 1.0f, 1.0f, 0.2f);
+        GLUT_BITMAP_HELVETICA_18, 140, 0.1f, 0.1f, 0.1f);
 
-   
-    dibujarTextoCentrado("La puntuacion depende de piezas vivas y velocidad",
-        GLUT_BITMAP_HELVETICA_10, -45, 0.6f, 0.6f, 0.6f);
-    dibujarTextoCentrado("Pulsa BACK para volver al menu",
-        GLUT_BITMAP_HELVETICA_10, -80, 0.5f, 0.5f, 0.5f);
-
-    
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_BLEND);
-    glColor3f(0.4f, 0.4f, 0.4f);
-    glLineWidth(1.0f);
-    glBegin(GL_LINES);
-    glVertex2f(-150, -105); glVertex2f(150, -105);
-    glEnd();
-    glPopAttrib();
 }
 
-void PantallaFinal::update(int x, int y) {
-    int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
-    int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
-    int tam = min(ventana_w, ventana_h);
-    int offsetX = (ventana_w - tam) / 2;
-    int offsetY = (ventana_h - tam) / 2;
-    float cx = ((x - offsetX) / (float)tam) * 800 - 400;
-    float cy = 400 - ((y - offsetY) / (float)tam) * 800;
-
-    // Mismo area del boton "back" que en el resto de pantallas
-    boton_activo = (cx >= 297 && cx <= 386 && cy >= -352 && cy <= -328) ? 1 : 0;
-}
-
-Modos_juego PantallaFinal::click(int x, int y) {
-    int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
-    int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
-    int tam = min(ventana_w, ventana_h);
-    int offsetX = (ventana_w - tam) / 2;
-    int offsetY = (ventana_h - tam) / 2;
-    float cx = ((x - offsetX) / (float)tam) * 800 - 400;
-    float cy = 400 - ((y - offsetY) / (float)tam) * 800;
-
-    if (cx >= 297 && cx <= 386 && cy >= -352 && cy <= -328) {
-        ETSIDI::play("assets/sonidos/click.mp3");
-        ETSIDI::stopMusica();
-        ETSIDI::playMusica("assets/sonidos/menu.mp3", true);
-        return Modos_juego::MENU;
-    }
-    return Modos_juego::Pantalla_Final;
+bool PantallaFinal::volverMenu() const {
+    if (tiempoInicio_ == 0) return false;
+    int ahora = glutGet(GLUT_ELAPSED_TIME);
+    return (ahora - tiempoInicio_) >= (tiempo_creditos + 10000);
 }

@@ -45,7 +45,6 @@ void display() {
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // Forzar pixel art nítido en todas las texturas
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -62,16 +61,16 @@ void display() {
     else if (estado == Modos_juego::Pantalla_Ranking)
         ranking->dibuja();
     else if (estado == Modos_juego::Partida) {
-        Partida::get_instance().dibuja();           // 1. fondo
-        MotorGrafico::get_instance().dibujar();     // 2. tablero
-        Partida::get_instance().dibujaSeleccion(); // 3. Selección de casilla
-        Partida::get_instance().dibujaHabilidades(); // 4. Dibujar habilidades      
-        Partida::get_instance().dibujaInmovilizados(); //6. Personaje inmovilizado
-        Partida::get_instance().dibujaBarrasVida(); // 7. Barras de vida 
-        Partida::get_instance().dibujaEscudos(); // 8. Escudo casilla
-        Partida::get_instance().dibujaInmunidad();// 9. Inmunidad casilla
-        Partida::get_instance().dibujaAviso(); // 10. Avisos por pantalla
-        Partida::get_instance().dibujaextra(); // 5. exit y popup encima de todo
+        Partida::get_instance().dibuja();
+        MotorGrafico::get_instance().dibujar();
+        Partida::get_instance().dibujaSeleccion();
+        Partida::get_instance().dibujaHabilidades();
+        Partida::get_instance().dibujaInmovilizados();
+        Partida::get_instance().dibujaBarrasVida();
+        Partida::get_instance().dibujaEscudos();
+        Partida::get_instance().dibujaInmunidad();
+        Partida::get_instance().dibujaAviso();
+        Partida::get_instance().dibujaextra();
     }
     else if (estado == Modos_juego::Arena_Combate)
     {
@@ -100,8 +99,7 @@ void mouseMove(int x, int y) {
         Partida::get_instance().update(x, y);
     else if (estado == Modos_juego::Arena_Combate)
         arena->update(x, y);
-    else if (estado == Modos_juego::Pantalla_Final)
-        pantalla_final->update(x, y);
+    // Pantalla_Final no necesita update (no hay boton)
     glutPostRedisplay();
 }
 
@@ -123,8 +121,7 @@ void mouseClick(int button, int estadoBtn, int x, int y) {
             estado = Partida::get_instance().click(x, y);
         else if (estado == Modos_juego::Arena_Combate)
             estado = arena->click(x, y);
-        else if (estado == Modos_juego::Pantalla_Final)
-            estado = pantalla_final->click(x, y);
+        // Pantalla_Final no tiene click (vuelve por tiempo)
 
         if (estado == Modos_juego::Partida && estado_anterior != Modos_juego::Partida)
             Partida::get_instance().reset();
@@ -143,7 +140,7 @@ void teclado(unsigned char key, int x, int y) {
         Partida::get_instance().teclado(key);
         Partida::get_instance().tecladoHabilidades(key);
     }
-    else if (estado == Modos_juego::Arena_Combate) {  
+    else if (estado == Modos_juego::Arena_Combate) {
         arena->teclado(key);
     }
     glutPostRedisplay();
@@ -159,7 +156,7 @@ void reposo() {
 
     static int tiempoAnterior = glutGet(GLUT_ELAPSED_TIME);
     int tiempoActual = glutGet(GLUT_ELAPSED_TIME);
-    float deltaTime = (tiempoActual - tiempoAnterior) / 1000.0f; 
+    float deltaTime = (tiempoActual - tiempoAnterior) / 1000.0f;
     tiempoAnterior = tiempoActual;
 
     if (estado == Modos_juego::Pantalla_carga) {
@@ -174,14 +171,19 @@ void reposo() {
         if (arena->combateTerminado() && !arena->mostrandoCartel()) {
             Partida::get_instance().tablero().resolverCombate(arena->getResultado());
             arena->finalizarCombate();
-            // Tras el combate puede haber acabado la partida (mago/piezas).
             estado = Partida::get_instance().comprobarFinPartida();
         }
     }
     else if (estado == Modos_juego::Partida) {
-        if (MotorGrafico::tiempoAviso > 0.0f) MotorGrafico::tiempoAviso -= deltaTime;  // ~60fps, resta ~1 seg cada 60 llamadas
-        // En modo 1 jugador, deja que la maquina mueva si es su turno.
+        if (MotorGrafico::tiempoAviso > 0.0f) MotorGrafico::tiempoAviso -= deltaTime;
         estado = Partida::get_instance().turnoMaquina();
+    }
+    else if (estado == Modos_juego::Pantalla_Final) {
+        if (pantalla_final->volverMenu()) {
+            ETSIDI::stopMusica();
+            ETSIDI::playMusica("assets/sonidos/menu.mp3", true);
+            estado = Modos_juego::MENU;
+        }
     }
     glutPostRedisplay();
 }
@@ -203,7 +205,6 @@ int main(int argc, char** argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(1000, 1000);
     glutCreateWindow("ARCHON");
-    //glutFullScreen(); // automaticamente pantalla completa
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(-400, 400, -400, 400);
@@ -217,7 +218,6 @@ int main(int argc, char** argv) {
     pantalla_carga = new Pantalla_carga();
     arena = new ArenaCombate();
     pantalla_final = new PantallaFinal();
-    // Partida y MotorGrafico se inicializan solos la primera vez que se llaman
     Partida::get_instance();
     MotorGrafico::get_instance();
     glutDisplayFunc(display);
