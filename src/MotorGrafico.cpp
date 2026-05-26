@@ -261,6 +261,7 @@ void MotorGrafico::dibujarFondoArena() {
 }
 
 void MotorGrafico::dibujarPersonajesArena(Personaje* local, Personaje* invasor) {
+
     const auto& dibujos = Partida::get_instance().getDibujos();
     extern ArenaCombate* arena;
 

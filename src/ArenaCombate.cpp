@@ -384,17 +384,23 @@ void ArenaCombate::actualizar() {
 	}
 	if (combateTerminado_) return;
 
+	// --- IDENTIFICACIÓN DE BANDOS ---
+	// Calculamos quién es quién aquí arriba para usarlo en todo el código
+	Personaje* pManana = (local_->getTurno() == Turno::TURNO_DE_MANANA) ? local_ : invasor_;
+	Personaje* pTarde = (local_->getTurno() == Turno::TURNO_DE_TARDE) ? local_ : invasor_;
+
 	// 2. Sincronización de Animaciones (Estados)
-	// La animacion "en movimiento" del humano va segun WASD; en modo 1 el
-	// humano puede ser local_ o invasor_ (humanoControlaLocal_).
-	Personaje* piezaHumanoWASD = (modo_ == 1 && !humanoControlaLocal_) ? invasor_ : local_;
-	if (piezaHumanoWASD != nullptr) {
-		bool moviendo = (teclaW || teclaS || teclaA || teclaD);
-		piezaHumanoWASD->setEnMovimiento(moviendo);
+	if (modo_ == 2) {
+		// En modo 2 jugadores: Mañana usa WASD, Tarde usa Flechas
+		if (pManana != nullptr) pManana->setEnMovimiento(teclaW || teclaS || teclaA || teclaD);
+		if (pTarde != nullptr)  pTarde->setEnMovimiento(teclaArriba || teclaAbajo || teclaIzquierda || teclaDerecha);
 	}
-	if (invasor_ != nullptr && modo_ == 2) {
-		bool moviendo_invasor = (teclaArriba || teclaAbajo || teclaIzquierda || teclaDerecha);
-		invasor_->setEnMovimiento(moviendo_invasor);
+	else {
+		// En modo 1 jugador: El humano siempre usa WASD
+		Turno bandoHumano = (equipo_j1 == 1) ? Turno::TURNO_DE_MANANA : Turno::TURNO_DE_TARDE;
+		Personaje* pHumano = (bandoHumano == Turno::TURNO_DE_MANANA) ? pManana : pTarde;
+
+		if (pHumano != nullptr) pHumano->setEnMovimiento(teclaW || teclaS || teclaA || teclaD);
 	}
 
 	int ahora = glutGet(GLUT_ELAPSED_TIME);
@@ -403,13 +409,12 @@ void ArenaCombate::actualizar() {
 	for (auto p : proyectiles_)
 		p->actualizar();
 
-	// 4. Colisiones (Aquí está la magia)
+	// 4. Colisiones
 	float xLocal = arenaToX(posLocal_.columna);
 	float yLocal = arenaToY(posLocal_.fila);
 	float xInvasor = arenaToX(posInvasor_.columna);
 	float yInvasor = arenaToY(posInvasor_.fila);
 
-	// Calculamos distancia una vez para no repetir código
 	int distFila = abs(posLocal_.fila - posInvasor_.fila);
 	int distCol = abs(posLocal_.columna - posInvasor_.columna);
 	int distancia = max(distFila, distCol);
@@ -446,10 +451,9 @@ void ArenaCombate::actualizar() {
 	// 6. Movimiento de personajes (con cooldown)
 	if (ahora - tiempoUltimoMovimiento_ >= INTERVALO_MOVIMIENTO) {
 
-		Personaje* pManana = (local_->getTurno() == Turno::TURNO_DE_MANANA) ? local_ : invasor_;
-		Personaje* pTarde = (local_->getTurno() == Turno::TURNO_DE_TARDE) ? local_ : invasor_;
 		PosArena& posManana = (pManana == local_) ? posLocal_ : posInvasor_;
 		PosArena& posTarde = (pTarde == local_) ? posLocal_ : posInvasor_;
+
 		if (modo_ == 2) {
 			// WASD mueve mañana
 			if (teclaW && moverEnArena(posManana, 1, 0)) pManana->incrementarPasos();

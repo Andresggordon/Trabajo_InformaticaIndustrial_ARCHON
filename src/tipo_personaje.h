@@ -153,12 +153,15 @@ public:
     }
 
     int getRadioMovimiento() const override { return 4; }
-    std::string getNombreSprite() const override { return "MotoEAnimada"; }
+    std::string getNombreSprite() const override { return "MotoelectricAnimada"; }
 std::string getNombreCarta()  const override { return "assets/cartas/cartamotoe.png"; }
 
     float getTamanoSprite() const override { return 60.0f; }
 
     int getFramesIdle() const override { return 8; }
+
+    int getFilasAnimacion() const override { return 2; }
+
     float getOffsetX() const override { return 35.0f; }
     float getOffsetY() const override { return 0.0f; }
     int getTiempoAnimacion() const override { return 80; }
@@ -323,15 +326,18 @@ public:
     }
 
     int getRadioMovimiento() const override { return 1; }
-    std::string getNombreSprite() const override { return "BRAZOANIMADO2"; }
-std::string getNombreCarta()  const override { return "assets/cartas/cartarobot.png"; }
+    std::string getNombreSprite() const override { return "BRAZOANIMADO3"; }
+    std::string getNombreCarta()  const override { return "assets/cartas/cartarobot.png"; }
 
 
     int getFramesIdle() const override { return 17; }
-    float getOffsetY() const override { return 10.0f; }
+    
+    float getOffsetX() const override { return 20.0f; }
+    float getOffsetY() const override { return 30.0f; }
+
     int getTiempoAnimacion() const override {return 300;}
 
-    float getTamanoSprite() const override { return 90.0f; }
+    float getTamanoSprite() const override { return 80.0f; }
 
     std::string getNombreProyectil() const override {
         return "assets/menu_imagenes/Tornillo.png";
@@ -379,15 +385,18 @@ public:
     }
 
     int getRadioMovimiento() const override { return 4; }
-    std::string getNombreSprite() const override { return "MotoPAnimada"; }
+    std::string getNombreSprite() const override { return "MotopetrolAnimada"; }
 std::string getNombreCarta()  const override { return "assets/cartas/cartamotop.png"; }
 
 
     float getTamanoSprite() const override { return 60.0f; }
     int getFramesIdle() const override { return 10; }
 
-    float getOffsetX() const override { return 130.0f; }
-    float getOffsetY() const override { return 100.0f; }
+    int getFilasAnimacion() const override { return 2; }
+
+
+    float getOffsetX() const override { return 35.0f; }
+    float getOffsetY() const override { return 10.0f; }
 
     int getTiempoAnimacion() const override { return 100; }
 

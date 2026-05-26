@@ -14,6 +14,7 @@ public:
     void update() { sprite->loop(); }
 
     Personaje* getPersonaje() const { return modelo; }
+    void setModelo(Personaje* nuevo_modelo) { modelo = nuevo_modelo; } //Para manejar el turno de tarde y el de mañana
 
 private:
     Personaje* modelo;      // Puntero a la lógica del personaje
