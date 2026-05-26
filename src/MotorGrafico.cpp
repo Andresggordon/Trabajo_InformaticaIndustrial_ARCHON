@@ -3,6 +3,7 @@
 #include "ArenaCombate.h"
 #include "personaje.h"
 #include "habilidades_profes.h"
+#include <cmath>
 
 float MotorGrafico::tiempoAviso = 0.0f;
 std::string MotorGrafico::mensajeAviso = "";
@@ -113,10 +114,19 @@ void MotorGrafico::dibujaSeleccion(Personaje* seleccionado, const std::vector<Ca
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    // 1. Dibujar casillas disponibles (Relleno amarillo translúcido)
+    // 1. Dibujar casillas disponibles (Relleno amarillo con parpadeo suave)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glColor4f(1.0f, 1.0f, 0.0f, 0.4f);
+
+    // PARPADEO DE LAS CASILLAS utilizando el tiempo del juego
+    float tiempo_seg = glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+
+    // La función sin() devuelve valores entre -1 y 1. 
+    float velocidad_parpadeo = 2.0f; // A mayor número, más rápido parpadea
+    float alpha_dinamico = 0.33f + 0.20f * sin(tiempo_seg * velocidad_parpadeo);
+
+    //OpenGL dibujará teniendo en cuenta el parámetro de tiempo calculado
+    glColor4f(0.7f, 1.0f, 0.0f, alpha_dinamico);
 
     glBegin(GL_QUADS);
     for (Casilla* c : iluminadas) {
