@@ -359,28 +359,20 @@ void ArenaCombate::aplicarAtaque(Personaje* atacante, Personaje* defensor) {
 	if (atacante == nullptr || defensor == nullptr) return;
 	if (combateTerminado_) return;
 
-	int distFila = abs(posLocal_.fila - posInvasor_.fila);
-	int distCol = abs(posLocal_.columna - posInvasor_.columna);
-	int distancia = max(distFila, distCol);
-
-	int alcance = atacante->getArma().getAlcance();
-	if (distancia > alcance) return;
-
 	bool esLocal = (atacante == local_);
 	float ox = arenaToX(esLocal ? posLocal_.columna : posInvasor_.columna);
 	float oy = arenaToY(esLocal ? posLocal_.fila : posInvasor_.fila);
 	float dx = arenaToX(esLocal ? posInvasor_.columna : posLocal_.columna);
 	float dy = arenaToY(esLocal ? posInvasor_.fila : posLocal_.fila);
 	float velocidad = atacante->getVelocidadProyectil();
-
-	// Daño base + bonus de terreno según quién ataca
-	int dano = atacante->getArma().getDanio() + (esLocal ? bonusDanioLocal_ : bonusDanioInvasor_);
+	int   dano = atacante->getArma().getDanio() +
+		(esLocal ? bonusDanioLocal_ : bonusDanioInvasor_);
 
 	proyectiles_.push_back(new Proyectil(ox, oy, dx, dy,
 		dano,
 		velocidad,
 		atacante->getNombreProyectil(),
-		esLocal));
+		esLocal, atacante->getArma().getAlcance()));
 }
 
 void ArenaCombate::actualizar() {

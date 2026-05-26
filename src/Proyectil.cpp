@@ -5,7 +5,7 @@
 Proyectil::Proyectil(float origenX, float origenY,
     float destinoX, float destinoY,
     int dano, float velocidad,
-    const std::string& rutaSprite, bool disparadoPorLocal)
+    const std::string& rutaSprite, bool disparadoPorLocal,int alcance)
     : x_(origenX), y_(origenY)
     , destinoX_(destinoX), destinoY_(destinoY)
     , dano_(dano), velocidad_(velocidad)
@@ -15,6 +15,10 @@ Proyectil::Proyectil(float origenX, float origenY,
         sprite_ = new ETSIDI::Sprite(rutaSprite.c_str(), x_, y_, 50, 50);
         tieneSprite_ = true;
     }
+
+    origenX_ = origenX;
+    origenY_ = origenY;
+    distanciaMaxima_ = alcance * 45.0f;
 }
 
 Proyectil::~Proyectil() {
@@ -27,17 +31,23 @@ void Proyectil::actualizar() {
     float dx = destinoX_ - x_;
     float dy = destinoY_ - y_;
     float distancia = sqrt(dx * dx + dy * dy);
-  
 
-    if (distancia > velocidad_) {
-        x_ += (dx / distancia) * velocidad_;
-        y_ += (dy / distancia) * velocidad_;
-        if (tieneSprite_)
-            sprite_->setPos(x_, y_);
-    }
-    else {
+    if (distancia <= velocidad_) {
         llegado_ = true;
-    } 
+        return;
+    }
+
+    x_ += (dx / distancia) * velocidad_;
+    y_ += (dy / distancia) * velocidad_;
+
+    if (tieneSprite_) sprite_->setPos(x_, y_);
+
+    // Calcular distancia recorrida desde el origen
+    float recorrido = sqrt((x_ - origenX_) * (x_ - origenX_) +
+        (y_ - origenY_) * (y_ - origenY_));
+    if (recorrido >= distanciaMaxima_) {
+        llegado_ = true;  // desaparece sin hacer daño
+    }
 }
 
 void Proyectil::dibujar() const {

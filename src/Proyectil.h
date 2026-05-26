@@ -7,7 +7,7 @@ public:
     Proyectil(float origenX, float origenY,
         float destinoX, float destinoY,
         int dano, float velocidad,
-        const std::string& rutaSprite, bool disparadoPorLocal);
+        const std::string& rutaSprite, bool disparadoPorLocal,int alcance);
     ~Proyectil();
 
     void actualizar();
@@ -24,7 +24,8 @@ public:
     float getX() const { return x_; }
     float getY() const { return y_; }
 private:
-   
+    float origenX_, origenY_;       
+    float distanciaMaxima_ = 500.f;
     float x_, y_;
     float destinoX_, destinoY_;
     float velocidad_;

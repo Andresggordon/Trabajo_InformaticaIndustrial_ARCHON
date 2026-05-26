@@ -101,7 +101,7 @@ private:
 	bool teclaDerecha = false;
 
 	int tiempoUltimoMovimiento_ = 0;
-	static const int INTERVALO_MOVIMIENTO = 250;
+	static const int INTERVALO_MOVIMIENTO = 100;
 
 	//Cadencias propias de la IA de la arena (solo modo 1 jugador)
 	int tiempoUltimoMovimientoIA_ = 0;
