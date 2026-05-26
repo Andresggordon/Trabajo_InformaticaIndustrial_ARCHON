@@ -129,6 +129,12 @@ void mouseClick(int button, int estadoBtn, int x, int y) {
 }
 
 void teclado(unsigned char key, int x, int y) {
+
+    if (key == 'f' || key == 'F') {
+        glutFullScreenToggle(); 
+        return; 
+    }
+
     if (estado == Modos_juego::Pantalla_carga) {
         pantalla_carga->teclado(key);
         if (pantalla_carga->carga_completa)
@@ -204,6 +210,7 @@ void tecladoEspecialUp(int key, int x, int y) {
         arena->teclaEspecialLevantada(key);
     glutPostRedisplay();
 }
+
 
 int main(int argc, char** argv) {
     SetProcessDPIAware();
