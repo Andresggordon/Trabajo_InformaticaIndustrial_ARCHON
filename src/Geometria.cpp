@@ -1,3 +1,14 @@
+/**
+ * @file Geometria.cpp
+ * 
+ * @brief Implementación de las funciones lógicas y matemáticas para la validación de movimientos en el tablero.
+ * * @details Desarrolla los métodos estáticos de la clase Geometria. Contiene las reglas matemáticas
+ * que calculan las distancias absolutas en la cuadrícula, evalúan los límites según el radio de
+ * movimiento de cada personaje y comprueban secuencialmente las casillas intermedias para verificar
+ * que las trayectorias de las unidades terrestres estén libres de obstrucciones.
+ * 
+ */
+
 #include "Geometria.h"
 #include "Casilla.h"
 #include "personaje.h"

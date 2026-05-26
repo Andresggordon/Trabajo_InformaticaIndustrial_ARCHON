@@ -1,9 +1,14 @@
-// -----------------------------------------------------------------------------------
-// Geometria es el ente que conoce las reglas de movimiento del tablero.
-// Ni Casilla ni Personaje saben de geometría: eso es responsabilidad de esta clase.
-// Todos sus métodos son estáticos porque no necesita estado propio,
-// solo trabaja con los datos del tablero y del personaje.
-// -----------------------------------------------------------------------------------
+/**
+ * @file Geometria.h
+ * 
+ * @brief Clase estática que gestiona las reglas lógicas y restricciones de movimiento del tablero.
+ * 
+ * * @details Modela la lógica espacial del juego abstrayendo al Tablero y a los Personajes de
+ * los cálculos geométricos. Evalúa las trayectorias de los personajes según su tipo de
+ * desplazamiento (Tierra, Aire, Teletransporte), calcula casillas disponibles y verifica
+ * colisiones u obstáculos intermedios. Todos sus métodos son estáticos al carecer de estado propio.
+ * 
+ * */
 
 #pragma once
 #include <vector>
