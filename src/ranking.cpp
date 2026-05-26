@@ -112,7 +112,7 @@ void Ranking::update(int x, int y) {
     float cx = ((x - offsetX) / (float)tam) * 800 - 400;
     float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
-    if (cx >= 225 && cx <= 275 && cy >= -265 && cy <= -235)
+    if (cx >= 297 && cx <= 386 && cy >= -352 && cy <= -328)
         boton_activo = 1;
     else
         boton_activo = 0;
@@ -128,7 +128,7 @@ Modos_juego Ranking::click(int x, int y) {
     float cx = ((x - offsetX) / (float)tam) * 800 - 400;
     float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
-    if (cx >= 225 && cx <= 275 && cy >= -265 && cy <= -235) {
+    if (cx >= 297 && cx <= 386 && cy >= -352 && cy <= -328) {
         ETSIDI::play("assets/sonidos/click.mp3");
         return Modos_juego::MENU;
     }

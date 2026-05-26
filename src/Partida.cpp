@@ -403,11 +403,8 @@ Modos_juego Partida::comprobarFinPartida() {
         << " (puntuacion " << puntuacion << ")\n";
 
     if (pantalla_final != nullptr)
-        pantalla_final->setResultado(res, puntuacion, nombre);
+        pantalla_final->setResultado(res, puntuacion);
 
-    // Persistir la puntuacion en el ranking (se guarda al fichero solo).
-    if (ranking != nullptr)
-        ranking->agregar(nombre, puntuacion);
 
     return Modos_juego::Pantalla_Final;
 }

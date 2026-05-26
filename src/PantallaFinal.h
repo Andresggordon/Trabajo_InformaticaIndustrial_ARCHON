@@ -26,28 +26,33 @@ class PantallaFinal {
 public:
     PantallaFinal();
     void dibuja();
-    void update(int x, int y);
-    Modos_juego click(int x, int y);
-    bool volverMenu() const;
-
+    
     // Llamar desde Partida justo antes de cambiar al estado Pantalla_Final.
     // Tambien arranca el temporizador de la fase de creditos.
-    void setResultado(ResultadoPartida r, int puntuacion, const std::string& nombre_ganador);
+    void setResultado(ResultadoPartida r, int puntuacion);
+    void teclado(unsigned char key);
+    bool volverMenu() const;
 
-    // Getters para que main.cpp pueda guardar la partida en el ranking
-    int         getPuntuacion()    const { return puntuacion_final; }
-    std::string getNombreGanador() const { return nombre_ganador; }
+    enum class Fase { PEDIR_NOMBRE, MOSTRAR_VICTORIA, CREDITOS };
+
+    const std::string& getNombre()    const { return nombre_; }
+    int                getPuntuacion() const { return puntuacion_; }
+    Fase               getFase()       const { return fase_; }
 
 private:
-    ETSIDI::Sprite* fondo;
-    ETSIDI::Sprite* creditos_;   // Imagen mostrada tras TIEMPO_PARA_CREDITOS
+    
+    ETSIDI::Sprite* fondo_nombre_;
+    ETSIDI::Sprite* fondo_victoria_;
+    ETSIDI::Sprite* creditos_;
 
-    ResultadoPartida resultado;
-    int              puntuacion_final;
-    std::string      nombre_ganador;
-    int              tiempoInicio_;   // ms en que se mostro la pantalla
+    Fase fase_;
+    ResultadoPartida resultado_;
+    int  puntuacion_;
+    std::string nombre_;
+    int  tiempoFaseVictoria_;
 
-    static const int tiempo_creditos = 10000;  // 10 segundos
+    static const int TIEMPO_CREDITOS = 10000;
+    static const int TIEMPO_VUELTA_MENU = 10000;
 
   
     

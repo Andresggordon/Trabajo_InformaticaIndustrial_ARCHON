@@ -99,7 +99,7 @@ void mouseMove(int x, int y) {
         Partida::get_instance().update(x, y);
     else if (estado == Modos_juego::Arena_Combate)
         arena->update(x, y);
-    // Pantalla_Final no necesita update (no hay boton)
+   
     glutPostRedisplay();
 }
 
@@ -121,8 +121,6 @@ void mouseClick(int button, int estadoBtn, int x, int y) {
             estado = Partida::get_instance().click(x, y);
         else if (estado == Modos_juego::Arena_Combate)
             estado = arena->click(x, y);
-        // Pantalla_Final no tiene click (vuelve por tiempo)
-
         if (estado == Modos_juego::Partida && estado_anterior != Modos_juego::Partida)
             Partida::get_instance().reset();
 
@@ -143,6 +141,14 @@ void teclado(unsigned char key, int x, int y) {
     else if (estado == Modos_juego::Arena_Combate) {
         arena->teclado(key);
     }
+    else if (estado == Modos_juego::Pantalla_Final) {
+        bool antesEnNombre = (pantalla_final->getFase() == PantallaFinal::Fase::PEDIR_NOMBRE);
+        pantalla_final->teclado(key);
+        if (antesEnNombre && key == 13 && !pantalla_final->getNombre().empty()) {
+            ranking->agregar(pantalla_final->getNombre(), pantalla_final->getPuntuacion());
+        }
+    }
+
     glutPostRedisplay();
 }
 
