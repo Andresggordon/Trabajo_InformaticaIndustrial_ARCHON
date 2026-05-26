@@ -25,8 +25,11 @@ void DibujoPersonaje::dibujar(float x, float y) {
     bool mirar_izquierda = modelo->getMirandoIzquierda();
     bool hacer_flip = false;
 
-    if (modelo->getTurno() == Turno::TURNO_DE_MANANA) hacer_flip = !mirar_derecha;
-    else                                              hacer_flip = !mirar_izquierda;
+    if (modelo->getTurno() == Turno::TURNO_DE_MANANA)
+        hacer_flip = !mirar_derecha;
+    else
+        hacer_flip = !mirar_izquierda;
+
 
     float offset_x = modelo->getOffsetX();
     if (hacer_flip) offset_x = -offset_x;
