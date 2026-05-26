@@ -31,13 +31,12 @@ void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo
 		humanoControlaLocal_ = false; // no se usa en modo 2 jugadores
 	}
 
-	posLocal_ = { 5,2 };
-	posInvasor_ = { 5,8 };
+	
 
 	// Inicializar en la arena a cada turno siempre en su respectivo lado
 	if (local_->getTurno() == Turno::TURNO_DE_MANANA) {
-		posLocal_ = { 5, 2 };   
-		posInvasor_ = { 5, 8 }; 
+		posLocal_ = { 5, 0};   
+		posInvasor_ = { 5, 10 }; 
 
 		local_->setMirandoDerecha(true);
 		local_->setMirandoIzquierda(false);
@@ -47,8 +46,8 @@ void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo
 		}
 	}
 	else {
-		posLocal_ = { 5, 8 };   
-		posInvasor_ = { 5, 2 }; 
+		posLocal_ = { 5, 10 };   
+		posInvasor_ = { 5, 0 }; 
 
 		local_->setMirandoDerecha(false);
 		local_->setMirandoIzquierda(true);
@@ -283,11 +282,11 @@ ResultadoCombate ArenaCombate::getResultado() const
 }
 
 ArenaCombate::ArenaCombate() {
-	fondo_arena = new ETSIDI::Sprite("assets/menu_imagenes/GulagDefinitivo.png", 0, 0, 600, 600);
+	fondo_arena = new ETSIDI::Sprite("assets/menu_imagenes/ArenaCombate.png", 0, 0, 800, 800);
 	abandonar_partida = new ETSIDI::Sprite("assets/menu_imagenes/boton_abandonar.png", 0, 0, 800, 800);
 	popup_salir = new ETSIDI::Sprite("assets/menu_imagenes/popup_salir.png", 0, 0, 800, 800);
-	posLocal_ = { 5, 2 };
-	posInvasor_ = { 5, 8 };
+	posLocal_ = { 5, 0 };
+	posInvasor_ = { 5, 11 };
 
 	cartel_gana_manana_ = new ETSIDI::Sprite("assets/menu_imagenes/cartel_gana_manana_.png", 0, 0, 400, 400);
 	cartel_gana_tarde_ = new ETSIDI::Sprite("assets/menu_imagenes/cartel_gana_tarde_.png", 0, 0, 400, 400);
@@ -332,6 +331,8 @@ Modos_juego ArenaCombate::click(int x, int y) {
 	float cx = ((x - offsetX) / (float)tam) * 800 - 400;
 	float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
+	
+	
 	ETSIDI::play("assets/sonidos/click.mp3");
 
 

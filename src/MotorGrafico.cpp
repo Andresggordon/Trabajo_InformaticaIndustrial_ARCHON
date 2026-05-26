@@ -458,8 +458,8 @@ void MotorGrafico::dibujarBarrasHP(Personaje* local, Personaje* invasor) {
     glDisable(GL_LIGHTING);
 
     // ── Barra HP local (izquierda) ──────────────
-    float xIniL = -228.f, xFinL = -76.f;
-    float ySupL = -265.f, yInfL = -274.f;
+    float xIniL = -305.f, xFinL = -94.f;
+    float ySupL = -350.f, yInfL = -369.f;
 
     if (manana != nullptr) {
         float pct = manana->getPorcentajeVida();
@@ -485,8 +485,8 @@ void MotorGrafico::dibujarBarrasHP(Personaje* local, Personaje* invasor) {
     }
 
     // ── Barra HP invasor (derecha) ───────────────
-    float xIniR = 104.f, xFinR = 255.f;
-    float ySupR = -265.f, yInfR = -274.f;
+    float xIniR = 138.f, xFinR = 347.f;
+    float ySupR = -350.f, yInfR = -369.f;
 
     if (tarde != nullptr) {
         float pct = tarde->getPorcentajeVida();
