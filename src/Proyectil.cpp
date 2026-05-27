@@ -1,7 +1,18 @@
+/**
+ * @file Proyectil.cpp
+ * @brief Clase para el control de los proyectiles para la arena
+ *
+ * @details Crea y destruye los proyectiles de cada personaje.
+ * Implementa cada proyectil con su información específica de velocidad, daño y alcance, y su sprite único.
+ * 
+ *
+ */
+
 #include "Proyectil.h"
 #include <GL/freeglut.h>
 #include <cmath>
-
+//El constructor de la clase donde tiene la información necesaria para utilizar los proyectiles.
+//Teniendo por ejemplo, la información de la posición de origen, la posición final dependiendo del alcance, etc...
 Proyectil::Proyectil(float origenX, float origenY,
     float destinoX, float destinoY,
     int dano, float velocidad,
@@ -20,11 +31,12 @@ Proyectil::Proyectil(float origenX, float origenY,
     origenY_ = origenY;
     distanciaMaxima_ = alcance * 45.0f;
 }
-
+//Borra el proyectil al final
 Proyectil::~Proyectil() {
     delete sprite_;
 }
-
+//Actualiza en tiempo real el proyectil en la pantalla, controlando la trayectoria y la velocidad.
+//Y cuando llega al final lo destruye si no detecta la colisión.
 void Proyectil::actualizar() {
     if (llegado_) return;
 
@@ -42,27 +54,27 @@ void Proyectil::actualizar() {
 
     if (tieneSprite_) sprite_->setPos(x_, y_);
 
-    // Calcular distancia recorrida desde el origen
+    
     float recorrido = sqrt((x_ - origenX_) * (x_ - origenX_) +
         (y_ - origenY_) * (y_ - origenY_));
     if (recorrido >= distanciaMaxima_) {
-        llegado_ = true;  // desaparece sin hacer daño
+        llegado_ = true;  
     }
 }
-
+//Dibuja el proyectil correspondiente
 void Proyectil::dibujar() const {
     if (llegado_) return;
 
     if (tieneSprite_) {
-        // 1. Decirle al sprite dónde debe estar en este instante exacto
+        
         sprite_->setPos(x_, y_);
 
-        // 2. Ahora sí, pintarlo
+        
         sprite_->draw();
         return;
     }
 }
-
+//Detecta la colisión con el otro personaje si se encuentra en el radio de alcance del proyectil.
 bool Proyectil::ColisionaCon(float x, float y, float radio) const {
     float dx = x_ - x;
     float dy = y_ - y;

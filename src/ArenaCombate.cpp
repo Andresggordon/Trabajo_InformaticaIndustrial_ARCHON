@@ -1,40 +1,47 @@
+/**
+ * @file ArenaCombate.cpp
+ * @brief Programación y control de la Arena de combate
+ *
+ * @details Centraliza todo lo relacionado con el combate en la arena.
+ * Tiene el control de donde colocar a los personajes y de como se mueven y de como atacan por la arena dependiendo del tipo de personaje.
+ * Además, marca el resultado de quien gana la partida y quien muere durante el combate.
+ *
+ */
+
 #include "ArenaCombate.h"
 #include "MotorGrafico.h"
 #include "personaje.h"
 #include "tipo_personaje.h"
 #include <GL/freeglut.h>
 #include "Proyectil.h"
-#include "Tablero.h"   // FaseCiclo + EstadoCasilla (no hay ciclo: .cpp incluye .h, no al revés)
+#include "Tablero.h"   
 #include "Partida.h"
 
-// Convierte posición en cuadrícula a coordenadas OpenGL
+// Obtenemos las coordenadas de los personajes para poder controlar su movimiento en la arena
 static float arenaToX(int columna) {
 	return -245.0f + columna * 45.0f+22.5f;
 }
 static float arenaToY(int fila) {
 	return -245.0f + fila * 45.0f+22.5f;
 }
-
+//La función coge la información del choque en el tablero y coloca a los personajes en la arena.
+// Además si hay un bonus por estar en la casilla, calcula el extra de daño que hará el personaje durante el combate
 void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo, FaseCiclo fase)
 {
 	local_ = local;
 	invasor_ = invasor;
 	modo_ = modo;
 
-	// En modo 1, averiguar cual de los dos personajes lleva el humano para que
-	// WASD y disparo se apliquen siempre a SU pieza (sea ella defensor o atacante).
+	
 	if (modo_ == 1) {
 		Turno bandoHumano = (equipo_j1 == 1) ? Turno::TURNO_DE_MANANA
 		                                     : Turno::TURNO_DE_TARDE;
 		humanoControlaLocal_ = (local_ != nullptr && local_->getTurno() == bandoHumano);
 	} else {
-		humanoControlaLocal_ = false; // no se usa en modo 2 jugadores
+		humanoControlaLocal_ = false; 
 	}
 
-	
-
-	// Inicializar en la arena a cada turno siempre en su respectivo lado
-	if (local_->getTurno() == Turno::TURNO_DE_MANANA) {
+	if (local_!=nullptr && local_->getTurno() == Turno::TURNO_DE_MANANA) {
 		posLocal_ = { 5, 0};   
 		posInvasor_ = { 5, 10 }; 
 
@@ -69,8 +76,7 @@ void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo
 	tiempoUltimoMovimiento_ = glutGet(GLUT_ELAPSED_TIME);
 	tiempoUltimoMovimientoIA_ = ahora;
 
-	//Ventaja de terreno: bonus de daño
-	static const int BONUS_TERRENO_PCT = 25; // % de daño extra
+	static const int BONUS_TERRENO_PCT = 25; 
 
 	bonusDanioLocal_ = 0;
 	bonusDanioInvasor_ = 0;
@@ -99,7 +105,8 @@ void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo
 	bonusDanioLocal_ = calcularBonus(local_);
 	bonusDanioInvasor_ = calcularBonus(invasor_);
 }
-
+//Para que el personaje se pueda mover, primero hay que comprobar que el destino esta dentro de la arena jugable
+//Luego, comprueba que no esta siendo ocupada esa posición para poder moverse. La arena es 11x11.
 bool ArenaCombate::moverEnArena(PosArena& pos, int df, int dc)
 {
 	int nuevaFila = pos.fila + df;
@@ -119,7 +126,8 @@ bool ArenaCombate::moverEnArena(PosArena& pos, int df, int dc)
 	pos.columna = nuevaColumna;
 	return true;
 }
-//Movimiento del Jugador 1 en el modo de 1vs1 y en el modo contra la máquina
+//Para moverse en tablero, el jugador uasará las teclas WASD. Mientras el ataque se usará el espacio.
+//En el modo de 2 jugadores, el turno de tarde atacará con el enter.
 void ArenaCombate::teclado(unsigned char key)
 {
 	if (combateTerminado_)
@@ -134,7 +142,7 @@ void ArenaCombate::teclado(unsigned char key)
 		pHumano = (bandoHumano == Turno::TURNO_DE_MANANA) ? pManana : pTarde;
 	}
 	else {
-		pHumano = pManana;  // modo 2: WASD siempre es mañana
+		pHumano = pManana;  
 	}
 	Personaje* pRival = (pHumano == pManana) ? pTarde : pManana;
 	int& cooldownHumano = (pHumano == local_) ? tiempoUltimoAtaqueLocal_
@@ -153,9 +161,6 @@ void ArenaCombate::teclado(unsigned char key)
 	case 'a':
 		teclaA = true;
 		{
-			// La orientacion afecta a la pieza del humano (que en modo 1
-			// puede ser local_ o invasor_ segun quien inicio el choque).
-			
 			if (pHumano) {
 				pHumano->setMirandoDerecha(false);
 				pHumano->setMirandoIzquierda(true);
@@ -173,10 +178,6 @@ void ArenaCombate::teclado(unsigned char key)
 		}
 		break;
 
-		// Ataque jugador 1 (espacio) — funciona en modo 1 y 2.
-		// En modo 1 ataca con la pieza del humano (que puede ser local_ o
-		// invasor_ segun quien inicio el choque). Se usa el cooldown del bando
-		// correspondiente para que la cadencia sea coherente.
 	case 32: {
 		int ahora = glutGet(GLUT_ELAPSED_TIME);
 		if (ahora - cooldownHumano >= COOLDOWN_ATAQUE) {
@@ -186,7 +187,6 @@ void ArenaCombate::teclado(unsigned char key)
 		break;
 	}
 
-		// Ataque jugador 2 (Enter) — solo modo 2 jugadores
 	case 13: {
 		if (modo_ == 2) {
 			int ahora = glutGet(GLUT_ELAPSED_TIME);
@@ -199,7 +199,7 @@ void ArenaCombate::teclado(unsigned char key)
 	} 
 	}
 }
-//Movimiento del jugador 2 en el modo 1vs1
+//En el modo de dos jugadores, el equipo de tarde se moverá con las flechas del teclado.
 void ArenaCombate::tecladoEspecial(int key)
 {
 	if (combateTerminado_)
@@ -234,16 +234,16 @@ void ArenaCombate::tecladoEspecial(int key)
 		break;
 	}
 }
-
+//Una vez termina el combate, resetea todas las variables para que cuando se vuelva a la arena se empiece desde el principio
 void ArenaCombate::finalizarCombate()
 {
-	// Limpiar proyectiles pendientes
+	
 	for (auto p : proyectiles_) {
 		delete p;
 	}
 	proyectiles_.clear();
 
-	// Resetear teclas
+	
 	teclaW = false;
 	teclaS = false;
 	teclaA = false;
@@ -256,7 +256,7 @@ void ArenaCombate::finalizarCombate()
 	local_ = nullptr;
 	invasor_ = nullptr;
 }
-
+//Una vez termine, determina el resultado de la arena y pasa la información al tablero inicial, además de activar el cartel correspondiente
 void ArenaCombate::resolverResultado() {
     combateTerminado_ = true;
     if (local_->estaVivo()) {
@@ -266,21 +266,21 @@ void ArenaCombate::resolverResultado() {
         resultado_ = ResultadoCombate::Gana_Invasor;
         Partida::get_instance().registrarMuerto(local_);
     }
-    //activa cartel
+   
     mostrandoCartel_ = true;
     tiempoCartel_    = glutGet(GLUT_ELAPSED_TIME);
 }
-
+//Devuelve que ha terminado el combate
 bool ArenaCombate::combateTerminado() const
 {
 	return combateTerminado_;
 }
-
+//Coge el resultado de la arena
 ResultadoCombate ArenaCombate::getResultado() const
 {
 	return resultado_;
 }
-
+//El constructor de la clase, se encarga de guardar las imágenes y las posiciones de los personajes en la arena.
 ArenaCombate::ArenaCombate() {
 	fondo_arena = new ETSIDI::Sprite("assets/menu_imagenes/ArenaCombate.png", 0, 0, 800, 800);
 	abandonar_partida = new ETSIDI::Sprite("assets/menu_imagenes/boton_abandonar.png", 0, 0, 800, 800);
@@ -291,17 +291,17 @@ ArenaCombate::ArenaCombate() {
 	cartel_gana_manana_ = new ETSIDI::Sprite("assets/menu_imagenes/cartel_gana_manana_.png", 0, 0, 400, 400);
 	cartel_gana_tarde_ = new ETSIDI::Sprite("assets/menu_imagenes/cartel_gana_tarde_.png", 0, 0, 400, 400);
 }
-
+//Función para pintar la arena de combate en la pantalla
 void ArenaCombate::dibuja() {
 	fondo_arena->draw();
 }
-
+//Función para pintar el mensaje de abandonar partida
 void ArenaCombate::dibujaPopup()
 {
 	abandonar_partida->draw();
 	if (mostrar_popup) popup_salir->draw();
 }
-
+//Actualiza los mensajes en la pantalla
 void ArenaCombate::update(int x, int y) {
 	int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
 	int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
@@ -321,7 +321,7 @@ void ArenaCombate::update(int x, int y) {
 		else boton_activo = 0;
 	}
 }
-
+//Detecta el click del ordenador, además de iniciar y parar la música
 Modos_juego ArenaCombate::click(int x, int y) {
 	int ventana_w = glutGet(GLUT_WINDOW_WIDTH);
 	int ventana_h = glutGet(GLUT_WINDOW_HEIGHT);
@@ -331,10 +331,7 @@ Modos_juego ArenaCombate::click(int x, int y) {
 	float cx = ((x - offsetX) / (float)tam) * 800 - 400;
 	float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
-	
-	
 	ETSIDI::play("assets/sonidos/click.mp3");
-
 
 	int col = (int)((cx - MotorGrafico::INICIO_X) / MotorGrafico::TAM);
 	int fil = (int)((cy - MotorGrafico::INICIO_Y) / MotorGrafico::TAM);
@@ -355,7 +352,7 @@ Modos_juego ArenaCombate::click(int x, int y) {
 	}
 	return Modos_juego::Arena_Combate;
 }
-
+//Controlamos que se aplique el ataque correctamente cuando el proyectil choca con el jugador rival
 void ArenaCombate::aplicarAtaque(Personaje* atacante, Personaje* defensor) {
 	if (atacante == nullptr || defensor == nullptr) return;
 	if (combateTerminado_) return;
@@ -375,9 +372,10 @@ void ArenaCombate::aplicarAtaque(Personaje* atacante, Personaje* defensor) {
 		atacante->getNombreProyectil(),
 		esLocal, atacante->getArma().getAlcance()));
 }
-
+//Se va actualizando el combate en tiempo real, controlando el movimiento de los personajes, los ataques y la vida de cada personaje.
+//Además de controlar el movimiento y la colisión de los choques
 void ArenaCombate::actualizar() {
-	// 1. Lógica de pausa
+	
 	if (mostrandoCartel_) {
 		if (glutGet(GLUT_ELAPSED_TIME) - tiempoCartel_ >= DURACION_CARTEL)
 			mostrandoCartel_ = false;
@@ -385,19 +383,18 @@ void ArenaCombate::actualizar() {
 	}
 	if (combateTerminado_) return;
 
-	// --- IDENTIFICACIÓN DE BANDOS ---
-	// Calculamos quién es quién aquí arriba para usarlo en todo el código
+	
 	Personaje* pManana = (local_->getTurno() == Turno::TURNO_DE_MANANA) ? local_ : invasor_;
 	Personaje* pTarde = (local_->getTurno() == Turno::TURNO_DE_TARDE) ? local_ : invasor_;
 
-	// 2. Sincronización de Animaciones (Estados)
+	
 	if (modo_ == 2) {
-		// En modo 2 jugadores: Mañana usa WASD, Tarde usa Flechas
+		
 		if (pManana != nullptr) pManana->setEnMovimiento(teclaW || teclaS || teclaA || teclaD);
 		if (pTarde != nullptr)  pTarde->setEnMovimiento(teclaArriba || teclaAbajo || teclaIzquierda || teclaDerecha);
 	}
 	else {
-		// En modo 1 jugador: El humano siempre usa WASD
+		
 		Turno bandoHumano = (equipo_j1 == 1) ? Turno::TURNO_DE_MANANA : Turno::TURNO_DE_TARDE;
 		Personaje* pHumano = (bandoHumano == Turno::TURNO_DE_MANANA) ? pManana : pTarde;
 
@@ -406,11 +403,11 @@ void ArenaCombate::actualizar() {
 
 	int ahora = glutGet(GLUT_ELAPSED_TIME);
 
-	// 3. Movimiento de Proyectiles (Siempre se actualizan)
+	
 	for (auto p : proyectiles_)
 		p->actualizar();
 
-	// 4. Colisiones
+	
 	float xLocal = arenaToX(posLocal_.columna);
 	float yLocal = arenaToY(posLocal_.fila);
 	float xInvasor = arenaToX(posInvasor_.columna);
@@ -421,7 +418,7 @@ void ArenaCombate::actualizar() {
 	int distancia = max(distFila, distCol);
 
 	for (auto p : proyectiles_) {
-		// Impacto LOCAL -> INVASOR
+		
 		if (p->esDeLocal() && p->ColisionaCon(xInvasor, yInvasor, 60.0f)) {
 			p->marcarLlegado();
 			if (distancia <= local_->getArma().getAlcance()) {
@@ -436,7 +433,7 @@ void ArenaCombate::actualizar() {
 				}
 			}
 		}
-		// Impacto INVASOR -> LOCAL
+		
 		else if (!p->esDeLocal() && p->ColisionaCon(xLocal, yLocal, 60.0f)) {
 			p->marcarLlegado();
 			if (distancia <= invasor_->getArma().getAlcance()) {
@@ -453,33 +450,33 @@ void ArenaCombate::actualizar() {
 		}
 	}
 
-	// 5. Limpieza de proyectiles
+	
 	for (auto it = proyectiles_.begin(); it != proyectiles_.end();) {
 		if ((*it)->haLlegado()) { delete* it; it = proyectiles_.erase(it); }
 		else { ++it; }
 	}
 
-	// 6. Movimiento de personajes (con cooldown)
+	
 	if (ahora - tiempoUltimoMovimiento_ >= INTERVALO_MOVIMIENTO) {
 
 		PosArena& posManana = (pManana == local_) ? posLocal_ : posInvasor_;
 		PosArena& posTarde = (pTarde == local_) ? posLocal_ : posInvasor_;
 
 		if (modo_ == 2) {
-			// WASD mueve mañana
+			
 			if (teclaW && moverEnArena(posManana, 1, 0)) pManana->incrementarPasos();
 			if (teclaS && moverEnArena(posManana, -1, 0)) pManana->incrementarPasos();
 			if (teclaA && moverEnArena(posManana, 0, -1)) pManana->incrementarPasos();
 			if (teclaD && moverEnArena(posManana, 0, 1)) pManana->incrementarPasos();
 
-			// Flechas mueven tarde
+			
 			if (teclaArriba && moverEnArena(posTarde, 1, 0)) pTarde->incrementarPasos();
 			if (teclaAbajo && moverEnArena(posTarde, -1, 0)) pTarde->incrementarPasos();
 			if (teclaIzquierda && moverEnArena(posTarde, 0, -1)) pTarde->incrementarPasos();
 			if (teclaDerecha && moverEnArena(posTarde, 0, 1)) pTarde->incrementarPasos();
 		}
 		else {
-			// Modo 1: WASD mueve al bando del humano
+			
 			Turno bandoHumano = (equipo_j1 == 1) ? Turno::TURNO_DE_MANANA : Turno::TURNO_DE_TARDE;
 			Personaje* pHumano = (bandoHumano == Turno::TURNO_DE_MANANA) ? pManana : pTarde;
 			PosArena& posHumano = (pHumano == local_) ? posLocal_ : posInvasor_;
@@ -493,15 +490,10 @@ void ArenaCombate::actualizar() {
 	}
 	if (modo_ == 1) moverMaquina();
 }
-
+//Controlamos el movimiento y el ataque de la máquina en el modo de 1 jugador en la arena.
+//Busca estar siempre a tiro del humano para poder disparar.
+//Controla el turno que no escoge el jugador.
 void ArenaCombate::moverMaquina() {
-	// Estrategia: la pieza de la IA es un tirador.
-	//   - Si tiene al humano a tiro -> dispara con el mismo cooldown que
-	//     el jugador (combate justo).
-	//   - Si esta a tiro, NO se acerca mas: mantiene posicion.
-	//   - Si esta fuera de rango -> da un paso hacia el humano.
-	// La IA puede ser local_ O invasor_ segun quien inicio el choque (ver
-	// humanoControlaLocal_), por eso resolvemos los datos con referencias.
 	if (combateTerminado_) return;
 	if (invasor_ == nullptr || local_ == nullptr) return;
 
@@ -520,17 +512,17 @@ void ArenaCombate::moverMaquina() {
 	int distancia = max(distFila, distCol);
 	int alcance = piezaIA->getArma().getAlcance();
 
-	// ── ATAQUE: si esta a tiro, disparar con su cooldown propio.
+	
 	if (distancia <= alcance) {
-		piezaIA->setEnMovimiento(false);  // quieta, en modo "disparo"
+		piezaIA->setEnMovimiento(false); 
 		if (ahora - tiempoAtaqueIA >= COOLDOWN_ATAQUE_IA) {
 			aplicarAtaque(piezaIA, piezaHumano);
 			tiempoAtaqueIA = ahora;
 		}
-		return;   // en rango: NO perseguir mas, mantener posicion de tirador
+		return;   
 	}
 
-	// ── MOVIMIENTO: fuera de rango, acercarse un paso (cadencia propia).
+	
 	if (ahora - tiempoUltimoMovimientoIA_ < INTERVALO_MOVIMIENTO_IA) return;
 
 	int df = 0, dc = 0;
@@ -548,7 +540,7 @@ void ArenaCombate::moverMaquina() {
 		piezaIA->setMirandoIzquierda(true);
 	}
 
-	// Intentar la diagonal; si esa celda esta bloqueada, probar por ejes.
+	
 	bool movido = false;
 	if (moverEnArena(posIA, df, dc)) {
 		movido = true;
@@ -566,7 +558,7 @@ void ArenaCombate::moverMaquina() {
 	}
 	tiempoUltimoMovimientoIA_ = ahora;
 }
-
+//Podemos hacer que se pueda mover y atacar a la vez mediante la detección de varios botones a la vez.
 void ArenaCombate::teclaLevantada(unsigned char key) {
 	switch (key) {
 	case 'w': teclaW = false; break;
@@ -575,7 +567,7 @@ void ArenaCombate::teclaLevantada(unsigned char key) {
 	case 'd': teclaD = false; break;
 	}
 }
-
+//Igual que el anterior.
 void ArenaCombate::teclaEspecialLevantada(int key) {
 	switch (key)
 	{
@@ -593,17 +585,17 @@ void ArenaCombate::teclaEspecialLevantada(int key) {
 		break;
 	}
 }
-
+//Función para pintar los proyectiles de cada personaje.
 void ArenaCombate::dibujarProyectiles() {
 	for (auto p : proyectiles_)
 		p->dibujar();
 }
 
-
+//Una vez obtenido el resultado, dibujamos el cartel de que turno ha ganado si mañana o tarde.
 void ArenaCombate::dibujaCartel() {
 	if (!mostrandoCartel_) return;
 
-	// Determinamos quién ganó y miramos su turno
+	
 	Personaje* ganador = (resultado_ == ResultadoCombate::Gana_Local) ? local_ : invasor_;
 
 	if (ganador != nullptr && ganador->getTurno() == Turno::TURNO_DE_TARDE)
