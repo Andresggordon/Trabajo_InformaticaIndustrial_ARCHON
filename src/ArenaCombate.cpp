@@ -427,12 +427,13 @@ void ArenaCombate::actualizar() {
 			if (distancia <= local_->getArma().getAlcance()) {
 				if (invasor_ != nullptr && invasor_->estaVivo()) {
 					if (invasor_->getEscudo()) {
-						invasor_->decrementarEscudo();  
+						invasor_->decrementarEscudo();
 					}
 					else {
 						invasor_->recibirDano(p->getDano());
 						if (!invasor_->estaVivo()) resolverResultado();
 					}
+				}
 			}
 		}
 		// Impacto INVASOR -> LOCAL
@@ -441,7 +442,7 @@ void ArenaCombate::actualizar() {
 			if (distancia <= invasor_->getArma().getAlcance()) {
 				if (local_ != nullptr && local_->estaVivo()) {
 					if (local_->getEscudo()) {
-						local_->decrementarEscudo(); 
+						local_->decrementarEscudo();
 					}
 					else {
 						local_->recibirDano(p->getDano());
