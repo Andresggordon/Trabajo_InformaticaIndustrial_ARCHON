@@ -14,13 +14,21 @@ PantallaFinal::PantallaFinal() {
     tiempoFaseVictoria_ = 0;
 }
 
-void PantallaFinal::setResultado(ResultadoPartida r, int puntuacion) {
+void PantallaFinal::setResultado(ResultadoPartida r, int puntuacion, bool ganadorEsHumano) {
     resultado_ = r;
     puntuacion_ = puntuacion;
     nombre_ = "";
-    fase_ = Fase::PEDIR_NOMBRE;
     ETSIDI::stopMusica();
     ETSIDI::playMusica("assets/sonidos/victoria.mp3", false);
+
+    if (ganadorEsHumano) {
+        fase_ = Fase::PEDIR_NOMBRE;
+    }
+    else {
+        nombre_ = "IA";  // o el nombre que quieras que aparezca en el ranking
+        fase_ = Fase::MOSTRAR_VICTORIA;
+        tiempoFaseVictoria_ = glutGet(GLUT_ELAPSED_TIME);
+    }
 }
 
 void PantallaFinal::dibujarTextoCentrado(const std::string& texto, void* font,

@@ -411,8 +411,11 @@ Modos_juego Partida::comprobarFinPartida() {
         << (ganaMan ? "MANANA" : "TARDE")
         << " (puntuacion " << puntuacion << ")\n";
 
+    bool ganadorEsHumano = (modo_actual == 2) ||
+        (modo_actual == 1 && ((ganaMan && equipo_j1 == 1) || (!ganaMan && equipo_j1 == 2)));
+
     if (pantalla_final != nullptr)
-        pantalla_final->setResultado(res, puntuacion);
+        pantalla_final->setResultado(res, puntuacion, ganadorEsHumano);
 
 
     return Modos_juego::Pantalla_Final;

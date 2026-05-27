@@ -29,8 +29,8 @@ public:
     
     // Llamar desde Partida justo antes de cambiar al estado Pantalla_Final.
     // Tambien arranca el temporizador de la fase de creditos.
-    void setResultado(ResultadoPartida r, int puntuacion);
-    void teclado(unsigned char key);
+    void PantallaFinal::setResultado(ResultadoPartida r, int puntuacion, bool ganadorEsHumano);
+        void teclado(unsigned char key);
     bool volverMenu() const;
 
     enum class Fase { PEDIR_NOMBRE, MOSTRAR_VICTORIA, CREDITOS };
