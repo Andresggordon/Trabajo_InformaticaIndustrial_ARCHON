@@ -1,3 +1,12 @@
+/**
+ * @file Tablero.cpp
+ * @brief Gestión espacial del juego.
+ *
+ * @details Mantiene la matriz de 9x9 casillas, gestiona el ciclo día/noche y resuelve las interacciones entre personajes.
+ * Proporciona acceso a las casillas mediante getCasilla() y avanza el ciclo de luz mediante avanzarCiclo(), cuya fase determina tanto el color del tablero como el bonus de daño en la arena.
+ * 
+ */
+
 #include "Tablero.h"
 #include "personaje.h"
 

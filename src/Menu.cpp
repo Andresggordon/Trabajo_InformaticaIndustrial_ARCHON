@@ -1,4 +1,13 @@
-﻿#include "Menu.h"
+﻿/**
+ * @file Menu.cpp
+ * @brief Menú principal del juego.
+ *
+ * @details Muestra las opciones de un jugador, dos jugadores, ranking y salir.
+ * Gestiona el indicador de botón activo mediante el ratón, arranca la música de fondo y redirige a la pantalla correspondiente según la elección del jugador.
+ *
+ */
+
+#include "Menu.h"
 #include <GL/freeglut.h>
 #include <iostream>
 

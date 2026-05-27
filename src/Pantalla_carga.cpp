@@ -1,3 +1,13 @@
+/**
+ * @file Pantalla_carga.cpp
+ * @brief Pantalla inicial de carga del juego.
+ *
+ * @details Muestra el fondo con el título del juego y espera a que el jugador pulse Enter.
+ * A continuación anima dos logos de la universidad que se desplazan hacia el centro mediante un temporizador interno.
+ * Cuando la animación concluye activa carga_completa y avanza al menú principal.
+ * 
+ */
+
 #include "Pantalla_carga.h"
 #include <GL/freeglut.h>
 

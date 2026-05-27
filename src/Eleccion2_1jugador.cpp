@@ -1,5 +1,14 @@
+/**
+ * @file Eleccion2_1jugador.cpp
+ * @brief Pantalla de selección del orden de turno para el modo de un jugador.
+ *
+ * @details Permite al jugador elegir qué bando comienza primero: mañana, tarde o aleatorio mediante ETSIDI::lanzaMoneda().
+ * Guarda la decisión en la variable global turno_inicio y lanza la partida.
+ * 
+ */
+
 #include "Eleccion2_1jugador.h"
-#include <GL/freeglut.h>ç
+#include <GL/freeglut.h>
 #include<iostream>
 
 Eleccion2_1jugador::Eleccion2_1jugador() {

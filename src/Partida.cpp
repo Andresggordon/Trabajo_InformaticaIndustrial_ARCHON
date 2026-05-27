@@ -1,3 +1,12 @@
+/**
+ * @file Partida.cpp
+ * @brief Controlador principal de la fase de juego.
+ *
+ * @details Implementa el patrón Singleton y actúa como coordinador entre el tablero, los personajes, la IA y la arena de combate.
+ * Gestiona los turnos, las habilidades de los líderes, las casillas iluminadas, las barras de vida y la detección del fin de partida.
+ * 
+ */
+
 #include "Partida.h"
 #include "MotorGrafico.h"
 #include <GL/freeglut.h>

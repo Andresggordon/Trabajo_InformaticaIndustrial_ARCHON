@@ -1,3 +1,12 @@
+/**
+ * @file Eleccion_2jugadores.cpp
+ * @brief Pantalla de selección de equipos para el modo de dos jugadores.
+ *
+ * @details El jugador uno elige su bando y el jugador dos recibe automáticamente el contrario. 
+ * Actualiza equipo_j1 y equipo_j2 y avanza directamente a la partida sin pantalla adicional de selección de turno.
+ *
+ */
+
 #include "Eleccion_2jugadores.h"
 #include <GL/freeglut.h>
 #include <iostream>

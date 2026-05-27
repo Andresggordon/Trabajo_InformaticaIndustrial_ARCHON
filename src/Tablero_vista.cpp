@@ -1,3 +1,12 @@
+/**
+ * @file Tablero_vista.cpp
+ * @brief Vista gráfica del tablero.
+ *
+ * @details Responsable del renderizado de la cuadrícula.
+ * Recibe un puntero observador al Tablero y consulta su estado a través de métodos públicos para dibujar cada casilla con su color correspondiente mediante primitivas OpenGL, sin modificar nunca el modelo.
+ *
+ */
+
 #include "Tablero_vista.h"
 #include "Casilla.h"
 
