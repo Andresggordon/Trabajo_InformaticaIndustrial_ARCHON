@@ -426,8 +426,13 @@ void ArenaCombate::actualizar() {
 			p->marcarLlegado();
 			if (distancia <= local_->getArma().getAlcance()) {
 				if (invasor_ != nullptr && invasor_->estaVivo()) {
-					invasor_->recibirDano(p->getDano());
-					if (!invasor_->estaVivo()) resolverResultado();
+					if (invasor_->getEscudo()) {
+						invasor_->decrementarEscudo();
+					}
+					else {
+						invasor_->recibirDano(p->getDano());
+						if (!invasor_->estaVivo()) resolverResultado();
+					}
 				}
 			}
 		}
@@ -436,8 +441,13 @@ void ArenaCombate::actualizar() {
 			p->marcarLlegado();
 			if (distancia <= invasor_->getArma().getAlcance()) {
 				if (local_ != nullptr && local_->estaVivo()) {
-					local_->recibirDano(p->getDano());
-					if (!local_->estaVivo()) resolverResultado();
+					if (local_->getEscudo()) {
+						local_->decrementarEscudo();
+					}
+					else {
+						local_->recibirDano(p->getDano());
+						if (!local_->estaVivo()) resolverResultado();
+					}
 				}
 			}
 		}

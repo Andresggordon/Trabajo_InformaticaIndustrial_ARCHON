@@ -9,6 +9,7 @@
 
 #include "Tablero_vista.h"
 #include "Casilla.h"
+#include "Finpartida.h"
 
 Tablero_vista::Tablero_vista(Tablero* t) {
     mi_tablero = t;
