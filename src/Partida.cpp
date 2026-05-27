@@ -398,13 +398,21 @@ Modos_juego Partida::comprobarFinPartida() {
         : ResultadoPartida::VICTORIA_TARDE;
     Turno bandoGanador = ganaMan ? Turno::TURNO_DE_MANANA : Turno::TURNO_DE_TARDE;
 
-    // Puntuacion sencilla: piezas que le quedan en juego al ganador.
-    int piezas = 0;
-    for (auto* p : personajes)
-        if (p && p->estaVivo() && p->getCasillaActual() != nullptr
-            && p->getTurno() == bandoGanador)
-            piezas++;
-    int puntuacion = piezas * 100;
+    // Puntuacion = piezas vivas propias + piezas eliminadas del rival.
+    //   - Cada pieza propia que sobrevive da 100 puntos (cuanto menos sufras, mejor).
+    //   - Cada pieza del rival que has eliminado da otros 100 puntos (premia la agresividad).
+    int piezasGanadorVivas    = 0;
+    int piezasRivalEliminadas = 0;
+    for (auto* p : personajes) {
+        if (!p) continue;
+        bool enJuego = p->estaVivo() && p->getCasillaActual() != nullptr;
+        if (p->getTurno() == bandoGanador) {
+            if (enJuego) piezasGanadorVivas++;
+        } else {
+            if (!enJuego) piezasRivalEliminadas++;
+        }
+    }
+    int puntuacion = (piezasGanadorVivas + piezasRivalEliminadas) * 100;
     std::string nombre = ganaMan ? "Turno de Manana" : "Turno de Tarde";
 
     std::cout << "[FIN PARTIDA] gana "

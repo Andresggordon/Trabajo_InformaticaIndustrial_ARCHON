@@ -61,6 +61,7 @@ void Ranking::dibujarTextoCentrado(const std::string& texto, void* font,
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
+    glDisable(GL_LIGHTING);   // sin esto, glRasterPos2f captura el color "iluminado" (sale negro)
     glColor3f(r, g, b);
     glRasterPos2f(-ancho / 2.0f, y);
     for (char c : texto)
@@ -93,10 +94,14 @@ void Ranking::dibuja() {
         std::string linea = std::to_string(i + 1) + ". " + e.nombre
             + "   " + std::to_string(e.puntuacion) + " pts";
 
+        // Colores del podio bien contrastados sobre el fondo oscuro del ranking:
+        //   oro    = amarillo dorado intenso
+        //   plata  = gris azulado claro (claramente metalico, no confundible con blanco)
+        //   bronce = cobre naranja saturado
         float r = 1.0f, g = 1.0f, b = 1.0f;
-        if (i == 0) { r = 1.0f; g = 0.85f; b = 0.0f; }   // oro
-        else if (i == 1) { r = 0.8f; g = 0.8f;  b = 0.85f; }  // plata
-        else if (i == 2) { r = 0.8f; g = 0.5f;  b = 0.2f; }   // bronce
+        if      (i == 0) { r = 1.00f; g = 0.82f; b = 0.00f; }   // oro
+        else if (i == 1) { r = 0.70f; g = 0.78f; b = 0.92f; }   // plata
+        else if (i == 2) { r = 0.87f; g = 0.50f; b = 0.13f; }   // bronce
 
         dibujarTextoCentrado(linea, GLUT_BITMAP_HELVETICA_18,
             yInicio - i * dy, r, g, b);

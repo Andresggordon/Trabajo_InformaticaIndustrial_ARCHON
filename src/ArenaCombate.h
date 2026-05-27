@@ -81,7 +81,8 @@ private:
 	//Temporizadores de ataque (ms)
 	int tiempoUltimoAtaqueLocal_ = 0;
 	int tiempoUltimoAtaqueInvasor_ = 0;
-	static const int COOLDOWN_ATAQUE = 750;
+	static const int COOLDOWN_ATAQUE = 750;       
+	static const int COOLDOWN_ATAQUE_IA = 1500;   
 
 	//Métodos de ataque
 	void aplicarAtaque(Personaje* atacante, Personaje* defensor);

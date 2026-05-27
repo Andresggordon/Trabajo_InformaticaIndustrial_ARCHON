@@ -520,13 +520,14 @@ void ArenaCombate::moverMaquina() {
 	int distancia = max(distFila, distCol);
 	int alcance = piezaIA->getArma().getAlcance();
 
-	// ── ATAQUE: si esta a tiro, disparar con el mismo cooldown que el jugador.
+	// ── ATAQUE: si esta a tiro, disparar con su cooldown propio.
 	if (distancia <= alcance) {
 		piezaIA->setEnMovimiento(false);  // quieta, en modo "disparo"
-		if (ahora - tiempoAtaqueIA >= COOLDOWN_ATAQUE) {
+		if (ahora - tiempoAtaqueIA >= COOLDOWN_ATAQUE_IA) {
 			aplicarAtaque(piezaIA, piezaHumano);
 			tiempoAtaqueIA = ahora;
 		}
+		return;   // en rango: NO perseguir mas, mantener posicion de tirador
 	}
 
 	// ── MOVIMIENTO: fuera de rango, acercarse un paso (cadencia propia).
