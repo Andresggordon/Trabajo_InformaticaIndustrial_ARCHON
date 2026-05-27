@@ -3,6 +3,7 @@
 #include "ArenaCombate.h"
 #include "personaje.h"
 #include "habilidades_profes.h"
+#include "Finpartida.h"
 #include <cmath>
 
 float MotorGrafico::tiempoAviso = 0.0f;
@@ -205,6 +206,43 @@ void MotorGrafico::dibujarTablero(const Tablero& t) {
         }
     }
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glLineWidth(4.0f);
+
+    for (int i = 0; i < FinPartida::NUM_PUNTOS_PODER; i++) {
+        int fila = FinPartida::PUNTOS_PODER[i][0];
+        int col = FinPartida::PUNTOS_PODER[i][1];
+        float x = INICIO_X + col * TAM;
+        float y = INICIO_Y + fila * TAM;
+
+        Personaje* p = t.getCasilla(fila, col).getPersonaje();
+
+ 
+        if (p != nullptr && p->estaVivo()) {
+            if (p->getTurno() == Turno::TURNO_DE_MANANA)
+                glColor4f(1.0f, 0.55f, 0.1f, 0.45f);
+            else
+                glColor4f(0.4f, 0.0f, 0.6f, 0.45f);
+            glBegin(GL_QUADS);
+            glVertex2f(x, y);
+            glVertex2f(x + TAM, y);
+            glVertex2f(x + TAM, y + TAM);
+            glVertex2f(x, y + TAM);
+            glEnd();
+        }
+
+        glColor3f(1.0f, 0.0f, 1.0f);
+        glBegin(GL_LINE_LOOP);
+        glVertex2f(x + 3, y + 3);
+        glVertex2f(x + TAM - 3, y + 3);
+        glVertex2f(x + TAM - 3, y + TAM - 3);
+        glVertex2f(x + 3, y + TAM - 3);
+        glEnd();
+    }
+
+    glDisable(GL_BLEND);
+    glLineWidth(1.0f);
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
