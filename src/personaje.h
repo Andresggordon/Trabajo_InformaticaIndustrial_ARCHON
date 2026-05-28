@@ -86,6 +86,10 @@ public:
     float getPosYVisual() const { return posY_visual_; }
     bool estaEnTransicion() const { return en_transicion_; }
 
+    //Para conocer si ha habido teletransporte o no
+    bool getTeletransportado() const { return recien_teletransportado; }
+    void setTeletransportado(bool b) { recien_teletransportado = b; }
+
 protected:
     // Atributos base
     std::string nombre;
@@ -116,4 +120,6 @@ protected:
     float posY_destino_ = 0.0f;
     int tiempo_inicio_animacion_ = 0;
     const int DURACION_ANIMACION_MS = 500;
+
+    bool recien_teletransportado = false;
 };
