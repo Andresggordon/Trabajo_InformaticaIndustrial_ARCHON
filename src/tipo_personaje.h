@@ -11,7 +11,7 @@ public:
         : Volador("San Segundo", 250,
             Turno::TURNO_DE_MANANA,
             Movimiento::AIRE,
-            stats("Ondas de sonido", 100, 6, 3),
+            stats("Ondas de sonido", 100, 6, 2),
             casillaInicial) {}
     Menu_habilidades menu;
     int getRadioMovimiento()  const override { return 2; }

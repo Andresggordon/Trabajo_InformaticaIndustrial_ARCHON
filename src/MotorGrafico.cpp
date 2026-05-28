@@ -418,7 +418,9 @@ void MotorGrafico::dibujarVidaTexto(float x, float y, Personaje* p) {
 }
 
 void MotorGrafico::dibujaBarrasVida(const Tablero& t, Personaje* seleccionado) {
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    
+    
+glPushAttrib(GL_ALL_ATTRIB_BITS);
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -858,5 +860,79 @@ void MotorGrafico::dibujaTemporizador(int tiempo_restante, bool activo) {
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
+    glPopAttrib();
+}
+
+void MotorGrafico::dibujaCartelSaltarIntro() {
+    // En lugar de leer los píxeles físicos del monitor, 
+    // anclamos la UI a la resolución lógica de 800x800 de tu juego.
+    float w_logico = 800.0f;
+    float h_logico = 800.0f;
+
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+
+    // Proyectamos el elemento sobre un lienzo virtual inamovible de 800x800
+    gluOrtho2D(0, w_logico, h_logico, 0);
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // ==========================================
+    // AJUSTES DE TAMAÑO Y POSICIÓN
+    // ==========================================
+    // Aumentamos el ancho y el alto para que el texto no se salga
+    float anchoPanel = 500.0f;
+    float altoPanel = 40.0f;
+
+    // Centramos la posición X e Y usando la resolución lógica (w_logico y h_logico)
+    float posX = ((w_logico - anchoPanel) / 2.0f) - 10.0f;
+    float posY = h_logico - altoPanel - 70.0f;
+
+    // Fondo negro semitransparente
+    glColor4f(0.0f, 0.0f, 0.0f, 0.65f);
+    glBegin(GL_QUADS);
+    glVertex2f(posX, posY);
+    glVertex2f(posX + anchoPanel, posY);
+    glVertex2f(posX + anchoPanel, posY + altoPanel);
+    glVertex2f(posX, posY + altoPanel);
+    glEnd();
+
+    // Borde sutil
+    glColor4f(0.8f, 0.8f, 0.8f, 0.5f);
+    glLineWidth(1.5f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(posX, posY);
+    glVertex2f(posX + anchoPanel, posY);
+    glVertex2f(posX + anchoPanel, posY + altoPanel);
+    glVertex2f(posX, posY + altoPanel);
+    glEnd();
+
+    // Cálculo del parpadeo (Pulso) usando el tiempo
+    float tiempo_seg = glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+    float alpha_texto = 0.4f + 0.6f * std::abs(sin(tiempo_seg * 3.0f));
+
+    // Texto
+    glColor4f(1.0f, 1.0f, 1.0f, alpha_texto);
+    std::string texto = "PULSA [ ESPACIO ] PARA SALTAR ANIMACION";
+
+    // Centramos el texto calculando unos 10px de ancho por letra y lo bajamos un pelín más (26.0f) por el nuevo alto
+    float textoX = posX + (anchoPanel / 2.0f) - ((texto.length() * 10.0f) / 2.0f);
+    float textoY = posY + 26.0f;
+
+    dibujarTextoBitmap(textoX, textoY, texto.c_str());
+
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
     glPopAttrib();
 }

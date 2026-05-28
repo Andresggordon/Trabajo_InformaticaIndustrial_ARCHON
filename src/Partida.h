@@ -52,6 +52,11 @@ public:
     void reiniciarTemporizador();
     int getTiempoRestante() const;
     void forzarFinDeTurno();
+    void regresarDeArena();
+    void entradaArena();
+
+    // Animación de despliegue inicial
+    void gestionarIntro();
 
 private:
     Partida();
@@ -103,6 +108,11 @@ private:
     int tiempo_inicio_turno_;
     const int TIEMPO_MAXIMO_TURNO = 20000;
     bool temporizador_activo_;
+    bool despliegue_inicial = true;
+
+    // Variables de la Intro paso a paso
+    int indice_intro = 0;
+    bool intro_activa = false;
 
     ~Partida();
 };

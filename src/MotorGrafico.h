@@ -35,6 +35,8 @@ public:
     void dibujaEscudos(const Tablero& t);
     void dibujaInmunidad(const Tablero& t);
     void dibujaTemporizador(int tiempo_restante, bool activo);
+    void dibujaCartelSaltarIntro();
+
 private:
     MotorGrafico() = default;
     void dibujarTextoBitmap(float x, float y, const char* texto);
