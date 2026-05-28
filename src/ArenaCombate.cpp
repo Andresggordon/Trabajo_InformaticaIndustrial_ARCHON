@@ -37,7 +37,6 @@ void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo
 		Turno bandoHumano = (equipo_j1 == 1) ? Turno::TURNO_DE_MANANA
 			: Turno::TURNO_DE_TARDE;
 		humanoControlaLocal_ = (local_ != nullptr && local_->getTurno() == bandoHumano);
-<<<<<<< HEAD
 	}
 	else {
 		humanoControlaLocal_ = false; // no se usa en modo 2 jugadores
@@ -49,7 +48,6 @@ void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo
 	if (local_->getTurno() == Turno::TURNO_DE_MANANA) {
 		posLocal_ = { 5, 0 };
 		posInvasor_ = { 5, 10 };
-=======
 	} else {
 		humanoControlaLocal_ = false; 
 	}
@@ -57,7 +55,6 @@ void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo
 	if (local_!=nullptr && local_->getTurno() == Turno::TURNO_DE_MANANA) {
 		posLocal_ = { 5, 0};   
 		posInvasor_ = { 5, 10 }; 
->>>>>>> 2f732eb148c8171ae3da844eee7e2ab2f6367da8
 
 		local_->setMirandoDerecha(true);
 		local_->setMirandoIzquierda(false);
@@ -187,12 +184,9 @@ void ArenaCombate::teclado(unsigned char key)
 	case 'a':
 		teclaA = true;
 		{
-<<<<<<< HEAD
 			// La orientacion afecta a la pieza del humano (que en modo 1
 			// puede ser local_ o invasor_ segun quien inicio el choque).
 
-=======
->>>>>>> 2f732eb148c8171ae3da844eee7e2ab2f6367da8
 			if (pHumano) {
 				pHumano->setMirandoDerecha(false);
 				pHumano->setMirandoIzquierda(true);
@@ -219,10 +213,7 @@ void ArenaCombate::teclado(unsigned char key)
 		break;
 	}
 
-<<<<<<< HEAD
 		   // Ataque jugador 2 (Enter) — solo modo 2 jugadores
-=======
->>>>>>> 2f732eb148c8171ae3da844eee7e2ab2f6367da8
 	case 13: {
 		if (modo_ == 2) {
 			int ahora = glutGet(GLUT_ELAPSED_TIME);
@@ -298,7 +289,6 @@ void ArenaCombate::finalizarCombate()
 }
 //Una vez termine, determina el resultado de la arena y pasa la información al tablero inicial, además de activar el cartel correspondiente
 void ArenaCombate::resolverResultado() {
-<<<<<<< HEAD
 	combateTerminado_ = true;
 	if (local_->estaVivo()) {
 		resultado_ = ResultadoCombate::Gana_Local;
@@ -311,7 +301,6 @@ void ArenaCombate::resolverResultado() {
 	//activa cartel
 	mostrandoCartel_ = true;
 	tiempoCartel_ = glutGet(GLUT_ELAPSED_TIME);
-=======
     combateTerminado_ = true;
     if (local_->estaVivo()) {
         resultado_ = ResultadoCombate::Gana_Local;
@@ -323,7 +312,6 @@ void ArenaCombate::resolverResultado() {
    
     mostrandoCartel_ = true;
     tiempoCartel_    = glutGet(GLUT_ELAPSED_TIME);
->>>>>>> 2f732eb148c8171ae3da844eee7e2ab2f6367da8
 }
 //Devuelve que ha terminado el combate
 bool ArenaCombate::combateTerminado() const
@@ -394,16 +382,10 @@ Modos_juego ArenaCombate::click(int x, int y) {
 	float cx = ((x - offsetX) / (float)tam) * 800 - 400;
 	float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
-<<<<<<< HEAD
-	printf("cx: %.1f, cy: %.1f\n", cx, cy);
-
+	ETSIDI::play("assets/sonidos/click.mp3");
 
 	ETSIDI::play("assets/sonidos/click.mp3");
 
-=======
-	ETSIDI::play("assets/sonidos/click.mp3");
-
->>>>>>> 2f732eb148c8171ae3da844eee7e2ab2f6367da8
 	int col = (int)((cx - MotorGrafico::INICIO_X) / MotorGrafico::TAM);
 	int fil = (int)((cy - MotorGrafico::INICIO_Y) / MotorGrafico::TAM);
 
@@ -467,15 +449,12 @@ void ArenaCombate::actualizar() {
 	}
 	if (combateTerminado_) return;
 
-<<<<<<< HEAD
 	// Pausar la lógica del combate si hay un popup abierto
 	if (mostrar_popup || mostrar_popup_normas) return;
 
 	// --- IDENTIFICACIÓN DE BANDOS ---
 	// Calculamos quién es quién aquí arriba para usarlo en todo el código
-=======
 	
->>>>>>> 2f732eb148c8171ae3da844eee7e2ab2f6367da8
 	Personaje* pManana = (local_->getTurno() == Turno::TURNO_DE_MANANA) ? local_ : invasor_;
 	Personaje* pTarde = (local_->getTurno() == Turno::TURNO_DE_TARDE) ? local_ : invasor_;
 
