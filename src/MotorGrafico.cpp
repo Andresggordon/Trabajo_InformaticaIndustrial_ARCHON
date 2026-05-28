@@ -699,3 +699,164 @@ void MotorGrafico::setColorVida(float porcentaje) {
     else if (porcentaje > 0.3f) glColor4f(1.0f, 0.65f, 0.0f, 0.9f);
     else                        glColor4f(0.9f, 0.1f, 0.1f, 0.9f);
 }
+
+void MotorGrafico::dibujaTemporizador(int tiempo_restante, bool activo) {
+    
+    static int ultimo_tiempo_restante = 30;
+    static float angulo_actual = 0.0f;
+    static int tiempo_inicio_rotacion = 0;
+    static bool rotando = false;
+
+    // Si el tiempo sube de golpe el turno ha cambiado
+    if (tiempo_restante > ultimo_tiempo_restante + 2) {
+        rotando = true;
+        tiempo_inicio_rotacion = glutGet(GLUT_ELAPSED_TIME);
+    }
+    ultimo_tiempo_restante = tiempo_restante;
+
+    // Calculamos el ángulo actual si está rotando
+    if (rotando) {
+        int pasado = glutGet(GLUT_ELAPSED_TIME) - tiempo_inicio_rotacion;
+        float duracion = 600.0f; // Tarda 0.6 segundos en dar la vuelta
+
+        if (pasado >= duracion) {
+            rotando = false;
+            angulo_actual = 0.0f; // Reseteamos al terminar
+        }
+        else {
+            // Fórmula Smoothstep para que frene suavemente al terminar de girar
+            float t = (float)pasado / duracion;
+            float smooth_t = t * t * (3.0f - 2.0f * t);
+            angulo_actual = 180.0f * smooth_t;
+        }
+    }
+
+    //   TEXTO Y PANEL DE FONDO
+    std::string texto_tiempo = std::to_string(tiempo_restante);
+    if (tiempo_restante < 10) texto_tiempo = "0" + texto_tiempo;
+
+    int w = glutGet(GLUT_WINDOW_WIDTH);
+    int h = glutGet(GLUT_WINDOW_HEIGHT);
+
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, w, h, 0);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    float anchoPanel = w * 0.10f;
+    float altoPanel = h * 0.05f;
+    float posX = (w / 2.0f) - (anchoPanel / 2.0f);
+    float posY = h - altoPanel - (h * 0.02f);
+
+    // Fondo
+    glColor4f(0.1f, 0.1f, 0.1f, 0.7f);
+    glBegin(GL_QUADS);
+    glVertex2f(posX, posY); glVertex2f(posX + anchoPanel, posY);
+    glVertex2f(posX + anchoPanel, posY + altoPanel); glVertex2f(posX, posY + altoPanel);
+    glEnd();
+
+    // Borde
+    if (tiempo_restante > 10) glColor4f(0.2f, 0.8f, 0.2f, 0.9f);
+    else if (tiempo_restante > 5) glColor4f(1.0f, 0.6f, 0.0f, 0.9f);
+    else glColor4f(1.0f, 0.1f, 0.1f, 0.9f);
+
+    glLineWidth(2.0f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(posX, posY); glVertex2f(posX + anchoPanel, posY);
+    glVertex2f(posX + anchoPanel, posY + altoPanel); glVertex2f(posX, posY + altoPanel);
+    glEnd();
+
+    //   RELOJ DE ARENA MATEMÁTICO
+    float ratio = (float)tiempo_restante / 30.0f;
+    if (ratio > 1.0f) ratio = 1.0f;
+    if (ratio < 0.0f) ratio = 0.0f;
+
+    float relojCX = posX + anchoPanel * 0.35f;
+    float relojCY = posY + altoPanel * 0.5f;
+    float R_W = altoPanel * 0.35f;
+    float R_H = altoPanel * 0.40f;
+
+    glPushMatrix();
+    glTranslatef(relojCX, relojCY, 0.0f); // Movemos el eje 0,0 al centro del reloj
+    glRotatef(angulo_actual, 0.0f, 0.0f, 1.0f); // Aplicamos el giro sobre sí mismo
+
+    glColor4f(0.9f, 0.8f, 0.2f, 1.0f);
+    float r_sqrt = sqrt(ratio); // La raíz cuadrada soluciona el "cuadrado dorado"
+
+    // 1. Arena superior 
+    if (ratio > 0.0f) {
+        glBegin(GL_TRIANGLES);
+        glVertex2f(0.0f, 0.0f); // Centro
+        glVertex2f(-R_W * r_sqrt, -R_H * r_sqrt); // Arriba Izquierda
+        glVertex2f(R_W * r_sqrt, -R_H * r_sqrt); // Arriba Derecha
+        glEnd();
+
+        // Hilo de arena cayendo oculto
+        if (!rotando && activo) {
+            float t_ms = glutGet(GLUT_ELAPSED_TIME);
+            glLineWidth(1.5f);
+            glBegin(GL_LINES);
+            glVertex2f(0.0f, 0.0f);
+            glVertex2f(0.0f, R_H * (0.6f + 0.4f * sin(t_ms * 0.02f)));
+            glEnd();
+        }
+    }
+
+    // 2. Arena inferior (Trapecio)
+    if (ratio < 1.0f) {
+        glBegin(GL_QUADS);
+        glVertex2f(-R_W, R_H); // Esquina abajo izq
+        glVertex2f(R_W, R_H); // Esquina abajo der
+        // Puntas superiores del trapecio que escalan junto con las paredes del cristal
+        glVertex2f(R_W * r_sqrt, R_H * r_sqrt);
+        glVertex2f(-R_W * r_sqrt, R_H * r_sqrt);
+        glEnd();
+    }
+
+    // 3. Cristales
+    glColor4f(0.6f, 0.8f, 0.9f, 0.9f);
+    glLineWidth(2.0f);
+
+    glBegin(GL_LINE_LOOP); // Cono superior
+    glVertex2f(-R_W, -R_H); glVertex2f(R_W, -R_H); glVertex2f(0.0f, 0.0f);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP); // Cono inferior
+    glVertex2f(-R_W, R_H); glVertex2f(R_W, R_H); glVertex2f(0.0f, 0.0f);
+    glEnd();
+
+    // 4. Tapas de madera
+    glColor4f(0.6f, 0.4f, 0.2f, 1.0f);
+    glBegin(GL_LINES);
+    glVertex2f(-R_W - 3, -R_H); glVertex2f(R_W + 3, -R_H);
+    glVertex2f(-R_W - 3, R_H); glVertex2f(R_W + 3, R_H);
+    glEnd();
+
+    glPopMatrix();
+
+    //   DIBUJAR NÚMERO
+    if (tiempo_restante <= 5) glColor4f(1.0f, 0.2f, 0.2f, 1.0f);
+    else glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+    float textoAnchoAprox = texto_tiempo.size() * 14.0f;
+    float textoX = posX + anchoPanel * 0.70f - (textoAnchoAprox / 2.0f);
+    float textoY = posY + (altoPanel * 0.65f);
+
+    dibujarTextoBitmap(textoX, textoY, texto_tiempo.c_str());
+
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopAttrib();
+}
