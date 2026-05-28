@@ -73,9 +73,12 @@ private:
 
 	ETSIDI::Sprite* fondo_arena = nullptr;
 	ETSIDI::Sprite* abandonar_partida;
+	ETSIDI::Sprite* indicador_pregunta = nullptr;
+	ETSIDI::Sprite* popup_normas;
 	ETSIDI::Sprite* popup_salir;
 	bool mostrar_popup = false;
 	int boton_activo = 0;
+	bool mostrar_popup_normas = false;
 
 	//Lógica de Ataque
 	//Temporizadores de ataque (ms)

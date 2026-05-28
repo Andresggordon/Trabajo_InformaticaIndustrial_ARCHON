@@ -9,10 +9,10 @@
 
 // Convierte posición en cuadrícula a coordenadas OpenGL
 static float arenaToX(int columna) {
-	return -245.0f + columna * 45.0f+22.5f;
+	return -245.0f + columna * 45.0f + 22.5f;
 }
 static float arenaToY(int fila) {
-	return -245.0f + fila * 45.0f+22.5f;
+	return -245.0f + fila * 45.0f + 22.5f;
 }
 
 void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo, FaseCiclo fase)
@@ -25,18 +25,19 @@ void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo
 	// WASD y disparo se apliquen siempre a SU pieza (sea ella defensor o atacante).
 	if (modo_ == 1) {
 		Turno bandoHumano = (equipo_j1 == 1) ? Turno::TURNO_DE_MANANA
-		                                     : Turno::TURNO_DE_TARDE;
+			: Turno::TURNO_DE_TARDE;
 		humanoControlaLocal_ = (local_ != nullptr && local_->getTurno() == bandoHumano);
-	} else {
+	}
+	else {
 		humanoControlaLocal_ = false; // no se usa en modo 2 jugadores
 	}
 
-	
+
 
 	// Inicializar en la arena a cada turno siempre en su respectivo lado
 	if (local_->getTurno() == Turno::TURNO_DE_MANANA) {
-		posLocal_ = { 5, 0};   
-		posInvasor_ = { 5, 10 }; 
+		posLocal_ = { 5, 0 };
+		posInvasor_ = { 5, 10 };
 
 		local_->setMirandoDerecha(true);
 		local_->setMirandoIzquierda(false);
@@ -46,8 +47,8 @@ void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo
 		}
 	}
 	else {
-		posLocal_ = { 5, 10 };   
-		posInvasor_ = { 5, 0 }; 
+		posLocal_ = { 5, 10 };
+		posInvasor_ = { 5, 0 };
 
 		local_->setMirandoDerecha(false);
 		local_->setMirandoIzquierda(true);
@@ -61,6 +62,7 @@ void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo
 	resultado_ = ResultadoCombate::Gana_Local;
 
 	mostrar_popup = false;
+	mostrar_popup_normas = false;
 
 	int ahora = glutGet(GLUT_ELAPSED_TIME);
 	tiempoUltimoAtaqueLocal_ = ahora;
@@ -122,7 +124,18 @@ bool ArenaCombate::moverEnArena(PosArena& pos, int df, int dc)
 //Movimiento del Jugador 1 en el modo de 1vs1 y en el modo contra la máquina
 void ArenaCombate::teclado(unsigned char key)
 {
+	// ESC cierra cualquier popup abierto
+	if (key == 27) {
+		mostrar_popup = false;
+		mostrar_popup_normas = false;
+		return;
+	}
+
 	if (combateTerminado_)
+		return;
+
+	// Bloquear controles si hay un popup abierto
+	if (mostrar_popup || mostrar_popup_normas)
 		return;
 
 	Personaje* pManana = (local_->getTurno() == Turno::TURNO_DE_MANANA) ? local_ : invasor_;
@@ -155,7 +168,7 @@ void ArenaCombate::teclado(unsigned char key)
 		{
 			// La orientacion afecta a la pieza del humano (que en modo 1
 			// puede ser local_ o invasor_ segun quien inicio el choque).
-			
+
 			if (pHumano) {
 				pHumano->setMirandoDerecha(false);
 				pHumano->setMirandoIzquierda(true);
@@ -165,7 +178,7 @@ void ArenaCombate::teclado(unsigned char key)
 	case 'd':
 		teclaD = true;
 		{
-			
+
 			if (pHumano) {
 				pHumano->setMirandoDerecha(true);
 				pHumano->setMirandoIzquierda(false);
@@ -186,7 +199,7 @@ void ArenaCombate::teclado(unsigned char key)
 		break;
 	}
 
-		// Ataque jugador 2 (Enter) — solo modo 2 jugadores
+		   // Ataque jugador 2 (Enter) — solo modo 2 jugadores
 	case 13: {
 		if (modo_ == 2) {
 			int ahora = glutGet(GLUT_ELAPSED_TIME);
@@ -196,7 +209,7 @@ void ArenaCombate::teclado(unsigned char key)
 			}
 		}
 		break;
-	} 
+	}
 	}
 }
 //Movimiento del jugador 2 en el modo 1vs1
@@ -205,6 +218,10 @@ void ArenaCombate::tecladoEspecial(int key)
 	if (combateTerminado_)
 		return;
 	if (modo_ != 2)
+		return;
+
+	// Bloquear controles si hay un popup abierto
+	if (mostrar_popup || mostrar_popup_normas)
 		return;
 
 	Personaje* pTarde = (local_->getTurno() == Turno::TURNO_DE_TARDE) ? local_ : invasor_;
@@ -217,7 +234,7 @@ void ArenaCombate::tecladoEspecial(int key)
 	case GLUT_KEY_DOWN:  teclaAbajo = true;
 		break;
 
-	case GLUT_KEY_LEFT:  
+	case GLUT_KEY_LEFT:
 		teclaIzquierda = true;
 		if (pTarde) {
 			pTarde->setMirandoDerecha(false);
@@ -226,7 +243,7 @@ void ArenaCombate::tecladoEspecial(int key)
 		break;
 
 	case GLUT_KEY_RIGHT:
-		teclaDerecha = true; 
+		teclaDerecha = true;
 		if (pTarde) {
 			pTarde->setMirandoDerecha(true);
 			pTarde->setMirandoIzquierda(false);
@@ -258,17 +275,18 @@ void ArenaCombate::finalizarCombate()
 }
 
 void ArenaCombate::resolverResultado() {
-    combateTerminado_ = true;
-    if (local_->estaVivo()) {
-        resultado_ = ResultadoCombate::Gana_Local;
-        Partida::get_instance().registrarMuerto(invasor_);
-    } else {
-        resultado_ = ResultadoCombate::Gana_Invasor;
-        Partida::get_instance().registrarMuerto(local_);
-    }
-    //activa cartel
-    mostrandoCartel_ = true;
-    tiempoCartel_    = glutGet(GLUT_ELAPSED_TIME);
+	combateTerminado_ = true;
+	if (local_->estaVivo()) {
+		resultado_ = ResultadoCombate::Gana_Local;
+		Partida::get_instance().registrarMuerto(invasor_);
+	}
+	else {
+		resultado_ = ResultadoCombate::Gana_Invasor;
+		Partida::get_instance().registrarMuerto(local_);
+	}
+	//activa cartel
+	mostrandoCartel_ = true;
+	tiempoCartel_ = glutGet(GLUT_ELAPSED_TIME);
 }
 
 bool ArenaCombate::combateTerminado() const
@@ -283,8 +301,11 @@ ResultadoCombate ArenaCombate::getResultado() const
 
 ArenaCombate::ArenaCombate() {
 	fondo_arena = new ETSIDI::Sprite("assets/menu_imagenes/ArenaCombate.png", 0, 0, 800, 800);
+	indicador_pregunta = new ETSIDI::Sprite("assets/menu_imagenes/pregunta.png", 0, 0, 800, 800);
 	abandonar_partida = new ETSIDI::Sprite("assets/menu_imagenes/boton_abandonar.png", 0, 0, 800, 800);
+	popup_normas = new ETSIDI::Sprite("assets/menu_imagenes/popup_normas.png", 0, 0, 800, 800);
 	popup_salir = new ETSIDI::Sprite("assets/menu_imagenes/popup_salir.png", 0, 0, 800, 800);
+
 	posLocal_ = { 5, 0 };
 	posInvasor_ = { 5, 11 };
 
@@ -298,8 +319,10 @@ void ArenaCombate::dibuja() {
 
 void ArenaCombate::dibujaPopup()
 {
+	indicador_pregunta->draw();
 	abandonar_partida->draw();
 	if (mostrar_popup) popup_salir->draw();
+	if (mostrar_popup_normas) popup_normas->draw();
 }
 
 void ArenaCombate::update(int x, int y) {
@@ -311,14 +334,17 @@ void ArenaCombate::update(int x, int y) {
 	float cx = ((x - offsetX) / (float)tam) * 800 - 400;
 	float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
-	if (!mostrar_popup) {
+	if (!mostrar_popup && !mostrar_popup_normas) {
 		if (cx >= 304 && cx <= 342 && cy >= -354 && cy <= -274) boton_activo = 1;
 		else boton_activo = 0;
 	}
-	else {
+	else if (mostrar_popup) {
 		if (cx >= -153 && cx <= -57 && cy >= -43 && cy <= -5) boton_activo = 2;
 		else if (cx >= 15 && cx <= 108 && cy >= -46 && cy <= -4) boton_activo = 3;
 		else boton_activo = 0;
+	}
+	else {
+		boton_activo = 0;
 	}
 }
 
@@ -331,13 +357,19 @@ Modos_juego ArenaCombate::click(int x, int y) {
 	float cx = ((x - offsetX) / (float)tam) * 800 - 400;
 	float cy = 400 - ((y - offsetY) / (float)tam) * 800;
 
-	
-	
-	ETSIDI::play("assets/sonidos/click.mp3");
+	printf("cx: %.1f, cy: %.1f\n", cx, cy);
 
+
+	ETSIDI::play("assets/sonidos/click.mp3");
 
 	int col = (int)((cx - MotorGrafico::INICIO_X) / MotorGrafico::TAM);
 	int fil = (int)((cy - MotorGrafico::INICIO_Y) / MotorGrafico::TAM);
+
+	// Si el popup de normas está abierto, cualquier click lo cierra
+	if (mostrar_popup_normas) {
+		mostrar_popup_normas = false;
+		return Modos_juego::Arena_Combate;
+	}
 
 	if (mostrar_popup) {
 		if (cx >= -153 && cx <= -57 && cy >= -43 && cy <= -5) {
@@ -353,6 +385,13 @@ Modos_juego ArenaCombate::click(int x, int y) {
 		mostrar_popup = true;
 		return Modos_juego::Arena_Combate;
 	}
+
+	// Click en el icono para sacar normas
+	if (cx >= -387 && cx <= -342 && cy >= 346 && cy <=390 ) {
+		mostrar_popup_normas = true;
+		return Modos_juego::Arena_Combate;
+	}
+
 	return Modos_juego::Arena_Combate;
 }
 
@@ -384,6 +423,9 @@ void ArenaCombate::actualizar() {
 		return;
 	}
 	if (combateTerminado_) return;
+
+	// Pausar la lógica del combate si hay un popup abierto
+	if (mostrar_popup || mostrar_popup_normas) return;
 
 	// --- IDENTIFICACIÓN DE BANDOS ---
 	// Calculamos quién es quién aquí arriba para usarlo en todo el código
@@ -516,7 +558,7 @@ void ArenaCombate::moverMaquina() {
 	int ahora = glutGet(GLUT_ELAPSED_TIME);
 
 	int distFila = abs(posHumano.fila - posIA.fila);
-	int distCol  = abs(posHumano.columna - posIA.columna);
+	int distCol = abs(posHumano.columna - posIA.columna);
 	int distancia = max(distFila, distCol);
 	int alcance = piezaIA->getArma().getAlcance();
 
