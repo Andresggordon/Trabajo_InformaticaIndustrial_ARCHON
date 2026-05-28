@@ -128,6 +128,8 @@ void mouseClick(int button, int estadoBtn, int x, int y) {
     }
 }
 
+
+
 void teclado(unsigned char key, int x, int y) {
 
     if (key == 'f' || key == 'F') {
@@ -184,6 +186,10 @@ void reposo() {
             Partida::get_instance().tablero().resolverCombate(arena->getResultado());
             arena->finalizarCombate();
             estado = Partida::get_instance().comprobarFinPartida();
+
+            if (estado == Modos_juego::Partida) {
+                Partida::get_instance().reiniciarTemporizador();
+            }
         }
     }
     else if (estado == Modos_juego::Partida) {
