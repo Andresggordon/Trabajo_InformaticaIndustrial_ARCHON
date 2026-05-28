@@ -101,7 +101,14 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
     Menu_habilidades* menu = personaje_seleccionado ? personaje_seleccionado->getMenu() : nullptr;
 
     if (modo_teleport) {
-        if (menu) menu->activarHabilidad(0, personaje_seleccionado, nullptr, &casilla);
+        if (menu) {
+            Casilla* origen = personaje_seleccionado->getCasillaActual();
+            menu->activarHabilidad(0, personaje_seleccionado, nullptr, &casilla);
+            if (personaje_seleccionado->getCasillaActual() != origen) {
+                personaje_seleccionado->setTeletransportado(true); 
+            }
+
+        }
         if (menu && !menu->puedeUsar(0)) {
             turno_actual = 1 - turno_actual;
             temporizador_activo_ = false; // CORRECCIÓN

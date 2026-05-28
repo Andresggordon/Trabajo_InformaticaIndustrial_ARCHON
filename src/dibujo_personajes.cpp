@@ -1,5 +1,6 @@
 #include "dibujo_personajes.h"
 #include "MotorGrafico.h"
+#include <cmath>
 
 DibujoPersonaje::DibujoPersonaje(Personaje* p)
     : modelo(p), sprite(nullptr), anim(nullptr)
@@ -17,58 +18,83 @@ DibujoPersonaje::DibujoPersonaje(Personaje* p)
 
 
 void DibujoPersonaje::dibujar(float x, float y) {
+    // 1. INICIALIZACIÓN DE LA POSICIÓN
+    if (!inicializado) {
+        x_visual = x; y_visual = y;
+        inicializado = true;
+    }
+
+    // 2. EL TELETRANSPORTE INSTANTÁNEO (Habilidad)
+    if (modelo->getTeletransportado()) {
+        x_visual = x;
+        y_visual = y;
+        modelo->setTeletransportado(false);
+    }
+
+    // 3. MOVIMIENTO LINEAL CONSTANTE
+    float dx = x - x_visual;
+    float dy = y - y_visual;
+    float distancia = std::sqrt(dx * dx + dy * dy);
+
+    // VELOCIDAD: Píxeles que avanza por cada fotograma. 
+    float velocidad = 0.2f;
+
+    if (distancia > velocidad) {
+        // Normalizamos el vector (dirección pura) y multiplicamos por la velocidad constante
+        x_visual += (dx / distancia) * velocidad;
+        y_visual += (dy / distancia) * velocidad;
+    }
+    else {
+        // Si está a punto de llegar (más cerca que un solo paso), lo encajamos para que no tiemble
+        x_visual = x;
+        y_visual = y;
+    }
+
+    // ==========================================
+    // 4. DIBUJADO DE ETSIDI
+    // ==========================================
     float tam = modelo->getTamanoSprite();
     float tamCasilla = MotorGrafico::TAM;
 
-    // 1. Orientación y Espejo (Tu lógica impecable)
     bool mirar_derecha = modelo->getMirandoDerecha();
     bool mirar_izquierda = modelo->getMirandoIzquierda();
     bool hacer_flip = false;
 
-    if (modelo->getTurno() == Turno::TURNO_DE_MANANA)
-        hacer_flip = !mirar_derecha;
-    else
-        hacer_flip = !mirar_izquierda;
-
+    if (modelo->getTurno() == Turno::TURNO_DE_MANANA) hacer_flip = !mirar_derecha;
+    else hacer_flip = !mirar_izquierda;
 
     float offset_x = modelo->getOffsetX();
     if (hacer_flip) offset_x = -offset_x;
 
-    // 2. Control Absoluto de los Frames
     if (anim != nullptr) {
         int cols = modelo->getFramesIdle();
         int frame_index = 0;
 
-        if (modelo->getFilasAnimacion() > 1 && modelo->getEnMovimiento()) {
-            // --- MODO CAMINAR ---
-            // Tu PNG tiene el caminar ARRIBA (Fila 0). 
-            // Por tanto, el índice va de 0 a 7. Ya no sumamos 'cols'.
-            int frame_caminar = modelo->getPasosDados() % cols;
+        if (modelo->getFilasAnimacion() > 1 && (std::abs(x - x_visual) > 1.0f || std::abs(y - y_visual) > 1.0f)) {
+            // --- MODO CAMINAR AUTOMÁTICO ---
+            int frame_caminar = (glutGet(GLUT_ELAPSED_TIME) / 100) % cols;
             frame_index = frame_caminar;
         }
         else {
             // --- MODO IDLE ---
-            // Tu PNG tiene el IDLE ABAJO (Fila 1).
-            // Sumamos 'cols' para saltar a la segunda fila (índices 8 a 15).
             int ahora = glutGet(GLUT_ELAPSED_TIME);
             int ms_por_frame = modelo->getTiempoAnimacion();
             int frame_idle = (ahora / ms_por_frame) % cols;
             frame_index = cols + frame_idle;
         }
 
-        // Le decimos a ETSIDI: "Ponte en este frame exacto"
         anim->setState(frame_index, true);
         anim->flip(hacer_flip, false);
 
-        anim->setPos(x + tamCasilla / 2.0 + offset_x,
-            y + tamCasilla + modelo->getOffsetY());
+        // AQUÍ SE DIBUJA CON LAS VARIABLES MATEMÁTICAS SIMPLES
+        anim->setPos(x_visual + tamCasilla / 2.0f + offset_x, y_visual + tamCasilla + modelo->getOffsetY());
         anim->setSize(tam, tam);
         anim->draw();
     }
     else {
         if (sprite != nullptr) {
             sprite->flip(hacer_flip, false);
-            sprite->setPos(x, y);
+            sprite->setPos(x_visual, y_visual);
             sprite->setSize(tam, tam);
             sprite->draw();
         }
@@ -79,3 +105,4 @@ DibujoPersonaje::~DibujoPersonaje() {
     delete sprite;
     delete anim;
 }
+
