@@ -432,6 +432,8 @@ void ArenaCombate::aplicarAtaque(Personaje* atacante, Personaje* defensor) {
 	int   dano = atacante->getArma().getDanio() +
 		(esLocal ? bonusDanioLocal_ : bonusDanioInvasor_);
 
+	ETSIDI::play("assets/sonidos/disparo.mp3");
+
 	proyectiles_.push_back(new Proyectil(ox, oy, dx, dy,
 		dano,
 		velocidad,
