@@ -23,4 +23,11 @@ private:
 
     //Para no resetear los frames y hacer la animación fluida de movimiento con las teclas
     int fila_actual_anim = -1;
+
+    //Variables para la animación en el tablero de una casilla a otra
+    
+    bool inicializado = false;
+    float x_visual = 0.0f;
+    float y_visual = 0.0f;
+
 };
