@@ -33,10 +33,6 @@ bool Geometria::desplazamientoValido(const Casilla& origen,
         // Puede moverse en diagonal.
         return (dx <= radio) && (dy <= radio) && (dx + dy > 0);
 
-    case Movimiento::TELETRANSPORTE:
-        // Sin restricción geométrica.
-        return (dx + dy > 0);
-
     default:
         return false;
     }

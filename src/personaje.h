@@ -16,7 +16,7 @@
 class Casilla;
 
 enum class Turno { TURNO_DE_MANANA, TURNO_DE_TARDE };
-enum class Movimiento { TIERRA, AIRE, TELETRANSPORTE };
+enum class Movimiento { TIERRA, AIRE};
 enum class ResultadoMover { OK, ILEGAL, CHOQUE };
 
 class Personaje {
