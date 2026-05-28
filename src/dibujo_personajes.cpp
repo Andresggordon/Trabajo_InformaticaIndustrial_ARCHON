@@ -1,6 +1,7 @@
 #include "dibujo_personajes.h"
 #include "MotorGrafico.h"
 #include <cmath>
+#include <GL/freeglut.h> // Necesario para el reloj de las animaciones de las piernas
 
 DibujoPersonaje::DibujoPersonaje(Personaje* p)
     : modelo(p), sprite(nullptr), anim(nullptr)
@@ -16,7 +17,6 @@ DibujoPersonaje::DibujoPersonaje(Personaje* p)
     }
 }
 
-
 void DibujoPersonaje::dibujar(float x, float y) {
     // 1. INICIALIZACIÓN DE LA POSICIÓN
     if (!inicializado) {
@@ -24,30 +24,33 @@ void DibujoPersonaje::dibujar(float x, float y) {
         inicializado = true;
     }
 
-    // 2. EL TELETRANSPORTE INSTANTÁNEO (Habilidad)
+    // 2. EL TELETRANSPORTE INSTANTÁNEO
     if (modelo->getTeletransportado()) {
         x_visual = x;
         y_visual = y;
         modelo->setTeletransportado(false);
     }
+    // 3. MOVIMIENTO LENTO Y UNIFORME (MRU)
+    else if (!esperando_intro) {
+        float dx = x - x_visual;
+        float dy = y - y_visual;
+        float distancia = std::sqrt(dx * dx + dy * dy);
 
-    // 3. MOVIMIENTO LINEAL CONSTANTE
-    float dx = x - x_visual;
-    float dy = y - y_visual;
-    float distancia = std::sqrt(dx * dx + dy * dy);
+        float velocidad = intro_terminada ? 0.28f : 0.38f;
 
-    // VELOCIDAD: Píxeles que avanza por cada fotograma. 
-    float velocidad = 0.2f;
+        if (distancia > velocidad) {
+            // Avanza a velocidad constante (MRU)
+            x_visual += (dx / distancia) * velocidad;
+            y_visual += (dy / distancia) * velocidad;
+        }
+        else {
+            // Llegó a la casilla exacta
+            x_visual = x;
+            y_visual = y;
 
-    if (distancia > velocidad) {
-        // Normalizamos el vector (dirección pura) y multiplicamos por la velocidad constante
-        x_visual += (dx / distancia) * velocidad;
-        y_visual += (dy / distancia) * velocidad;
-    }
-    else {
-        // Si está a punto de llegar (más cerca que un solo paso), lo encajamos para que no tiemble
-        x_visual = x;
-        y_visual = y;
+            // ¡MAGIA!: Al pisar su casilla por primera vez, la intro se acaba para siempre
+            intro_terminada = true;
+        }
     }
 
     // ==========================================
@@ -69,15 +72,19 @@ void DibujoPersonaje::dibujar(float x, float y) {
     if (anim != nullptr) {
         int cols = modelo->getFramesIdle();
         int frame_index = 0;
+        int ahora = glutGet(GLUT_ELAPSED_TIME);
 
-        if (modelo->getFilasAnimacion() > 1 && (std::abs(x - x_visual) > 1.0f || std::abs(y - y_visual) > 1.0f)) {
-            // --- MODO CAMINAR AUTOMÁTICO ---
-            int frame_caminar = (glutGet(GLUT_ELAPSED_TIME) / 100) % cols;
+        // Evaluamos si físicamente se está moviendo en este fotograma para mover las piernas
+        bool esta_caminando = !esperando_intro &&
+            (std::abs(x - x_visual) > 1.0f || std::abs(y - y_visual) > 1.0f);
+
+        if (modelo->getFilasAnimacion() > 1 && (modelo->getEnMovimiento() || esta_caminando)) {
+            // --- MODO CAMINAR ---
+            int frame_caminar = (ahora / 100) % cols;
             frame_index = frame_caminar;
         }
         else {
-            // --- MODO IDLE ---
-            int ahora = glutGet(GLUT_ELAPSED_TIME);
+            // --- MODO IDLE (Respirar) ---
             int ms_por_frame = modelo->getTiempoAnimacion();
             int frame_idle = (ahora / ms_por_frame) % cols;
             frame_index = cols + frame_idle;
@@ -86,7 +93,6 @@ void DibujoPersonaje::dibujar(float x, float y) {
         anim->setState(frame_index, true);
         anim->flip(hacer_flip, false);
 
-        // AQUÍ SE DIBUJA CON LAS VARIABLES MATEMÁTICAS SIMPLES
         anim->setPos(x_visual + tamCasilla / 2.0f + offset_x, y_visual + tamCasilla + modelo->getOffsetY());
         anim->setSize(tam, tam);
         anim->draw();
@@ -105,4 +111,3 @@ DibujoPersonaje::~DibujoPersonaje() {
     delete sprite;
     delete anim;
 }
-

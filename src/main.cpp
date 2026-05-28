@@ -188,7 +188,8 @@ void reposo() {
             estado = Partida::get_instance().comprobarFinPartida();
 
             if (estado == Modos_juego::Partida) {
-                Partida::get_instance().reiniciarTemporizador();
+                // AQUÍ EL CAMBIO: La partida se encarga de reajustar todo visualmente y el tiempo
+                Partida::get_instance().regresarDeArena();
             }
         }
     }
