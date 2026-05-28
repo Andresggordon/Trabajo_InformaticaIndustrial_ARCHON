@@ -259,7 +259,7 @@ public:
     std::string getNombreProyectil() const override {
         return "assets/menu_imagenes/TizaVoladora.png";
     }
-    float getVelocidadProyectil() const override { return 0.5f; }
+    float getVelocidadProyectil() const override { return 0.2f; }
 };
 
 class Microprocesador_T : public Volador {

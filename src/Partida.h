@@ -48,6 +48,11 @@ public:
     Personaje* getPersonajeSeleccionado() const { return personaje_seleccionado; }
     void dibujaBarrasVida();
 
+    //Métodos para el temporizador de turnos
+    void reiniciarTemporizador();
+    int getTiempoRestante() const;
+    void forzarFinDeTurno();
+
 private:
     Partida();
     Partida(const Partida&) = delete;
@@ -93,5 +98,11 @@ private:
     //OPTIMIZACIÓN
     void decrementarEstados();
     void screenToGame(int x, int y, float& cx, float& cy);
+
+    //Temporizador de turno
+    int tiempo_inicio_turno_;
+    const int TIEMPO_MAXIMO_TURNO = 20000;
+    bool temporizador_activo_;
+
     ~Partida();
 };
