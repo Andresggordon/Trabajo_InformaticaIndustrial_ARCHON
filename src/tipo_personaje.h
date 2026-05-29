@@ -12,7 +12,7 @@ public:
         : Volador("San Segundo", 250,
             Turno::TURNO_DE_MANANA,
             Movimiento::AIRE,
-            stats("Ondas de sonido", 100, 6, 1),  
+            stats("Ondas de sonido", 100, 6, 2),  
             5, // Velocidad de movimiento en la arena
             2, //Radio de alcance en el tablero
             casillaInicial) {}
@@ -45,7 +45,7 @@ public:
         : Volador("Microprocesador", 200,
             Turno::TURNO_DE_MANANA,
             Movimiento::AIRE,
-            stats("Cadena de bits", 75, 4, 1),
+            stats("Cadena de bits", 75, 4, 2),
             6, // Velocidad de movimiento
             2, //Radio de movimiento
             casillaInicial) {}
@@ -70,7 +70,7 @@ public:
         : Terrestre("Multimetro", 100,
             Turno::TURNO_DE_MANANA,
             Movimiento::TIERRA,
-            stats("Lanza rayos", 50, 10, 5),
+            stats("Lanza rayos", 50, 10, 2),
             2, // Velocidad de movimiento
             3, //Radio de movimiento
             casillaInicial) {}
@@ -97,7 +97,7 @@ public:
         : Terrestre("PLC", 500,
             Turno::TURNO_DE_MANANA,
             Movimiento::TIERRA,
-            stats("Lanza tuercas", 100, 1, 3),
+            stats("Lanza tuercas", 100, 1, 1),
             3, // Velocidad de movimiento
             1, //Radio de movimiento
             casillaInicial) {}
@@ -124,7 +124,7 @@ public:
         : Terrestre("Fuente de tension de bateria", 350,
             Turno::TURNO_DE_MANANA,
             Movimiento::TIERRA,
-            stats("Arco electrico", 75, 2, 6),
+            stats("Arco electrico", 75, 2, 2),
             3, // Velocidad de movimiento
             2, //Rdio de movimiento
             casillaInicial) {}
@@ -146,7 +146,7 @@ public:
         : Volador("Moto electrica", 225,
             Turno::TURNO_DE_MANANA,
             Movimiento::AIRE,
-            stats("Rayo", 50, 4, 3),
+            stats("Rayo", 50, 4, 2),
             8, // Velocidad de movimiento
             3, //Rdio de movimiento
             casillaInicial) {}
@@ -176,7 +176,7 @@ public:
         : Volador("Copilot", 150,
             Turno::TURNO_DE_MANANA,
             Movimiento::AIRE,
-            stats("C", 75, 6, 1),
+            stats("C", 75, 6, 3),
             7, // Velocidad de movimiento
             4, //Rdio de movimiento
             casillaInicial) {}
@@ -232,7 +232,7 @@ public:
         : Volador("MH", 250,
             Turno::TURNO_DE_TARDE,
             Movimiento::AIRE,
-            stats("Tizas", 100, 6, 6),
+            stats("Tizas", 100, 6, 2),
             5, // Velocidad de movimiento
             2, //Rdio de movimiento
             casillaInicial) {}
@@ -265,7 +265,7 @@ public:
         : Volador("Microprocesador", 200,
             Turno::TURNO_DE_TARDE,
             Movimiento::AIRE,
-            stats("Cadena de bits", 75, 4, 4),
+            stats("Cadena de bits", 75, 4, 1),
             6, // Velocidad de movimiento
             2, //Rdio de movimiento
             casillaInicial) {}
@@ -291,7 +291,7 @@ public:
         : Terrestre("Osciloscopio", 100,
             Turno::TURNO_DE_TARDE,
             Movimiento::TIERRA,
-            stats("Lanza senos", 50, 10, 4),
+            stats("Lanza senos", 50, 10, 2),
             2, // Velocidad de movimiento
             3, //Rdio de movimiento
             casillaInicial) {}
@@ -318,7 +318,7 @@ public:
         : Terrestre("Brazo robot", 500,
             Turno::TURNO_DE_TARDE,
             Movimiento::TIERRA,
-            stats("Lanza tornillos", 100, 1, 4),
+            stats("Lanza tornillos", 100, 1, 1),
             3, // Velocidad de movimiento
             1, //Rdio de movimiento
             casillaInicial) {}
@@ -349,7 +349,7 @@ public:
         : Terrestre("Fuente de corriente", 375,
             Turno::TURNO_DE_TARDE,
             Movimiento::TIERRA,
-            stats("Arco eléctrico", 75, 2, 4),
+            stats("Arco eléctrico", 75, 2, 2),
             3, // Velocidad de movimiento
             2, //Rdio de movimiento
             casillaInicial) {}
@@ -377,7 +377,7 @@ public:
         : Volador("Moto Petrol", 225,
             Turno::TURNO_DE_TARDE,
             Movimiento::AIRE,
-            stats("Gasolina", 50, 4, 4),
+            stats("Gasolina", 50, 4, 2),
             8, // Velocidad de movimiento
             3, //Rdio de movimiento
             casillaInicial) {}
@@ -410,7 +410,7 @@ public:
         : Volador("Gemini", 150,
             Turno::TURNO_DE_TARDE,
             Movimiento::AIRE,
-            stats("C++", 75, 6, 4),
+            stats("C++", 75, 6, 3),
             7, // Velocidad de movimiento
             4, //Rdio de movimiento
             casillaInicial) {}

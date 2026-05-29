@@ -428,11 +428,14 @@ void ArenaCombate::aplicarAtaque(Personaje* atacante, Personaje* defensor) {
 	int velocidad_int = atacante->getArma().getVelocidad();
 	int   dano = atacante->getArma().getDanio() + (esLocal ? bonusDanioLocal_ : bonusDanioInvasor_);
 
+
+	float velocidad_ajustada = 0.5f + (velocidad_int - 1) * 0.3f;
+
 	ETSIDI::play("assets/sonidos/disparo.mp3");
 
 	proyectiles_.push_back(new Proyectil(ox, oy, dx, dy,
 		dano,
-		static_cast<float>(velocidad_int),
+		velocidad_ajustada, // <-- Aquí pasamos el float ya suavizado
 		atacante->getNombreProyectil(),
 		esLocal, atacante->getArma().getAlcance()));
 }
