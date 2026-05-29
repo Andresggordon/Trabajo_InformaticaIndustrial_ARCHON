@@ -158,12 +158,6 @@ void teclado(unsigned char key, int x, int y) {
 }
 
 void tecladoEspecial(int key, int x, int y) {
-
-    if (key == GLUT_KEY_F11) {
-        glutFullScreenToggle();
-        return;
-    }
-
     if (estado == Modos_juego::Arena_Combate)
         arena->tecladoEspecial(key);
     glutPostRedisplay();
@@ -191,7 +185,6 @@ void reposo() {
             estado = Partida::get_instance().comprobarFinPartida();
 
             if (estado == Modos_juego::Partida) {
-                // AQUÍ EL CAMBIO: La partida se encarga de reajustar todo visualmente y el tiempo
                 Partida::get_instance().regresarDeArena();
             }
         }
@@ -216,6 +209,12 @@ void tecladoUp(unsigned char key, int x, int y) {
 }
 
 void tecladoEspecialUp(int key, int x, int y) {
+
+    if ( key == GLUT_KEY_F11) {
+        glutFullScreenToggle();
+        return;
+    }
+
     if (estado == Modos_juego::Arena_Combate)
         arena->teclaEspecialLevantada(key);
     glutPostRedisplay();
