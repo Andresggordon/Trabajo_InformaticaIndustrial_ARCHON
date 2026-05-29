@@ -114,5 +114,9 @@ private:
     int indice_intro = 0;
     bool intro_activa = false;
 
+
+    bool pausa_habilidad = false;
+    int tiempo_pausa_inicio = 0;
+
     ~Partida();
 };

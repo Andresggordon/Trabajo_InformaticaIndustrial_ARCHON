@@ -37,8 +37,13 @@ void MotorGrafico::dibujarTextoBitmap(float x, float y, const char* texto) {
     }
 }
 
-void MotorGrafico::dibujaHabilidades(Personaje* p, bool modo_t, bool modo_i, bool modo_r) {
-    if (p == nullptr || modo_t || modo_i || modo_r) return;
+void MotorGrafico::dibujaHabilidades(Personaje* p, bool m_teleport, bool m_inmovilizar, bool m_revivir, bool m_curar, bool m_escudo, bool m_inmunidad) {
+    
+    if (p == nullptr) {
+        return;
+    }
+    
+    
     Menu_habilidades* menu = p->getMenu();
     if (menu == nullptr) return;
 
@@ -935,4 +940,25 @@ void MotorGrafico::dibujaCartelSaltarIntro() {
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glPopAttrib();
+}
+
+void MotorGrafico::dibujarIndicacionesHabilidades(int id_habilidad) {
+    if (id_habilidad < 1 || id_habilidad > 6) return;
+
+    static ETSIDI::Sprite* carteles_habilidades[7] = { nullptr };
+
+    if (carteles_habilidades[id_habilidad] == nullptr) {
+        std::string ruta = "assets/menu_imagenes/indicador_hab_" + std::to_string(id_habilidad) + ".png";
+
+
+        float ancho = 650.0f; // Tamaño grande para el centro
+        float alto = 650.0f;
+
+        float posX = 0.0f; // 0,0 es el centro exacto de la pantalla en ETSIDI
+        float posY = 0.0f;
+
+        carteles_habilidades[id_habilidad] = new ETSIDI::Sprite(ruta.c_str(), posX, posY, ancho, alto);
+    }
+
+    carteles_habilidades[id_habilidad]->draw();
 }
