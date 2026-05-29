@@ -36,7 +36,7 @@ void DibujoPersonaje::dibujar(float x, float y) {
         float dy = y - y_visual;
         float distancia = std::sqrt(dx * dx + dy * dy);
 
-        float velocidad = intro_terminada ? 0.28f : 0.38f;
+        float velocidad = intro_terminada ? 0.28f : 0.4f;
 
         if (distancia > velocidad) {
             // Avanza a velocidad constante (MRU)

@@ -28,7 +28,7 @@ public:
 
     // FUNCIONES DE DIBUJO (Trasladadas desde Partida para cumplir normativa)
     void dibujaSeleccion(Personaje* seleccionado, const std::vector<Casilla*>& iluminadas);
-    void dibujaHabilidades(Personaje* p, bool modo_t, bool modo_i, bool modo_r);
+    void dibujaHabilidades(Personaje* p, bool m_teleport, bool m_inmovilizar, bool m_revivir, bool m_curar, bool m_escudo, bool m_inmunidad);
     void dibujaInmovilizados(const Tablero& t);
     void dibujaBarrasVida(const Tablero& t, Personaje* p);
     void dibujarVidaPanel(Personaje* p);
@@ -36,6 +36,8 @@ public:
     void dibujaInmunidad(const Tablero& t);
     void dibujaTemporizador(int tiempo_restante, bool activo);
     void dibujaCartelSaltarIntro();
+    void dibujarIndicacionesHabilidades(int id_habilidad);
+
 
 private:
     MotorGrafico() = default;
@@ -49,4 +51,5 @@ private:
     void dibujarVidaTexto(float x, float y, Personaje* p);
     void dibujarRecuadroEstado(const Tablero& t, float r, float g, float b, std::function<bool(Personaje*)> condicion);
     void setColorVida(float porcentaje);
+
 };
