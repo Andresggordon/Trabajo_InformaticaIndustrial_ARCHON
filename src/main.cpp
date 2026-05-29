@@ -132,10 +132,7 @@ void mouseClick(int button, int estadoBtn, int x, int y) {
 
 void teclado(unsigned char key, int x, int y) {
 
-    if (key == 'f' || key == 'F') {
-        glutFullScreenToggle(); 
-        return; 
-    }
+    
 
     if (estado == Modos_juego::Pantalla_carga) {
         pantalla_carga->teclado(key);
@@ -161,6 +158,12 @@ void teclado(unsigned char key, int x, int y) {
 }
 
 void tecladoEspecial(int key, int x, int y) {
+
+    if (key == GLUT_KEY_F11) {
+        glutFullScreenToggle();
+        return;
+    }
+
     if (estado == Modos_juego::Arena_Combate)
         arena->tecladoEspecial(key);
     glutPostRedisplay();
