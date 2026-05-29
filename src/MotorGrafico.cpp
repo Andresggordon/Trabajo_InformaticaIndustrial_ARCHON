@@ -274,8 +274,57 @@ void MotorGrafico::dibujarPersonajes(const Tablero& t, Personaje* seleccionado) 
             Personaje* p = t.getCasilla(fila, col).getPersonaje();
             if (p != nullptr) {
                 for (auto d : dibujos) {
-                    if (d->getPersonaje() == p) { d->dibujar(x, y); break; }
+                    if (d->getPersonaje() == p) {
+                        d->dibujar(x, y);
+                        break;
+                    }
                 }
+            }
+        }
+    }
+}
+
+void MotorGrafico::dibujarPersonajesArena(Personaje* local, Personaje* invasor) {
+    const auto& dibujos = Partida::get_instance().getDibujos();
+    extern ArenaCombate* arena;
+
+    if (local != nullptr) {
+        float x, y;
+        if (local->estaEnTransicion()) {
+            local->actualizarPosicionVisual();
+            x = local->getPosXVisual();
+            y = local->getPosYVisual();
+        }
+        else {
+            // Usamos las constantes directamente y sumamos la mitad para centrarlo
+            x = ArenaCombate::INICIO_ARENA_X + arena->getPosLocal().columna * ArenaCombate::TAM_CASILLA + (ArenaCombate::TAM_CASILLA / 2.0f);
+            y = ArenaCombate::INICIO_ARENA_Y + arena->getPosLocal().fila * ArenaCombate::TAM_CASILLA + (ArenaCombate::TAM_CASILLA / 2.0f);
+        }
+
+        for (auto d : dibujos) {
+            if (d->getPersonaje() == local) {
+                d->dibujar(x, y);
+                break;
+            }
+        }
+    }
+
+    if (invasor != nullptr) {
+        float x, y;
+        if (invasor->estaEnTransicion()) {
+            invasor->actualizarPosicionVisual();
+            x = invasor->getPosXVisual();
+            y = invasor->getPosYVisual();
+        }
+        else {
+            x = ArenaCombate::INICIO_ARENA_X + arena->getPosInvasor().columna * ArenaCombate::TAM_CASILLA + (ArenaCombate::TAM_CASILLA / 2.0f);
+            y = ArenaCombate::INICIO_ARENA_Y + arena->getPosInvasor().fila * ArenaCombate::TAM_CASILLA + (ArenaCombate::TAM_CASILLA / 2.0f);
+        }
+
+        for (auto d : dibujos) {
+            if (d->getPersonaje() == invasor) {
+                d->dibujar(x, y);
+                break;
             }
         }
     }
@@ -323,37 +372,6 @@ void MotorGrafico::dibujarFondoArena() {
     arena->dibuja();
 }
 
-void MotorGrafico::dibujarPersonajesArena(Personaje* local, Personaje* invasor) {
-
-    const auto& dibujos = Partida::get_instance().getDibujos();
-    extern ArenaCombate* arena;
-
-    float TAMCasilla = 45.0f;
-    float inicioArenaX = -245.0f;
-    float inicioArenaY = -245.0f;
-
-    if (local != nullptr) {
-        float x = inicioArenaX + arena->getPosLocal().columna * TAMCasilla;
-        float y = inicioArenaY + arena->getPosLocal().fila * TAMCasilla;
-        for (auto d : dibujos) {
-            if (d->getPersonaje() == local) {
-                d->dibujar(x, y);
-                break;
-            }
-        }
-    }
-
-    if (invasor != nullptr) {
-        float x = inicioArenaX + arena->getPosInvasor().columna * TAMCasilla;
-        float y = inicioArenaY + arena->getPosInvasor().fila * TAMCasilla;
-        for (auto d : dibujos) {
-            if (d->getPersonaje() == invasor) {
-                d->dibujar(x, y);
-                break;
-            }
-        }
-    }
-}
 
 void MotorGrafico::dibujarBarraVida(float x, float y, Personaje* p) {
     if (p == nullptr || !p->estaVivo()) return;

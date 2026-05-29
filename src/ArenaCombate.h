@@ -6,12 +6,9 @@
 
 // Forward declaration para evitar include circular con Tablero.h
 enum class FaseCiclo;
-
-
 class Proyectil;
 
 //El personaje LOCAL es aquel que se encuentra en la casilla mientras el INVASOR es el personaje que se desplaza a la casilla
-
 enum class ResultadoCombate //Declaramos los posibles resultados que se producen en el combate
 {
 	Gana_Local, Gana_Invasor
@@ -20,6 +17,11 @@ enum class ResultadoCombate //Declaramos los posibles resultados que se producen
 class ArenaCombate
 {
 public:
+	
+	static constexpr float TAM_CASILLA = 45.0f;
+	static constexpr float INICIO_ARENA_X = -337.5f;
+	static constexpr float INICIO_ARENA_Y = -337.5f;
+
 	ArenaCombate();
 	void iniciarCombate(Personaje* local, Personaje* invasor, int modo, FaseCiclo fase); //Iniciar y finalizar el combate
 	void finalizarCombate();
@@ -59,8 +61,10 @@ private:
 
 	std::vector<Proyectil*> proyectiles_;
 
-	static const int Filas_Arena = 11;
-	static const int Columnas_Arena = 11;
+	static const int Filas_Arena = 15;
+	static const int Columnas_Arena = 15;
+
+	
 
 	PosArena posLocal_;
 	PosArena posInvasor_;
@@ -84,8 +88,8 @@ private:
 	//Temporizadores de ataque (ms)
 	int tiempoUltimoAtaqueLocal_ = 0;
 	int tiempoUltimoAtaqueInvasor_ = 0;
-	static const int COOLDOWN_ATAQUE = 750;       
-	static const int COOLDOWN_ATAQUE_IA = 1500;   
+	static const int COOLDOWN_ATAQUE = 750;
+	static const int COOLDOWN_ATAQUE_IA = 1500;
 
 	//Métodos de ataque
 	void aplicarAtaque(Personaje* atacante, Personaje* defensor);
@@ -104,19 +108,16 @@ private:
 	bool teclaIzquierda = false;
 	bool teclaDerecha = false;
 
-	int tiempoUltimoMovimiento_ = 0;
-	static const int INTERVALO_MOVIMIENTO = 100;
-
-	//Cadencias propias de la IA de la arena (solo modo 1 jugador)
-	int tiempoUltimoMovimientoIA_ = 0;
-	static const int INTERVALO_MOVIMIENTO_IA = INTERVALO_MOVIMIENTO;
+	// Temporizadores de movimiento independientes (basados en la estadística de velocidad)
+	int tiempoUltimoMovimientoLocal_ = 0;
+	int tiempoUltimoMovimientoInvasor_ = 0;
 
 	// Bonus de daño por ventaja de terreno (0 = sin ventaja)
 	// Se calcula en iniciarCombate y se aplica en aplicarAtaque.
 	int bonusDanioLocal_ = 0;
 	int bonusDanioInvasor_ = 0;
 
-	ETSIDI::Sprite* cartel_gana_manana_ = nullptr;  
+	ETSIDI::Sprite* cartel_gana_manana_ = nullptr;
 	ETSIDI::Sprite* cartel_gana_tarde_ = nullptr;
 	bool mostrandoCartel_ = false;
 	int  tiempoCartel_ = 0;          // ms en que empezó a mostrarse
@@ -126,7 +127,6 @@ private:
 	int tiempo_parada_local_ = 0;
 	int tiempo_parada_invasor_ = 0;
 	static const int RETARDO_IDLE = 350; // ms de espera antes de volver a estar quieto
-
 
 	~ArenaCombate();
 };

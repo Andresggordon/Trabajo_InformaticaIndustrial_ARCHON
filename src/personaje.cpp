@@ -14,10 +14,11 @@
 #include "Tablero.h"
 #include "Partida.h"
 #include <GL/freeglut.h>
+#include <cmath>
 
-Personaje::Personaje(std::string nombre_, int vida_, Turno turno_, Movimiento movimiento_, stats arma_, Casilla& casillaInicial)
-    : nombre(nombre_), vida_Max(vida_), vida_actual(vida_),
-    turno(turno_), movimiento(movimiento_), arma(arma_), casilla_actual(&casillaInicial)
+Personaje::Personaje(std::string nombre_, int vida_, Turno turno_, Movimiento movimiento_, stats arma_, int velocidad_, int radio_mov_, Casilla& casillaInicial)
+    : nombre(nombre_), vida_Max(vida_), vida_actual(vida_), turno(turno_), movimiento(movimiento_), arma(arma_), velocidad_movimiento(velocidad_),
+    radio_movimiento(radio_mov_), casilla_actual(&casillaInicial)
 {
     casilla_actual->setPersonaje(this);  // El personaje ocupa la casilla inicial al nacer
 
@@ -93,14 +94,20 @@ ResultadoMover Personaje::mover(Casilla& destino) {
     return ResultadoMover::OK;
 }
 
-// ---------------- TRANSICIÓN VISUAL (LERP) ----------------
+// ---------------- TRANSICIÓN VISUAL ----------------
 
 void Personaje::iniciarAnimacionMovimiento(float x_origen, float y_origen, float x_destino, float y_destino) {
-    posX_visual_ = x_origen;
-    posY_visual_ = y_origen;
+    // EL TRUCO ANTISALTOS: Si estaba quieto, su posición visual es el origen que nos pasan.
+    // Pero si YA estaba en movimiento, ignoramos el origen para que no dé un tirón hacia atrás.
+    if (!en_transicion_) {
+        posX_visual_ = x_origen;
+        posY_visual_ = y_origen;
+        tiempo_inicio_animacion_ = glutGet(GLUT_ELAPSED_TIME); // Lo usamos para calcular el DeltaTime
+    }
+
+    // Le decimos a la capa visual cuál es su nueva "zanahoria" a perseguir
     posX_destino_ = x_destino;
     posY_destino_ = y_destino;
-    tiempo_inicio_animacion_ = glutGet(GLUT_ELAPSED_TIME);
     en_transicion_ = true;
 }
 
@@ -108,20 +115,32 @@ void Personaje::actualizarPosicionVisual() {
     if (!en_transicion_) return;
 
     int ahora = glutGet(GLUT_ELAPSED_TIME);
-    int tiempo_pasado = ahora - tiempo_inicio_animacion_;
+    float dt = (ahora - tiempo_inicio_animacion_) / 1000.0f; // Delta time en segundos
+    tiempo_inicio_animacion_ = ahora; // Actualizamos para el siguiente fotograma
 
-    // Calculamos el progreso matemático de la animación de 0.0f a 1.0f
-    float progreso = (float)tiempo_pasado / DURACION_ANIMACION_MS;
+    // MRU: v = d / t
+    // Distancia = 45.0f píxeles (tamaño de la casilla en la arena)
+    // Tiempo = getDuracionAnimacion() en segundos
+    float tiempo_casilla_seg = getDuracionAnimacion() / 1000.0f;
+    float velocidad_px_por_seg = 45.0f / tiempo_casilla_seg;
 
-    if (progreso >= 1.0f) {
-        // La animación ha terminado, forzamos posición final exacta
+    // Calculamos el vector de dirección hacia el destino
+    float dx = posX_destino_ - posX_visual_;
+    float dy = posY_destino_ - posY_visual_;
+    float distancia = std::sqrt(dx * dx + dy * dy);
+
+    // ¿Cuánto puede avanzar en este fotograma?
+    float movimiento_este_frame = velocidad_px_por_seg * dt;
+
+    if (distancia <= movimiento_este_frame) {
+        // Si el paso es mayor que la distancia que le queda, lo clavamos en la meta
         posX_visual_ = posX_destino_;
         posY_visual_ = posY_destino_;
-        en_transicion_ = false;
+        en_transicion_ = false; // Se detiene suavemente
     }
     else {
-        // Fórmula LERP: Posición = Inicio + (Destino - Inicio) * Progreso
-        posX_visual_ = posX_visual_ + (posX_destino_ - posX_visual_) * progreso;
-        posY_visual_ = posY_visual_ + (posY_destino_ - posY_visual_) * progreso;
+        // MRU puro: avanza hacia el destino
+        posX_visual_ += (dx / distancia) * movimiento_este_frame;
+        posY_visual_ += (dy / distancia) * movimiento_este_frame;
     }
 }
