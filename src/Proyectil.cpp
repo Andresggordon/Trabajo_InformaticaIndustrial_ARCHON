@@ -11,6 +11,8 @@
 #include "Proyectil.h"
 #include <GL/freeglut.h>
 #include <cmath>
+#include "ArenaCombate.h"
+
 //El constructor de la clase donde tiene la información necesaria para utilizar los proyectiles.
 //Teniendo por ejemplo, la información de la posición de origen, la posición final dependiendo del alcance, etc...
 Proyectil::Proyectil(float origenX, float origenY,
@@ -29,7 +31,7 @@ Proyectil::Proyectil(float origenX, float origenY,
 
     origenX_ = origenX;
     origenY_ = origenY;
-    distanciaMaxima_ = alcance * 45.0f;
+    distanciaMaxima_ = alcance * ArenaCombate::TAM_CASILLA;
 }
 //Borra el proyectil al final
 Proyectil::~Proyectil() {

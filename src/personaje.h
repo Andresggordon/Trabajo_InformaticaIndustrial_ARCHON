@@ -21,11 +21,9 @@ enum class ResultadoMover { OK, ILEGAL, CHOQUE };
 
 class Personaje {
 public:
-    Personaje(std::string nombre_, int vida_, Turno turno_, Movimiento movimiento_, stats arma_, Casilla& casillaInicial);
-    virtual ~Personaje();
+    Personaje(std::string nombre_, int vida_, Turno turno_, Movimiento movimiento_, stats arma_, int velocidad_, int radio_mov_, Casilla& casillaInicial);    virtual ~Personaje();
 
     // --- CARACTERÍSTICAS VIRTUALES (A sobreescribir por subclases) ---
-    virtual int         getRadioMovimiento() const = 0;
     virtual std::string getNombreSprite()    const = 0;
     virtual float       getTamanoSprite()    const = 0;
     virtual std::string getNombreCarta()     const = 0;
@@ -35,7 +33,6 @@ public:
     virtual float       getOffsetX()         const { return 0.0f; }
     virtual float       getOffsetY()         const { return 0.0f; }
     virtual std::string getNombreProyectil() const { return ""; }
-    virtual float       getVelocidadProyectil() const { return 5.0f; }
     virtual Menu_habilidades* getMenu() { return nullptr; }
     virtual bool        esLider() const { return false; }
 
@@ -64,6 +61,7 @@ public:
     bool        getEnMovimiento()    const { return en_movimiento; }
     bool        getMirandoDerecha()  const { return mirando_derecha; }
     bool        getMirandoIzquierda() const { return mirando_izquierda; }
+    int getRadioMovimiento() const { return radio_movimiento; }
 
     // --- SETTERS Y ESTADOS ---
     void setCasillaActual(Casilla* c);
@@ -86,15 +84,27 @@ public:
     float getPosYVisual() const { return posY_visual_; }
     bool estaEnTransicion() const { return en_transicion_; }
 
+    // Calcula cuánto tarda visualmente en cruzar una casilla para no dar trompicones
+    int getDuracionAnimacion() const {
+        int vel = velocidad_movimiento > 0 ? velocidad_movimiento : 1;
+        return 1000 / vel;
+    }
+
     //Para conocer si ha habido teletransporte o no
     bool getTeletransportado() const { return recien_teletransportado; }
     void setTeletransportado(bool b) { recien_teletransportado = b; }
+
+    int getVelocidadMovimiento() const { return velocidad_movimiento; }
+
+
 
 protected:
     // Atributos base
     std::string nombre;
     int         vida_Max;
     int         vida_actual;
+    int velocidad_movimiento;
+    int radio_movimiento;
     Turno       turno;
     Movimiento  movimiento;
     stats       arma;
@@ -119,7 +129,6 @@ protected:
     float posX_destino_ = 0.0f;
     float posY_destino_ = 0.0f;
     int tiempo_inicio_animacion_ = 0;
-    const int DURACION_ANIMACION_MS = 500;
 
     bool recien_teletransportado = false;
 };
