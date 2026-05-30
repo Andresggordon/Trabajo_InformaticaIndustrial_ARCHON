@@ -68,6 +68,9 @@ Casilla* Personaje::getCasillaActual() const { return casilla_actual; }
 // ---------------- LOGICA DE MOVIMIENTO EN TABLERO ----------------
 
 ResultadoMover Personaje::mover(Casilla& destino) {
+    // Protección contra punteros colgantes o nulos
+    if (casilla_actual == nullptr) return ResultadoMover::ILEGAL;
+    
     // 1. Condiciones físicas del estado del personaje 
     if (!estaVivo()) return ResultadoMover::ILEGAL;
     if (getInmovilizado()) return ResultadoMover::ILEGAL;

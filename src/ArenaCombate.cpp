@@ -38,14 +38,6 @@ void ArenaCombate::iniciarCombate(Personaje* local, Personaje* invasor, int modo
 	}
 
 	// Inicializar en la arena a cada turno siempre en su respectivo lado
-	if (local_->getTurno() == Turno::TURNO_DE_MANANA) {
-		posLocal_ = { 5, 0 };
-		posInvasor_ = { 5, 10 };
-	}
-	else {
-		humanoControlaLocal_ = false;
-	}
-
 	if (local_ != nullptr && local_->getTurno() == Turno::TURNO_DE_MANANA) {
 		posLocal_ = { 5, 0 };
 		posInvasor_ = { 5, 10 };
@@ -148,6 +140,8 @@ void ArenaCombate::teclado(unsigned char key)
 
 	if (combateTerminado_)
 		return;
+
+	if (local_ == nullptr || invasor_ == nullptr) return;  // Guardia contra punteros nulos
 
 	// Bloquear controles si hay un popup abierto
 	if (mostrar_popup || mostrar_popup_normas)
@@ -265,9 +259,9 @@ void ArenaCombate::tecladoEspecial(int key)
 //Una vez termina el combate, resetea todas las variables para que cuando se vuelva a la arena se empiece desde el principio
 void ArenaCombate::finalizarCombate()
 {
-	for (auto p : proyectiles_) {
+	/*for (auto p : proyectiles_) {
 		delete p;
-	}
+	}*/
 	proyectiles_.clear();
 
 	teclaW = false;
@@ -285,6 +279,7 @@ void ArenaCombate::finalizarCombate()
 
 //Una vez termine, determina el resultado de la arena y pasa la información al tablero inicial, además de activar el cartel correspondiente
 void ArenaCombate::resolverResultado() {
+	if (local_ == nullptr || invasor_ == nullptr) return;  // Guardia contra punteros nulos
 	combateTerminado_ = true;
 	if (local_->estaVivo()) {
 		resultado_ = ResultadoCombate::Gana_Local;
@@ -450,6 +445,7 @@ void ArenaCombate::actualizar() {
 
 	// --- IDENTIFICACIÓN DE BANDOS ---
 	// Calculamos quién es quién aquí arriba para usarlo en todo el código
+	if (local_ == nullptr || invasor_ == nullptr) return;  // Guardia necesaria en Release
 	Personaje* pManana = (local_->getTurno() == Turno::TURNO_DE_MANANA) ? local_ : invasor_;
 	Personaje* pTarde = (local_->getTurno() == Turno::TURNO_DE_TARDE) ? local_ : invasor_;
 
@@ -479,6 +475,8 @@ void ArenaCombate::actualizar() {
 	int distancia = max(distFila, distCol);
 
 	for (auto p : proyectiles_) {
+		
+		if (p->haLlegado()) continue; //Si el proyectil ya impactó (y se marcó como llegado), el bucle lo salta y no le vuelve a quitar vida en el siguiente fotograma.
 		if (p->esDeLocal() && p->ColisionaCon(xInvasor, yInvasor, 60.0f)) {
 			p->marcarLlegado();
 			if (distancia <= local_->getArma().getAlcance()) {
@@ -510,12 +508,15 @@ void ArenaCombate::actualizar() {
 	}
 
 	for (auto it = proyectiles_.begin(); it != proyectiles_.end();) {
-		if ((*it)->haLlegado()) { delete* it; it = proyectiles_.erase(it); }
+		if ((*it)->haLlegado()) {
+			// delete *it;                
+			it = proyectiles_.erase(it);  
+		}
 		else { ++it; }
 	}
 
-	
-	
+
+
 	auto procesarMovimiento = [&](Personaje* p, PosArena& pos, int& tiempoUltimoMov, bool w, bool s, bool a, bool d) {
 		if (p == nullptr) return;
 

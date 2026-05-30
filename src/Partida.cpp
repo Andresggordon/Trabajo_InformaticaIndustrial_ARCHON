@@ -45,7 +45,7 @@ void Partida::dibujaextra() {
     if (personaje_seleccionado != nullptr) {
         std::string ruta = personaje_seleccionado->getNombreCarta();
         if (ruta != nombre_carta_cargada) {
-            delete carta_actual;
+            //delete carta_actual;
             carta_actual = new ETSIDI::Sprite(ruta.c_str(), 0, 0, 800, 800);
             nombre_carta_cargada = ruta;
         }
@@ -287,8 +287,8 @@ Modos_juego Partida::procesarClickTablero(int fil, int col) {
                 return Modos_juego::Arena_Combate;
             }
             else {
-                MotorGrafico::mensajeAviso = "Movimiento no valido!";
-                MotorGrafico::tiempoAviso = 2.0f;
+               MotorGrafico::mensajeAviso = "Movimiento no valido!";
+               MotorGrafico::tiempoAviso = 2.0f;
             }
             personaje_seleccionado = nullptr; casillas_iluminadas.clear();
         }
@@ -510,7 +510,8 @@ void Partida::reset() {
     modo_curar = modo_escudo = modo_inmunidad = false;
     ia_pensando_ = false; ia_tiempoInicioTurno_ = 0;
     casillas_iluminadas.clear();
-    delete carta_actual; carta_actual = nullptr;
+    //delete carta_actual;
+    carta_actual = nullptr;
     nombre_carta_cargada = "";
     tab_.reset();
     temporizador_activo_ = false;

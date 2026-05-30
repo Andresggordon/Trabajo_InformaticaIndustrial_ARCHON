@@ -90,12 +90,12 @@ void Tablero::limpiarPendiente() {
 }
 
 void Tablero::resolverCombate(ResultadoCombate resultado) {
+    if (pendienteLocal_ == nullptr || pendienteInvasor_ == nullptr) return; // Seguridad extra
+
     Personaje* local = pendienteLocal_;
     Personaje* invasor = pendienteInvasor_;
 
     if (resultado == ResultadoCombate::Gana_Invasor) {
-        // Local pierde — vaciar su casilla pero no borrarlo
-        // El invasor ocupa la casilla del local
         Casilla* casillaLocal = local->getCasillaActual();
         Casilla* casillaInvasor = invasor->getCasillaActual();
 
@@ -103,20 +103,16 @@ void Tablero::resolverCombate(ResultadoCombate resultado) {
         casillaInvasor->setPersonaje(nullptr);
         invasor->setCasillaActual(casillaLocal);
 
-        // Local queda sin casilla pero sigue en memoria
         local->setCasillaActual(nullptr);
-
+      
     }
     else {
-        // Invasor pierde — vaciar su casilla pero no borrarlo
         Casilla* casillaInvasor = invasor->getCasillaActual();
-        casillaInvasor->setPersonaje(nullptr);
+        if (casillaInvasor) casillaInvasor->setPersonaje(nullptr);
         invasor->setCasillaActual(nullptr);
     }
 
     limpiarPendiente();
-
-    // Las casillas DINÁMICAS evolucionan automáticamente tras cada combate
     avanzarCiclo();
 }
 

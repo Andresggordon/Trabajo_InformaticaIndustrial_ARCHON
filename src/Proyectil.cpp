@@ -35,7 +35,7 @@ Proyectil::Proyectil(float origenX, float origenY,
 }
 //Borra el proyectil al final
 Proyectil::~Proyectil() {
-    delete sprite_;
+   // delete sprite_;
 }
 //Actualiza en tiempo real el proyectil en la pantalla, controlando la trayectoria y la velocidad.
 //Y cuando llega al final lo destruye si no detecta la colisión.

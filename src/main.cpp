@@ -15,6 +15,7 @@
 #include "MotorGrafico.h"
 #include "ArenaCombate.h"
 #include "PantallaFinal.h"
+#include <crtdbg.h>
 
 
 int equipo_j1 = 0;
@@ -226,6 +227,9 @@ void tecladoEspecialUp(int key, int x, int y) {
 
 
 int main(int argc, char** argv) {
+
+    //_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF);
+   
     SetProcessDPIAware();
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
@@ -267,6 +271,5 @@ int main(int argc, char** argv) {
     delete pantalla_carga;
     delete pantalla_final;
 
-    return 0;
     return 0;
 }
