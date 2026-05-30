@@ -1,3 +1,13 @@
+/**
+ * @file Tablero_vista.h
+ * @brief Clase auxiliar para el renderizado básico del campo de batalla.
+ *
+ * @details Actúa como una sub-vista utilizada por el `MotorGrafico`. Su única responsabilidad
+ * es leer las dimensiones, estado y fase dinámica del objeto `Tablero` (modelo) y traducirlo a
+ * instrucciones de dibujo primitivas de OpenGL (cuadrados y colores) para pintar
+ * sin preocuparse por la lógica de los personajes o las interfaces de usuario.
+ */
+
 #pragma once
 #include "Tablero.h"
 #include <GL/freeglut.h>

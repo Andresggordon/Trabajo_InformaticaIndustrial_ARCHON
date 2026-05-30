@@ -1,3 +1,14 @@
+/**
+ * @file ArenaCombate.h
+ * @brief Define la clase ArenaCombate, encargada de gestionar la fase de combate en tiempo real.
+ *
+ * @details Esta clase toma el control cuando dos personajes colisionan en el tablero principal.
+ * Gestiona el entorno de la arena (cuadrícula 15x15), el procesamiento de inputs del usuario
+ * (tanto para un jugador como para modo multijugador local), la inteligencia artificial del rival
+ * en el modo de 1 jugador, la generación y colisión de proyectiles, y los temporizadores
+ * de movimiento y ataque basados en las estadísticas individuales de cada personaje.
+ */
+
 #pragma once
 #include "personaje.h"
 #include "Modos_juego.h"
@@ -23,6 +34,8 @@ public:
 	static constexpr float INICIO_ARENA_Y = -337.5f;
 
 	ArenaCombate();
+	~ArenaCombate();
+
 	void iniciarCombate(Personaje* local, Personaje* invasor, int modo, FaseCiclo fase); //Iniciar y finalizar el combate
 	void finalizarCombate();
 	bool combateTerminado() const; //Confirmar que el combate acabo y pasar el resultado del combate
@@ -128,5 +141,4 @@ private:
 	int tiempo_parada_invasor_ = 0;
 	static const int RETARDO_IDLE = 350; // ms de espera antes de volver a estar quieto
 
-	~ArenaCombate();
 };

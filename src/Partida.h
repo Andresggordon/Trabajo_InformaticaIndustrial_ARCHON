@@ -1,3 +1,14 @@
+/**
+ * @file Partida.h
+ * @brief Controlador principal del bucle de juego interactivo.
+ *
+ * @details Implementa el patrón Singleton y actúa como coordinador principal entre el tablero,
+ * los personajes, la IA y la arena de combate. Gestiona las reglas del juego como el sistema
+ * de turnos, el cálculo de temporizadores en tiempo real, la ejecución de las habilidades
+ * de los líderes (manejando las pausas tácticas) y la detección de las condiciones de
+ * victoria o derrota, delegando el dibujado al Motor Gráfico.
+ */
+
 #pragma once
 #include <vector>
 #include "Menu.h"

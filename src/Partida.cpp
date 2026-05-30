@@ -383,7 +383,6 @@ void Partida::tecladoHabilidades(unsigned char key) {
     Menu_habilidades* menu = personaje_seleccionado->getMenu();
     if (!menu) return;
 
-    // 1. Averiguamos qué ID interno de habilidad corresponde a la tecla pulsada
     int id_habilidad = -1;
     switch (key) {
     case '1': id_habilidad = 1; break; // Revivir
@@ -395,7 +394,6 @@ void Partida::tecladoHabilidades(unsigned char key) {
     default: return; // Si pulsa cualquier otra tecla, salimos directamente
     }
 
-    // 2. Si la tecla era válida (1-6) y la habilidad está lista para usarse
     if (menu->puedeUsar(id_habilidad)) {
 
         // Apagamos todas las habilidades para evitar que se acumulen los carteles
@@ -413,7 +411,6 @@ void Partida::tecladoHabilidades(unsigned char key) {
         }
 
         // Activamos la pausa de tiempo
-        // (Solo guardamos la marca de tiempo si NO estábamos ya en pausa)
         if (!pausa_habilidad) {
             pausa_habilidad = true;
             tiempo_pausa_inicio = glutGet(GLUT_ELAPSED_TIME);
@@ -444,13 +441,11 @@ void Partida::dibujaAviso() { MotorGrafico::get_instance().dibujaAviso(); }
 void Partida::teclado(unsigned char key) {
     if (key == 27) { 
         if (pausa_habilidad) {
-            // 1. Quitar el cartel y despausar el tiempo
             pausa_habilidad = false;
             int tiempo_pausado = glutGet(GLUT_ELAPSED_TIME) - tiempo_pausa_inicio;
-            tiempo_inicio_turno_ += tiempo_pausado; // Desplaza el reloj hacia adelante para evitar saltos de tiempo
+            tiempo_inicio_turno_ += tiempo_pausado; 
         }
         else if (modo_revivir || modo_inmovilizar || modo_teleport || modo_curar || modo_escudo || modo_inmunidad) {
-            // 2. Si pulsa ESC de nuevo (sin cartel), cancela la habilidad
             modo_revivir = modo_inmovilizar = modo_teleport = modo_curar = modo_escudo = modo_inmunidad = false;
             personaje_seleccionado = nullptr;
             casillas_iluminadas.clear();
@@ -479,19 +474,17 @@ void Partida::teclado(unsigned char key) {
 void Partida::gestionarIntro() {
     if (!intro_activa || dibujos.empty()) return;
 
-    // Si aún quedan personajes por entrar
     if (indice_intro < dibujos.size()) {
         DibujoPersonaje* actual = dibujos[indice_intro];
 
-        // 1. Le decimos "Te toca caminar"
+        
         actual->arrancar();
 
-        // 2. Comprobamos si ya llegó a su casilla
         float destX = MotorGrafico::INICIO_X + actual->getPersonaje()->getPosX() * MotorGrafico::TAM;
         float destY = MotorGrafico::INICIO_Y + actual->getPersonaje()->getPosY() * MotorGrafico::TAM;
 
         if (actual->haLlegado(destX, destY)) {
-            indice_intro++; // ¡Ha llegado! Pasamos la vez a la siguiente pieza
+            indice_intro++; 
         }
     }
     else {
@@ -548,9 +541,7 @@ void Partida::reset() {
     for (auto p : personajes)
         dibujos.push_back(new DibujoPersonaje(p));
 
-    // ====================================================================
-    // EFECTO INTRO: Ocultamos a todas las piezas y las congelamos
-    // ====================================================================
+    // Ocultar piezas en la intro
     for (auto d : dibujos) {
         Personaje* p = d->getPersonaje();
 
@@ -564,7 +555,6 @@ void Partida::reset() {
     indice_intro = 0;
     intro_activa = true;
     despliegue_inicial = true;
-    // ====================================================================
 
 }
 Modos_juego Partida::comprobarFinPartida() {

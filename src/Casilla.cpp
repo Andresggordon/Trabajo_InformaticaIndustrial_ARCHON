@@ -1,3 +1,8 @@
+/**
+ * @file Casilla.cpp
+ * @brief Implementación de la clase Casilla. Define los métodos de acceso y modificación de su estado interno.
+ */
+
 #include "Casilla.h"
 #include "personaje.h"
 

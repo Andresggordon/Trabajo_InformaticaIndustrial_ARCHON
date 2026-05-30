@@ -1,3 +1,13 @@
+/**
+ * @file Casilla.h
+ * @brief Define la clase Casilla, que representa cada una de las celdas individuales del tablero de juego.
+ *
+ * @details Actúa como el contenedor principal para la posición estructural (fila, columna) y el
+ * estado lógico de la celda (BLANCA_FIJA, AZUL_FIJA o DINAMICA, lo cual influye en los bonus de combate).
+ * Además, almacena una referencia (puntero) al objeto `Personaje` que la ocupa en cada momento,
+ * sirviendo como nexo de información bidireccional entre el sistema de coordenadas del `Tablero`
+ * y las entidades que interactúan sobre él.
+ */
 
 #pragma once
 #include <vector>
@@ -17,38 +27,9 @@ public:
     int getCol() const;
     void setPosicion(int fila, int col);
 
-
-    /*// ── Enlace entre casillas ─────────────────────────────────────────────
-    // Registra una casilla vecina con su desplazamiento relativo (dx, dy).
-    // El Tablero llama a esto al inicializarse para construir la red.
-    void agregarCasillaVecina(Casilla* c, int dx, int dy);
-
-
-    // ── Legalidad en el movimiento ─────────────────────────────────────────────
-    // Decide si el personaje p puede moverse desde ESTA casilla hasta c_destino.
-    // Recibe const Personaje& porque:
-    //   · Solo necesita consultar datos del personaje (radio, tipo de movimiento)
-    //   · No debe modificarlo — const lo garantiza
-    //   · & para no copiar el objeto entero
-    bool puedeMoverseA(const Casilla& c_destino, const Personaje& p) const;  //Añadir metodo geom para saber qué casillas tienne disponibles de una en una
-    */
 private:
     EstadoCasilla estado;
     Personaje* personaje;
     int fila_, col_;
 
-
-    /*EstadoCasilla estado;
-    Personaje* personaje;  // puntero, no propietario, la casilla tampoco es que pueda destruir al personaje, en eso son independientes
-
-    int fila_, col_; //Posición de la casilla en el tablero es privada porque no la debe cambiar cualquiera
-    
-    struct CasillaVecina {
-        Casilla* casilla;
-        int dx, dy; 
-    };
-    
-
-    
-    std::vector<CasillaVecina> casillasvecinas; */
 };

@@ -1,3 +1,8 @@
+/**
+ * @file habilidades_profe.cpp
+ * @brief Implementación de las habilidades activas de los líderes y su gestor de uso.
+ */
+
 #include "habilidades_profes.h"
 #include "personaje.h"
 #include "Casilla.h"
@@ -21,6 +26,8 @@ std::string Menu_habilidades::getNombre(int i)    const { return habilidades[i]-
 int         Menu_habilidades::numHabilidades()    const { return (int)habilidades.size(); }
 
 bool HabilidadTeleport::usar(Personaje* usuario, Personaje* /*objetivo*/, Casilla* destino) {
+    if (!destino) return false; //Evitar puntero colgante, validando que no sea false antes de utilizarlo
+    
     if (usada || !usuario || !destino) return false;
     if (destino->getPersonaje() != nullptr) return false;
 

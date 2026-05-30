@@ -1,18 +1,19 @@
+/**
+ * @file Finpartida.h
+ * @brief Define la clase FinPartida, encargada de evaluar las condiciones de victoria o derrota.
+ *
+ * @details Esta clase opera bajo el principio de Alta Cohesión y Bajo Acoplamiento. No gestiona
+ * entradas, no renderiza gráficos ni modifica los estados del tablero. Su única responsabilidad es
+ * realizar consultas de solo lectura (`const`) sobre la lista de personajes y la disposición de la
+ * cuadrícula para determinar en cada turno si algún bando ha ganado.
+ */
+
 #pragma once
 #include "personaje.h"
 #include "Tablero.h"
 #include <vector>
 
-// -----------------------------------------------------------------------------------
-//  FinPartida
-//
-//  RESPONSABILIDAD UNICA: decir si la partida ha terminado y por que.
-//  Es logica pura: no dibuja, no conoce raton ni teclado, no cambia estados.
-//  Solo CONSULTA el Tablero y el vector de personajes (todo const).
-//  Alta cohesion, bajo acoplamiento.
-// -----------------------------------------------------------------------------------
 
-// Razon por la que ha terminado (o NINGUNA si sigue).
 enum class CondicionVictoria {
     NINGUNA,
 

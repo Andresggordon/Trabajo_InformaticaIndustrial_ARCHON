@@ -1,3 +1,13 @@
+/**
+ * @file Proyectil.h
+ * @brief Entidad gráfica y lógica que representa los ataques a distancia en la arena.
+ *
+ * @details Controla el ciclo de vida, desplazamiento interpolado y renderizado
+ * de los ataques en la Arena de Combate. Calcula las colisiones radiales en tiempo real
+ * contra los personajes y respeta una distancia máxima basada en el alcance del arma,
+ * destruyéndose automáticamente al alcanzar su objetivo o su límite físico.
+ */
+
 #pragma once
 #include "ETSIDI.h"
 #include <string>

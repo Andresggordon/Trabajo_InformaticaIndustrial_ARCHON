@@ -1,11 +1,12 @@
 /**
- * @file Personaje.h
- * @brief Definición de la clase base Personaje.
+ * @file personaje.h
+ * @brief Definición de la clase base abstracta Personaje.
  *
- * @details Modela la entidad principal que interactúa en el tablero. Almacena
- * la salud, estadísticas de combate, estado actual (inmovilizado, escudo, etc.)
- * y orientación visual de cada luchador. Actúa como clase padre (base) para
- * los distintos tipos de personajes (profesores, objetos, etc.).
+ * @details Modela la entidad principal que interactúa en el tablero. Actúa como clase padre
+ * para los distintos tipos de personajes. Almacena
+ * datos vitales (salud, estados, etc.), estadísticas de movimiento independientes, y
+ * proporciona una interfaz común (getters, setters y métodos virtuales) para la gestión del
+ * combate, la animación visual fluida y la aplicación de habilidades.
  */
 
 #pragma once

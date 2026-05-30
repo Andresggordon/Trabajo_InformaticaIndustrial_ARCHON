@@ -1,10 +1,6 @@
 /**
  * @file Eleccion_1jugador.cpp
- * @brief Pantalla de selección de bando para el modo de un jugador.
- *
- * @details Permite al jugador elegir entre el turno de mañana o el turno de tarde. 
- * Actualiza las variables globales equipo_j1, equipo_j2 y modo_juego antes de avanzar a la siguiente pantalla de selección.
- *
+ * @brief Implementación de la pantalla de selección de bando para el modo de un jugador.
  */
 
 #include "Eleccion_1jugador.h"

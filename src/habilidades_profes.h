@@ -1,3 +1,14 @@
+/**
+ * @file habilidades_profes.h
+ * @brief Define la jerarquía de habilidades activas y su menú de gestión para los líderes (Profesores).
+ *
+ * @details Implementa un sistema de clases derivado de una clase base abstracta (`Habilidad`) para
+ * encapsular la lógica única de cada poder especial (Teleport, Revivir, Inmovilizar, Curar, Escudo,
+ * Inmunidad). Además, define la clase `Menu_habilidades` como contenedor que gestiona el inventario
+ * de habilidades de cada líder, validando si una acción ya ha sido consumida y ejecutando su efecto
+ * específico sobre un objetivo o casilla determinada.
+ */
+
 #pragma once
 #include <string>
 #include <vector>

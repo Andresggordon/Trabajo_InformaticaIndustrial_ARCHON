@@ -1,3 +1,13 @@
+/**
+ * @file Menu.h
+ * @brief Define la pantalla principal del juego (Menú de Inicio).
+ *
+ * @details Gestiona la interfaz gráfica principal a la que accede el usuario tras la pantalla
+ * de carga. Permite navegar entre las opciones fundamentales del juego: "1 Jugador" (contra IA),
+ * "2 Jugadores" (multijugador local) y el acceso al "Ranking". Controla las animaciones de
+ * hover sobre los botones y devuelve el siguiente estado del juego tras un clic válido.
+ */
+
 #pragma once
 #include "ETSIDI.h"
 #include "Modos_juego.h"

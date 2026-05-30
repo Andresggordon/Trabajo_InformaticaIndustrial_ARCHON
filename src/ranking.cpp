@@ -1,3 +1,8 @@
+/**
+ * @file ranking.cpp
+ * @brief Implementación del sistema de puntuación y renderizado del Top 10 de jugadores.
+ */
+
 #include "ranking.h"
 #include <GL/freeglut.h>
 #include <fstream>

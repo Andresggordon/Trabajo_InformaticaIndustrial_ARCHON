@@ -1,3 +1,8 @@
+/**
+ * @file PantallaFinal.cpp
+ * @brief Implementación de la secuencia de fin de partida, entrada de datos del usuario y créditos.
+ */
+
 #include "PantallaFinal.h"
 #include <GL/freeglut.h>
 #include <string>

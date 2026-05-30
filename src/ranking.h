@@ -1,25 +1,19 @@
+/**
+ * @file ranking.h
+ * @brief Gestiona la lectura, escritura y visualización de las mejores puntuaciones.
+ *
+ * @details Tiene la responsabilidad única de mantener una lista ordenada (Top N) de las
+ * puntuaciones obtenidas en partidas finalizadas. Se encarga de cargar los datos desde el
+ * archivo persistente (`ranking.txt`) al iniciarse, guardar automáticamente tras cada inserción
+ * (`agregar()`) y renderizar la clasificación en pantalla. Su diseño garantiza alta cohesión
+ * al encapsular el formato del fichero, y bajo acoplamiento al exponer solo métodos básicos.
+ */
+
 #pragma once
 #include "ETSIDI.h"
 #include "Modos_juego.h"
 #include <string>
 #include <vector>
-
-// -----------------------------------------------------------------------------
-//  EntradaRanking + Ranking
-//
-//  Responsabilidad unica de Ranking: gestionar la lista de puntuaciones de
-//  partidas terminadas. Carga al construirse, guarda automaticamente tras
-//  cada agregar(), y dibuja las Top N en pantalla.
-//
-//  Alta cohesion: todo lo del ranking (datos, fichero y dibujo) vive aqui.
-//  Bajo acoplamiento: el resto del juego solo usa agregar() — no sabe del
-//  formato del fichero ni de como se ordenan.
-//
-//  Persistencia: "ranking.txt" en el cwd del ejecutable. Formato por linea:
-//        puntuacion;nombre
-//  La puntuacion va primero porque es la clave de orden y "nombre" puede
-//  contener espacios.
-// -----------------------------------------------------------------------------
 
 struct EntradaRanking {
     std::string nombre;

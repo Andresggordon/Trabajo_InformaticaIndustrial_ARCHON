@@ -1,11 +1,6 @@
 /**
  * @file ArenaCombate.cpp
- * @brief Programación y control de la Arena de combate
- *
- * @details Centraliza todo lo relacionado con el combate en la arena.
- * Tiene el control de donde colocar a los personajes y de como se mueven y de como atacan por la arena dependiendo del tipo de personaje.
- * Además, marca el resultado de quien gana la partida y quien muere durante el combate.
- *
+ * @brief Implementación de la clase ArenaCombate. Gestiona el ciclo de vida del minijuego de combate.
  */
 
 #include "ArenaCombate.h"

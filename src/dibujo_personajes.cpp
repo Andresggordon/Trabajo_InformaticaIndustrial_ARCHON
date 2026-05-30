@@ -1,3 +1,8 @@
+/**
+ * @file dibujo_personajes.cpp
+ * @brief Implementación de la clase DibujoPersonaje. Renderiza los sprites e interpola sus posiciones lógicas.
+ */
+
 #include "dibujo_personajes.h"
 #include "MotorGrafico.h"
 #include <cmath>

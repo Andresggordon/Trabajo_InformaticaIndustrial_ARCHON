@@ -1,3 +1,8 @@
+/**
+ * @file Finpartida.cpp
+ * @brief Implementación de las condiciones de fin de partida (puntos de poder, aniquilación, etc.).
+ */
+
 #include "Finpartida.h"
 #include "Casilla.h"
 

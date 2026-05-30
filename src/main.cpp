@@ -1,3 +1,8 @@
+/**
+ * @file main.cpp
+ * @brief Punto de entrada de la aplicación y coordinador de la máquina de estados global.
+ */
+
 #include <Windows.h>
 #include <GL/freeglut.h>
 #include "Menu.h"
@@ -44,9 +49,6 @@ void reshape(int w, int h) {
 void display() {
 
     glClear(GL_COLOR_BUFFER_BIT);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     if (estado == Modos_juego::Pantalla_carga)
         pantalla_carga->dibuja();
@@ -158,6 +160,12 @@ void teclado(unsigned char key, int x, int y) {
 }
 
 void tecladoEspecial(int key, int x, int y) {
+
+    if (key == GLUT_KEY_F11) {
+        glutFullScreenToggle();
+        return;
+    }
+
     if (estado == Modos_juego::Arena_Combate)
         arena->tecladoEspecial(key);
     glutPostRedisplay();
@@ -210,11 +218,7 @@ void tecladoUp(unsigned char key, int x, int y) {
 
 void tecladoEspecialUp(int key, int x, int y) {
 
-    if ( key == GLUT_KEY_F11) {
-        glutFullScreenToggle();
-        return;
-    }
-
+  
     if (estado == Modos_juego::Arena_Combate)
         arena->teclaEspecialLevantada(key);
     glutPostRedisplay();
@@ -252,5 +256,17 @@ int main(int argc, char** argv) {
     glutKeyboardUpFunc(tecladoUp);
     glutSpecialUpFunc(tecladoEspecialUp);
     glutMainLoop();
+
+    //Evitar fugas de memoria
+    delete menu;
+    delete eleccion_1jugador;
+    delete eleccion_2jugadores;
+    delete eleccion2_1jugador;
+    delete ranking;
+    delete arena;
+    delete pantalla_carga;
+    delete pantalla_final;
+
+    return 0;
     return 0;
 }

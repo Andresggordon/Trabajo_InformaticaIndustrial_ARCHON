@@ -1,11 +1,13 @@
-
-// EvaluadorMovimiento es el ente que sabe CUANTO de bueno es un movimiento.
-// Su unica responsabilidad es puntuar
-
-// Para puntuar solo consulta el Tablero y los Personajes (de solo lectura) y
-// reutiliza Geometria para razonar sobre amenazas. No guarda referencias al
-// estado del juego
-
+/**
+ * @file EvaluadorMovimiento.h
+ * @brief Define la clase EvaluadorMovimiento, motor heurístico de la inteligencia artificial.
+ *
+ * @details Tiene la responsabilidad única de puntuar numéricamente la calidad de un posible movimiento
+ * basándose en criterios estratégicos encapsulados (como el valor intrínseco de las piezas,
+ * el control de puntos de poder, las amenazas inminentes y las ventajas del color de casilla).
+ * Es una clase pura de solo lectura: consulta la geometría, las casillas y el tablero, pero no
+ * almacena ni altera ningún estado del juego.
+ */
 #pragma once
 
 class Personaje;

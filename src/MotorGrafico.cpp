@@ -1,11 +1,6 @@
 /**
  * @file MotorGrafico.cpp
- * @brief Motor de renderizado central de la fase de partida.
- *
- * @details Centraliza todo el dibujado durante la partida. 
- * Implementa el patrón Singleton para garantizar una única instancia.
- * Gestiona dos modos de visualización: el tablero de 9x9 casillas y la arena de combate 1 contra 1, incluyendo fondos, sprites de personajes y barras de vida.
- * 
+ * @brief Implementación del sistema de renderizado. Dibuja todos los elementos visuales usando OpenGL y ETSIDI.
  */
 
 #include "MotorGrafico.h"

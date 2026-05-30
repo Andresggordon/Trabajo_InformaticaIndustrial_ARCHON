@@ -1,3 +1,14 @@
+/**
+ * @file Tablero.h
+ * @brief Estructura de datos lógica que representa el campo de batalla y sus reglas de ciclo.
+ *
+ * @details Modela la cuadrícula 9x9 del juego instanciando y organizando una matriz bidimensional
+ * de objetos `Casilla`. Centraliza el control espacial de las piezas, gestiona el sistema
+ * de progresión de fases (`FaseCiclo`) que altera las condiciones de combate,
+ * y maneja las transiciones lógicas (origen y destino) antes de enviar a las piezas colisionadas
+ * a la Arena de Combate.
+ */
+
 #pragma once
 #include "Casilla.h"
 #include "ArenaCombate.h"

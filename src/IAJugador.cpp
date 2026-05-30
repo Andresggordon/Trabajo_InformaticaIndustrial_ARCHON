@@ -1,3 +1,8 @@
+/**
+ * @file IAJugador.cpp
+ * @brief Implementación del cerebro de la máquina. Calcula y ejecuta el movimiento con mayor puntuación táctica.
+ */
+
 #include "IAJugador.h"
 #include "personaje.h"
 #include "Casilla.h"

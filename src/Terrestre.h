@@ -1,3 +1,12 @@
+/**
+ * @file Terrestre.h
+ * @brief Clase intermedia para la categorización de personajes terrestres.
+ *
+ * @details Hereda de `Personaje` y agrupa semánticamente a las unidades
+ * con movimiento `TIERRA` (limitadas por obstáculos en la cuadrícula). Mantiene un constructor
+ * transparente hacia la clase base, sirviendo como etiqueta de clasificación estructural en la jerarquía.
+ */
+
 #pragma once
 #include "personaje.h"
 
@@ -9,4 +18,3 @@ public:
     using Personaje::Personaje;
 };
 
-//Esta clase deberia ser private porque no se va a usar fuera de esta jerarquia, pero la dejamos public para poder hacer pruebas unitarias

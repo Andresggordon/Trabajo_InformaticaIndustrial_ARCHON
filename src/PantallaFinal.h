@@ -1,3 +1,13 @@
+/**
+ * @file PantallaFinal.h
+ * @brief Define la secuencia de fin de partida: victoria, puntuación y créditos.
+ *
+ * @details Gestiona la interfaz mostrada al concluir un enfrentamiento. Se divide en tres
+ * fases controladas por temporizadores: petición del nombre del jugador, visualización del
+ * bando ganador junto con su puntuación, y finalmente la transición automática a la pantalla
+ * de créditos. Envía los datos recogidos al sistema de `Ranking` antes de regresar al menú.
+ */
+
 #pragma once
 #include "ETSIDI.h"
 #include "Modos_juego.h"
@@ -9,19 +19,6 @@ enum class ResultadoPartida {
     VICTORIA_TARDE,  // Turno de tarde gana
 };
 
-// ============================================================
-//  Clase PantallaFinal
-//  Muestra quien ha ganado, la puntuacion obtenida, y permite
-//  volver al menu principal.
-//
-//  Tras TIEMPO_PARA_CREDITOS ms, sustituye automaticamente la
-//  pantalla por una imagen de "creditos" (disenada por Esther).
-//  El boton BACK sigue visible y funcional en ambas fases.
-//
-//  USO desde Partida:
-//    1. pantalla_final->setResultado(r, puntuacion, nombre);
-//    2. Cambiar estado a Modos_juego::Pantalla_Final
-// ============================================================
 class PantallaFinal {
 public:
     PantallaFinal();

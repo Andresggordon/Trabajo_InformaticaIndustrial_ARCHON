@@ -1,3 +1,13 @@
+/**
+ * @file MotorGrafico.h
+ * @brief Define el motor de renderizado y dibujo mediante el patrón Singleton.
+ *
+ * @details Centraliza absolutamente todas las llamadas a OpenGL y ETSIDI para el renderizado.
+ * Esta clase extrae la responsabilidad gráfica del coordinador lógico (`Partida`) y se encarga
+ * de pintar el tablero, las piezas, las animaciones, la arena de combate, las barras de vida
+ * y la interfaz de usuario (HUD), aplicando constantes espaciales estandarizadas.
+ */
+
 #pragma once
 #include "Tablero.h"
 #include "ETSIDI.h"

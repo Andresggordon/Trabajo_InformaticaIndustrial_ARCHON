@@ -1,3 +1,13 @@
+/**
+ * @file dibujo_personajes.h
+ * @brief Define la clase DibujoPersonaje, encargada de la representación visual y animación de las piezas.
+ *
+ * @details Separa la lógica interna del juego de su representación gráfica.
+ * Esta clase envuelve los sprites y animaciones de la librería ETSIDI, gestionando las transiciones
+ * visuales de movimiento en el tablero, la interpolación de posiciones y las cinemáticas de entrada
+ * al comenzar la partida, leyendo siempre los datos lógicos desde su puntero a `Personaje`.
+ */
+
 #pragma once
 #include "ETSIDI.h"      // Dibujo de los sprites
 #include "Casilla.h"

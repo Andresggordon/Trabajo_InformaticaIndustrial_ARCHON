@@ -1,3 +1,8 @@
+/**
+ * @file EvaluadorMovimiento.cpp
+ * @brief Implementación de la heurística de evaluación táctica para la Inteligencia Artificial.
+ */
+
 #include "EvaluadorMovimiento.h"
 #include "personaje.h"
 #include "Casilla.h"

@@ -1,3 +1,13 @@
+/**
+ * @file Pantalla_carga.h
+ * @brief Define la secuencia cinemática introductoria al abrir el juego (Splash Screen).
+ *
+ * @details Gestiona la pantalla inicial de presentación. Controla un temporizador interno
+ * (`timer`) para mostrar y desvanecer logotipos de forma secuencial. Una vez finalizada
+ * la secuencia automática, solicita la confirmación del usuario (pulsar Enter) para
+ * realizar la transición segura hacia el `Menu` principal.
+ */
+
 #pragma once
 #include "ETSIDI.h"
 #include "Menu.h"

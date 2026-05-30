@@ -1,3 +1,14 @@
+/**
+ * @file tipo_personaje.h
+ * @brief Catálogo integral de las clases concretas de personajes del juego.
+ *
+ * @details Este archivo agrupa las definiciones de los 12 tipos de personajes jugables,
+ * instanciándolos mediante la herencia de las clases intermedias `Volador` o `Terrestre`.
+ * Aquí se definen las estadísticas base de cada unidad (nombre, vida,
+ * movimiento, daño, velocidad, radio) y sus atributos visuales (sprites, animaciones, proyectiles
+ * e imágenes de cartas para el HUD).
+ */
+
 #pragma once
 #include "Personaje.h"
 #include "habilidades_profes.h"
